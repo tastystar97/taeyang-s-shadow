@@ -2,11 +2,12 @@ const TEMPLATE_CHECKLIST = {
   "operation-order": ["assignment", "operation-order"],
   "hq-report": ["hq-report"],
   "protection-record": ["protected-review"],
-  "settlement-report": ["result-record", "condition-update", "payroll", "maintenance", "indicators"]
+  "settlement-report": ["result-record", "condition-update", "payroll", "maintenance"]
 };
 
-const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "mark-document-read"]);
-const GM_ACTIONS = new Set(["approve-form", "return-form", "set-phase", "add-notice", "update-stats", "reset-state"]);
+const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
+const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "mark-document-read", "save-archive-document"]);
+const GM_ACTIONS = new Set(["approve-form", "return-form", "set-phase", "add-notice", "add-evidence", "reset-state"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -17,6 +18,27 @@ function sanitizeForm(input) {
   const content = {};
   for (const [key, value] of Object.entries(input.content || {})) content[text(key, 60)] = text(value);
   return { id: text(input.id, 80), template: input.template, title: text(input.title, 160), content, signature: text(input.signature, 40), status: text(input.status, 20) || "DRAFT" };
+}
+
+function sanitizeArchiveEntry(input) {
+  const id = text(input?.id, 80);
+  if (!EDITABLE_ARCHIVE_DOCUMENTS.has(id)) throw new Error("작성할 수 없는 보관 문서입니다.");
+  const content = {};
+  const signatures = {};
+  for (const [key, value] of Object.entries(input?.content || {})) content[text(key, 60)] = text(value, 4000);
+  for (const [key, value] of Object.entries(input?.signatures || {})) signatures[text(key, 60)] = text(value, 80);
+  return { id, content, signatures };
+}
+
+function sanitizeEvidence(input) {
+  const id = text(input?.id, 80);
+  const title = text(input?.title, 120);
+  if (!id || !title) throw new Error("증거 사진의 식별자와 제목이 필요합니다.");
+  return {
+    id, title, category: text(input.category, 40) || "현장사진", caseCode: text(input.caseCode, 80),
+    location: text(input.location, 160), capturedAt: text(input.capturedAt, 40), description: text(input.description, 1200),
+    fileName: text(input.fileName, 180), contentType: text(input.contentType, 80), createdAt: text(input.createdAt, 40) || new Date().toISOString()
+  };
 }
 
 function activity(state, action, detail) {
@@ -60,6 +82,12 @@ export function applyAction(state, action, payload = {}) {
     const document = state.documents.find((entry) => entry.id === text(payload.id, 80));
     if (document?.status === "NEW") document.status = "RELEASED";
   }
+  if (action === "save-archive-document") {
+    const entry = sanitizeArchiveEntry(payload.entry);
+    state.archiveEntries ||= {};
+    state.archiveEntries[entry.id] = { ...entry, updatedAt: new Date().toISOString() };
+    activity(state, "ARCHIVE_UPDATED", entry.id);
+  }
   if (action === "approve-form" || action === "return-form") {
     const form = state.forms.find((entry) => entry.id === text(payload.id, 80));
     if (!form || form.status !== "SUBMITTED") throw new Error("승인 대기 중인 서류가 아닙니다.");
@@ -81,11 +109,13 @@ export function applyAction(state, action, payload = {}) {
     state.notices = state.notices.slice(0, 20);
     activity(state, "NOTICE_SENT", title);
   }
-  if (action === "update-stats") {
-    for (const key of ["morale", "alert", "intel"]) if (payload[key] !== undefined) state.stats[key] = Math.max(0, Math.min(10, Number(payload[key]) || 0));
-    if (payload.funds !== undefined) state.stats.funds = Math.max(0, Number(payload.funds) || 0);
-    if (payload.trust !== undefined) state.stats.trust = text(payload.trust, 20);
-    activity(state, "STATUS_UPDATED", "지부 지표 갱신");
+  if (action === "add-evidence") {
+    const evidence = sanitizeEvidence(payload.evidence);
+    state.evidence ||= [];
+    if (state.evidence.some((entry) => entry.id === evidence.id)) throw new Error("이미 등록된 증거 사진입니다.");
+    state.evidence.unshift(evidence);
+    state.evidence = state.evidence.slice(0, 200);
+    activity(state, "EVIDENCE_ADDED", evidence.title);
   }
   state.revision = Number(state.revision || 0) + 1;
   return state;
