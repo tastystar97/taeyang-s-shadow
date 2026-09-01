@@ -42,6 +42,19 @@ test("signed archive documents can be saved as shared player records", () => {
   assert.ok(state.archiveEntries["medical-isea"].updatedAt);
 });
 
+test("in-document checklist choices and director signature are preserved", () => {
+  const state = freshState();
+  const attachments = JSON.stringify(["initialReport", "peopleRegister", "p07Consent"]);
+  applyAction(state, "save-archive-document", { entry: {
+    id: "hq-urgent",
+    content: { decision: "지부 보호 지속", opinion: "지부에서 보호한다.", attachments },
+    signatures: { branchDirector: "최영호" }
+  } });
+  assert.equal(state.archiveEntries["hq-urgent"].content.decision, "지부 보호 지속");
+  assert.equal(state.archiveEntries["hq-urgent"].content.attachments, attachments);
+  assert.equal(state.archiveEntries["hq-urgent"].signatures.branchDirector, "최영호");
+});
+
 test("non-editable archive documents reject player edits", () => {
   const state = freshState();
   assert.throws(() => applyAction(state, "save-archive-document", { entry: { id: "city-history", content: {}, signatures: {} } }), /작성할 수 없는/);
