@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UGN 본부규정 P-07 · 보호대상 안정화 및 인계</title>
+  <style>
+    :root{--navy:#081d34;--blue:#185e90;--cyan:#249cac;--ink:#182838;--muted:#617284;--line:#b9c7d2;--paper:#f8fafc;--pale:#eaf1f6;--red:#a13843;--amber:#a56a18;--green:#276e5b}
+    *{box-sizing:border-box}
+    html{background:#07111c}
+    body{margin:0;min-height:100vh;color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;background:radial-gradient(circle at 18% 4%,#183c59,transparent 34%),linear-gradient(145deg,#06101b,#0b2032)}
+    .toolbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:11px 18px;color:#dcecf4;background:rgba(5,16,28,.94);border-bottom:1px solid rgba(63,190,202,.28);backdrop-filter:blur(10px)}
+    .toolbar strong{font:800 .7rem Consolas,monospace;letter-spacing:.12em}.toolbar button{padding:8px 13px;border:1px solid #4c7188;border-radius:3px;color:#effcff;background:#173850;font-weight:800;cursor:pointer}
+    main{width:min(930px,calc(100% - 30px));margin:30px auto 50px;display:grid;gap:28px}
+    .sheet{position:relative;min-height:1180px;padding:40px 50px 35px;background:linear-gradient(100deg,rgba(24,94,144,.035),transparent 30%),var(--paper);border:1px solid #a9b8c5;box-shadow:0 25px 70px rgba(0,0,0,.42);overflow:hidden}
+    .sheet:before{content:"P-07";position:absolute;right:-18px;bottom:-45px;color:rgba(8,29,52,.035);font:900 10rem/1 Consolas,monospace}
+    .classline{display:flex;justify-content:space-between;padding:6px 10px;color:#fff;background:var(--navy);font:800 .59rem Consolas,monospace;letter-spacing:.14em}
+    .mast{display:grid;grid-template-columns:76px 1fr auto;gap:16px;align-items:center;padding:20px 2px 16px;border-bottom:4px double var(--navy)}
+    .logo{width:66px;height:66px;display:grid;place-items:center;border:2px solid var(--blue);border-radius:50%;color:var(--blue);font:900 1.08rem Arial,sans-serif;box-shadow:inset 0 0 0 5px var(--paper),inset 0 0 0 7px rgba(24,94,144,.2)}
+    .org small{display:block;color:var(--blue);font:800 .62rem Consolas,monospace;letter-spacing:.12em}.org h1{margin:4px 0 2px;font-size:1.5rem;letter-spacing:-.04em}.org p{margin:0;color:var(--muted);font-size:.68rem}
+    .code{text-align:right;color:#354f64;font:700 .65rem/1.55 Consolas,monospace}.code b{color:var(--red)}
+    .title{margin:20px 0 16px;text-align:center}.title h2{margin:0;font-size:1.65rem;letter-spacing:.04em}.title p{margin:5px 0 0;color:var(--muted);font:700 .61rem Consolas,monospace;letter-spacing:.13em}
+    .principle{display:grid;grid-template-columns:150px 1fr;margin:15px 0 19px;border:2px solid var(--blue);background:#edf5f9}.principle b{display:grid;place-items:center;padding:12px;color:#fff;background:var(--blue);font-size:.78rem}.principle span{padding:12px 15px;font-size:.76rem;line-height:1.55;font-weight:800}
+    .article{position:relative;margin-top:16px}.article h3{display:flex;align-items:baseline;gap:10px;margin:0 0 7px;padding-bottom:5px;border-bottom:2px solid #355b76;color:#173d59;font-size:.86rem}.article h3 span{color:var(--red);font:800 .64rem Consolas,monospace}.article p{margin:5px 0;font-size:.7rem;line-height:1.55}.clauses{margin:0;padding:0;list-style:none;counter-reset:clause}.clauses>li{position:relative;padding:5px 8px 5px 35px;border-bottom:1px solid var(--line);font-size:.69rem;line-height:1.5}.clauses>li:before{counter-increment:clause;content:"(" counter(clause) ")";position:absolute;left:7px;top:5px;color:var(--blue);font:800 .63rem Consolas,monospace}.clauses b{color:#203d53}.sub{margin:4px 0 1px;padding-left:17px;color:#40566a;font-size:.66rem;line-height:1.45}
+    .terms{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.term{padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.66rem;line-height:1.45}.term b{display:block;margin-bottom:3px;color:var(--blue);font-size:.69rem}
+    .stop{margin:12px 0;padding:10px 13px;border-left:4px solid var(--red);background:#fff0f1;color:#573139;font-size:.69rem;line-height:1.55}.stop b{color:var(--red)}
+    .timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}.step{padding:10px;border:1px solid var(--line);background:#fff;font-size:.64rem;line-height:1.45}.step b{display:block;margin-bottom:4px;color:var(--blue);font:800 .68rem Consolas,monospace}.step strong{color:#263d51}
+    .rulebox{margin:10px 0;padding:11px 13px;border:1px solid #d5bd8b;background:#fff8e9;font-size:.68rem;line-height:1.5}.rulebox b{color:var(--amber)}
+    .rights{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}.right{padding:10px 12px;border:1px solid #afc8c2;background:#f0f8f5;font-size:.66rem;line-height:1.5}.right b{display:block;margin-bottom:3px;color:var(--green);font-size:.69rem}
+    .ban{width:100%;border-collapse:collapse;margin-top:8px;font-size:.65rem}.ban th{padding:7px 8px;color:#fff;background:#254e6b;text-align:left}.ban td{padding:7px 8px;border:1px solid var(--line);vertical-align:top}.ban td:first-child{width:30%;color:var(--red);font-weight:900}
+    .footer{position:absolute;left:50px;right:50px;bottom:25px;display:flex;justify-content:space-between;color:#71828f;font:700 .56rem Consolas,monospace;letter-spacing:.08em}
+    .annex-head{display:flex;justify-content:space-between;align-items:end;margin:20px 0 13px;padding-bottom:9px;border-bottom:3px solid var(--navy)}.annex-head h2{margin:0;font-size:1.2rem}.annex-head span{color:var(--muted);font:700 .6rem Consolas,monospace;letter-spacing:.1em}
+    .check{width:100%;border-collapse:collapse;font-size:.67rem}.check th{padding:7px 8px;color:#fff;background:#274e6a;text-align:left}.check td{padding:7px 8px;border:1px solid var(--line)}.check .tick{width:43px;text-align:center;font-size:.85rem}.check .must{color:var(--red);font-weight:900}
+    .decision{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.card{padding:13px 14px;border:2px solid #7894a7;background:#fff}.card.sera{border-color:#27778b}.card.suhwan{border-color:#9a6870}.card .tag{color:var(--muted);font:800 .58rem Consolas,monospace;letter-spacing:.1em}.card h3{margin:4px 0 8px;font-size:1rem}.status{display:inline-block;margin-bottom:8px;padding:4px 8px;color:#fff;background:var(--green);font:900 .61rem Consolas,monospace}.suhwan .status{background:var(--red)}.card ul{margin:0;padding-left:18px;font-size:.68rem;line-height:1.55}.card .result{margin-top:10px;padding:8px 9px;background:var(--pale);font-size:.68rem;line-height:1.5;font-weight:800}
+    .flow{display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr;align-items:stretch;margin:14px 0}.flow .f{display:grid;place-items:center;padding:12px 9px;border:1px solid var(--line);background:#fff;text-align:center;font-size:.67rem;line-height:1.45}.flow .arr{display:grid;place-items:center;color:var(--blue);font-weight:900}
+    .record{margin-top:15px;padding:13px;border:2px solid #315975;background:#f0f6f9}.record h3{margin:0 0 8px;color:#24485f;font-size:.78rem}.record-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field{min-height:58px;padding:7px 8px;border:1px solid #9eb0bc;background:#fff;color:#6a7b87;font-size:.61rem}.field b{display:block;margin-bottom:14px;color:#273f52;font-size:.66rem}.record .wide{grid-column:1/4;min-height:70px}
+    .gmnote{margin-top:15px;padding:12px 14px;border-left:5px solid var(--amber);background:#fff7e8;font-size:.69rem;line-height:1.55}.gmnote b{color:var(--amber)}
+    @media(max-width:720px){main{width:min(100% - 12px,930px);margin-top:10px}.sheet{min-height:0;padding:25px 18px 45px}.mast{grid-template-columns:58px 1fr}.logo{width:54px;height:54px}.code{grid-column:1/3}.principle,.terms,.timeline,.rights,.decision,.record-grid{grid-template-columns:1fr}.principle b{display:block}.flow{grid-template-columns:1fr}.flow .arr{padding:3px;transform:rotate(90deg)}.record .wide{grid-column:auto}.footer{position:static;margin-top:24px}}
+    @page{size:A4 portrait;margin:8mm}
+    @media print{html,body{background:#fff}.toolbar{display:none}main{display:block;width:auto;margin:0}.sheet{min-height:0;height:281mm;padding:8mm 10mm;box-shadow:none;border:0;break-after:page}.sheet:last-child{break-after:auto}.classline{print-color-adjust:exact;-webkit-print-color-adjust:exact}.footer{left:10mm;right:10mm;bottom:6mm}.article{margin-top:10px}.clauses>li{padding-top:4px;padding-bottom:4px}.timeline,.rights{gap:5px}}
+  </style>
+</head>
+<body>
+  <div class="toolbar"><strong>UGN HEADQUARTERS REGULATION · P-07</strong><button type="button" onclick="window.print()">전체 인쇄 / PDF 저장</button></div>
+  <main>
+    <article class="sheet">
+      <div class="classline"><span>UGN INTERNAL · BRANCH DIRECTOR CLEARANCE</span><span>본부규정 · 즉시 시행</span></div>
+      <header class="mast">
+        <div class="logo">UGN</div>
+        <div class="org"><small>UNIVERSAL GUARDIANS NETWORK · KOREA HEADQUARTERS</small><h1>보호대상 관리조정실 본부규정</h1><p>미등록 오버드 및 회수 피해자의 보호·의료·이송 기준</p></div>
+        <div class="code"><b>REGULATION P-07</b><br>REVISION 01<br>EFFECTIVE: IMMEDIATE<br>PERMANENT RECORD</div>
+      </header>
+      <div class="title"><h2>보호대상 안정화 및 인계에 관한 규정</h2><p>PROTECTED PERSON · STABILIZATION, CONSENT & TRANSFER</p></div>
+
+      <div class="principle"><b>최우선 원칙</b><span>보고는 즉시 한다. 인계는 안전할 때 한다. 성인의 보호는 본인의 의사를 대신하지 않는다.</span></div>
+
+      <section class="article"><h3><span>ARTICLE 01</span> 목적</h3><p>본 규정은 현장에서 확보한 미등록 오버드, 실험·감금·약물 피해자 및 신원 미확인자의 생명과 자기결정권을 보호하면서 UGN 본부와 지부 사이의 보고·보호·인계 책임을 명확히 하는 것을 목적으로 한다.</p></section>
+
+      <section class="article"><h3><span>ARTICLE 02</span> 용어</h3><div class="terms">
+        <div class="term"><b>보호대상</b>구조·확보 후 UGN의 의료, 은폐 또는 신변 보호가 필요한 사람.</div>
+        <div class="term"><b>안정화</b>활력·침식·약물 영향·인지 상태가 이송과 의사표현에 충분한 수준에 도달한 상태.</div>
+        <div class="term"><b>의사결정능력</b>정보를 이해하고 선택의 결과를 비교해 일관된 의사를 표현할 수 있는 능력.</div>
+        <div class="term"><b>인계</b>보호 책임과 소재 관리 권한을 본부 지정 시설 또는 다른 UGN 기관에 공식 이전하는 절차.</div>
+      </div></section>
+
+      <section class="article"><h3><span>ARTICLE 03</span> 기본 원칙</h3><ol class="clauses">
+        <li><b>의료 우선:</b> 보고 지연보다 위험한 것은 부적절한 이송이다. 불안정 상태에서는 지부가 임시 보호 책임을 유지한다.</li>
+        <li><b>최소 제한:</b> 보호를 이유로 필요한 범위를 넘는 감금·구속·통신 차단을 해서는 안 된다.</li>
+        <li><b>성인 동의:</b> 의사결정능력이 있는 성인의 보호시설 인계에는 충분한 설명에 기초한 명시적 동의가 필요하다.</li>
+        <li><b>침묵은 동의가 아님:</b> 기억 혼란, 약물 영향, 공포 또는 의식 저하 상태의 무응답을 인계 동의로 간주하지 않는다.</li>
+        <li><b>외부 차단:</b> 헬리오스 등 제3자는 UGN의 보호 결정을 대신할 수 없으며, 본부 서면 승인 없는 접근·인계를 금한다.</li>
+      </ol></section>
+
+      <section class="article"><h3><span>ARTICLE 04</span> 초동 조치와 보고 시한</h3><div class="timeline">
+        <div class="step"><b>도착 후 6시간</b><strong>초동 등록</strong><br>가명 허용, 확보 경위·즉시 위험·동반자 기록.</div>
+        <div class="step"><b>도착 후 24시간</b><strong>1차 안정화 평가</strong><br>활력·침식·약물·기억·의사결정능력 확인.</div>
+        <div class="step"><b>도착 후 72시간</b><strong>보호계획 제출</strong><br>지부 잔류·본부 협의·자발적 퇴소 중 계획 회신.</div>
+      </div></section>
+
+      <section class="article"><h3><span>ARTICLE 05</span> 인계 유예</h3><ol class="clauses">
+        <li>지부장은 다음 사유 중 하나가 있으면 최초 <b>72시간</b> 동안 인계를 유예할 수 있다.
+          <div class="sub">가. 활력·침식·부상 불안정　 나. 약물·세뇌·기억 혼란　 다. 의사결정능력 평가 미완료　 라. 안전한 목적지·호송 미확보　 마. 즉각적인 추적·회수 위협</div></li>
+        <li>의료 담당자의 소견이 있으면 72시간 단위로 연장할 수 있다. 연장 때마다 상태·보호계획·다음 재평가 시점을 본부에 보고한다.</li>
+        <li><b>본 조에 따른 적법한 유예만을 이유로 본부 신뢰 또는 지원금 등급을 낮출 수 없다.</b> 미보고·허위 보고·사적 은닉은 별도로 감사한다.</li>
+      </ol><div class="stop"><b>이송 중지 기준:</b> 의식 저하, 침식 급등, 급성 약물 반응, 강압에 따른 동의 번복, 목적지 불명확 중 하나라도 확인되면 출발 전후를 불문하고 이송을 중지한다.</div></section>
+      <div class="footer"><span>UGN-KR/HQ-PD/P-07 · PAGE 1/2</span><span>PROTECTION BEFORE TRANSFER</span></div>
+    </article>
+
+    <article class="sheet">
+      <div class="classline"><span>UGN INTERNAL · REGULATION P-07</span><span>시행 부록 · 태양시 지부 적용</span></div>
+
+      <section class="article"><h3><span>ARTICLE 06</span> 성인 보호대상의 권리</h3><ol class="clauses">
+        <li>의사결정능력이 있는 성인은 본부 시설 인계, 지부 잔류, 외부 협력 보호 또는 보호 종료 중 선택할 수 있다.</li>
+        <li>UGN은 목적지·담당자·보호기간·의료계획·연락 가능 범위를 설명한 뒤 동의를 받아야 한다.</li>
+        <li>성인이 인계를 거부했다는 이유만으로 구금하거나 기억처리·강제훈련·강제검사를 실시할 수 없다.</li>
+        <li>본인 또는 타인의 생명에 명백하고 임박한 위험이 있는 경우에만 최대 24시간 긴급 제한을 허용한다. 지부장과 의료 담당자의 공동 기록 및 본부 재심사를 요한다.</li>
+      </ol><div class="rights">
+        <div class="right"><b>거부권</b>인계와 비응급 의료행위를 거절하고 다른 보호안을 요청할 수 있다.</div>
+        <div class="right"><b>설명받을 권리</b>자신의 상태, UGN의 역할, 목적지와 예상 처우를 이해 가능한 말로 듣는다.</div>
+        <div class="right"><b>연락권</b>안전을 해치지 않는 범위에서 지정 연락자 및 지부 담당자와 연락한다.</div>
+        <div class="right"><b>재심 요청권</b>보호·이송 결정의 재검토와 다른 담당자 면담을 요청할 수 있다.</div>
+      </div></section>
+
+      <section class="article"><h3><span>ARTICLE 07</span> 연령·신원·판단능력 미확인자</h3><ol class="clauses">
+        <li>연령 또는 법적 신원이 확인되지 않고 기억·인지가 불안정한 사람은 <b>취약 보호대상</b>으로 분류한다.</li>
+        <li>조사 편의를 위한 이송보다 안정화·신원 확인·독립된 보호 담당자의 의견을 우선한다.</li>
+        <li>명시적 동의를 받을 수 없을 때에는 가장 안전하고 제한이 적은 임시 보호안을 선택하며 매 24시간 상태를 재평가한다.</li>
+        <li>안정화 후 의사결정능력이 회복되면 즉시 제6조의 성인 권리 또는 확인된 연령에 맞는 보호 절차를 적용한다.</li>
+      </ol></section>
+
+      <section class="article"><h3><span>ARTICLE 08</span> 지정 보호시설의 요건</h3><p>본부가 인계를 요구하려면 목적지와 다음 정보를 사전에 서면 제공해야 한다.</p><table class="ban">
+        <thead><tr><th>필수 고지</th><th>내용</th></tr></thead>
+        <tbody><tr><td>시설 정보</td><td>정확한 소재, 책임자, 보안등급, 수용 목적과 예상 기간.</td></tr><tr><td>의료 계획</td><td>예정 검사·투약·격리 범위와 거부 가능한 항목.</td></tr><tr><td>연락·점검</td><td>태양시 지부 연락 담당자와 정기 상태 확인 일정.</td></tr><tr><td>재이관 제한</td><td>본인 동의와 지부 통지 없이 외부 기관·민간 연구시설로 재이관할 수 없음.</td></tr></tbody>
+      </table><div class="rulebox"><b>본부의 시설 부족은 강제 인계 사유가 아니다.</b> 적합한 보호시설이 없으면 본부는 지부의 임시 보호 비용·인력·은폐 조치를 지원해야 한다.</div></section>
+
+      <section class="article"><h3><span>ARTICLE 09</span> 금지 행위</h3><table class="ban"><tbody>
+        <tr><td>강제 연구</td><td>보호를 조건으로 한 임상시험·능력시험·샘플 제공 강요.</td></tr>
+        <tr><td>자동 기억처리</td><td>본인의 동의 또는 별도 긴급심사 없이 기억을 소거·변조하는 행위.</td></tr>
+        <tr><td>목적지 은폐</td><td>시설명·책임자·처우를 밝히지 않은 채 진행하는 인계.</td></tr>
+        <tr><td>외부 재이관</td><td>헬리오스, 민간기업, 연구시설에 보호 책임을 임의 이전하는 행위.</td></tr>
+      </tbody></table></section>
+
+      <div class="annex-head"><h2>태양시 지부 · 현 사건 적용 메모</h2><span>APPLICATION NOTE / ACT II</span></div>
+      <div class="decision">
+        <section class="card sera"><span class="tag">CASE 004 · ADULT</span><h3>정세라 · 22세</h3><span class="status">본인 동의 우선</span><ul><li>성인이며 의사 표현 가능.</li><li>투약 후유증 안정화와 충분한 설명이 선행되어야 함.</li><li>본부행을 원하지 않으면 강제 인계할 수 없음.</li></ul><div class="result">권고: 지부에서 안정화 → 선택지 설명 → 세라가 보호처 결정.</div></section>
+        <section class="card suhwan"><span class="tag">CODE-003 · CAPACITY PENDING</span><h3>수환 · 연령 미확인</h3><span class="status">현재 인계 부적합</span><ul><li>초커 해제 후 실신 및 기억 혼란.</li><li>의사결정능력과 이송 안정성 평가 미완료.</li><li>침묵·혼란을 인계 동의로 간주할 수 없음.</li></ul><div class="result">권고: 지부 임시 보호 → 24시간마다 재평가 → 안정화 후 적합 시설 협의.</div></section>
+      </div>
+
+      <div class="flow"><div class="f"><b>① 지부 보호</b><br>의료·기억·침식 안정화</div><div class="arr">→</div><div class="f"><b>② 의사 확인</b><br>설명·동의·보호안 비교</div><div class="arr">→</div><div class="f"><b>③ 적합 시설</b><br>목적지 공개 후 공식 인계</div></div>
+
+      <section class="record"><h3>지부장 유예 결정 기록</h3><div class="record-grid"><div class="field"><b>대상자</b>성명 / 사건번호</div><div class="field"><b>유예 사유</b>□ 의료　□ 인지　□ 보안　□ 시설</div><div class="field"><b>다음 재평가</b>일시 / 담당자</div><div class="field wide"><b>보호계획 및 본인 의사</b></div></div></section>
+
+      <div class="gmnote"><b>행정 해석:</b> 지부장이 규정에 따라 상태를 보고하고 보호계획을 제출한 경우, 인계 유예 자체를 본부 신뢰 하락 사유로 삼지 않는다. 단, 숙소·의료·은폐 자원에 대한 지부의 관리 책임은 계속된다. 보고를 누락하거나 소재를 숨긴 경우에는 적법한 보호가 아니라 사적 은닉으로 보아 감사 절차를 개시한다.</div>
+      <div class="footer"><span>UGN-KR/HQ-PD/P-07 · PAGE 2/2</span><span>STABILIZE · INFORM · CONSENT · TRANSFER</span></div>
+    </article>
+  </main>
+</body>
+</html>

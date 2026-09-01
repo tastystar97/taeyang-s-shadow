@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>지부 시설 참조 · Housing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13100C;--ink-2:#1B1712;--panel:#211C16;--panel-2:#282219;
+    --line:#3A3125;--line-soft:#2E271E;
+    --gold:#EDB04A;--gold-dim:#C88A2E;--corona:#F5C868;
+    --erode:#D2506A;--wound:#C96A3C;--cyan:#6FA6AE;--ok:#8FB07A;
+    --med:#8FB07A;--train:#C88A2E;--ops:#6FA6AE;--house:#D9A24B;--lounge:#C97D5E;
+    --text:#ECE1CE;--text-2:#B4A891;--text-3:#867B68;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--ink);color:var(--text);
+    font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-weight:300;line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding-bottom:20px;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  strong{font-weight:600;color:var(--text)}
+
+  header{border-bottom:1px solid var(--line-soft);padding:54px 0 34px;background:radial-gradient(circle at 88% 0%,rgba(237,176,74,.07),transparent 45%)}
+  .eyebrow{font-family:"Chakra Petch",sans-serif;font-weight:600;letter-spacing:.28em;text-transform:uppercase;font-size:.66rem;color:var(--gold-dim);display:block;margin-bottom:12px}
+  header h1{font-weight:700;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.02em;line-height:1.1}
+  header p{color:var(--text-2);max-width:620px;margin-top:12px;font-size:.98rem}
+
+  /* legend bar */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;font-size:.78rem;color:var(--text-3)}
+  .legend b{color:var(--gold)}
+  .legend .free{color:var(--ok);border:1px solid rgba(143,176,122,.4);border-radius:2px;padding:1px 7px;font-family:"IBM Plex Mono",monospace;font-size:.68rem}
+
+  main{padding-top:14px}
+  .fac{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;border-left-width:3px}
+  .fac.med{border-left-color:var(--med)}
+  .fac.train{border-left-color:var(--train)}
+  .fac.ops{border-left-color:var(--ops)}
+  .fac.house{border-left-color:var(--house)}
+  .fac.lounge{border-left-color:var(--lounge)}
+
+  .fhead{display:flex;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid var(--line-soft);background:linear-gradient(90deg,rgba(255,255,255,.015),transparent)}
+  .fhead .ico{font-size:1.5rem;line-height:1}
+  .fhead .tt h2{font-size:1.2rem;font-weight:700;letter-spacing:-.01em}
+  .fhead .tt .role{font-family:"Chakra Petch",sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:.6rem;color:var(--gold-dim);margin-top:3px}
+  .fhead .en{margin-left:auto;font-family:"Chakra Petch",sans-serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+
+  .levels{padding:6px 24px 18px}
+  .lv{display:grid;grid-template-columns:56px 1fr 128px;gap:16px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line-soft)}
+  .lv:last-child{border-bottom:none}
+  .lv .tier{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.82rem;color:var(--gold);padding-top:2px}
+  .lv .eff{font-size:.9rem;color:var(--text-2)}
+  .lv .eff .sig{color:var(--gold);font-weight:600}
+  .lv .eff .hot{color:var(--erode)}
+  .lv .cost{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:.74rem;color:var(--text-3);line-height:1.7}
+  .lv .cost .b{color:var(--text-2)}
+  .lv .cost .free{color:var(--ok)}
+  .lv .cost .lbl{color:var(--text-3);font-size:.64rem}
+
+  .fnote{padding:12px 24px 18px;font-size:.8rem;color:var(--text-3);border-top:1px dashed var(--line-soft);background:var(--ink-2)}
+  .fnote b{color:var(--text-2)}
+
+  /* footer rules */
+  .rules{margin-top:30px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--gold-dim);border-radius:8px;padding:24px 26px}
+  .rules .eyebrow{color:var(--gold)}
+  .rules ul{list-style:none;margin-top:6px}
+  .rules li{position:relative;padding:8px 0 8px 20px;font-size:.88rem;color:var(--text-2);border-top:1px solid var(--line-soft)}
+  .rules li:first-child{border-top:none}
+  .rules li::before{content:"▹";position:absolute;left:0;color:var(--gold-dim)}
+  .rules li b{color:var(--text)}
+
+  .foot{margin-top:30px;text-align:center;font-family:"Chakra Petch",sans-serif;letter-spacing:.2em;text-transform:uppercase;font-size:.6rem;color:var(--text-3)}
+
+  @media(max-width:640px){
+    .lv{grid-template-columns:44px 1fr;gap:12px}
+    .lv .cost{grid-column:2;text-align:left;margin-top:2px}
+    .fhead .en{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">지부 운영 · Housing Reference</span>
+    <h1>지부 시설 목록 · 효과</h1>
+    <p>모든 시설은 새 스탯을 만들지 않고 <strong>기존 지표·판정·게이지에 보정만</strong> 겁니다. 내정 페이즈에 자금을 소모해 건설·증축하세요.</p>
+    <div class="legend">
+      <span><b>건설비</b> 일회성 지출 (증축은 누적 +표기)</span>
+      <span><b>유지비</b> 매 사이클 고정 지출</span>
+      <span class="free">무료</span> 기본 시설 · 파산해도 작동
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 의무실 -->
+  <div class="fac med">
+    <div class="fhead">
+      <span class="ico">🏥</span>
+      <div class="tt"><h2>의무실</h2><div class="role">회복 · 침식 케어</div></div>
+      <span class="en">Medical</span>
+    </div>
+    <div class="levels">
+      <div class="lv">
+        <div class="tier">Lv 1</div>
+        <div class="eff">정산 시 부상 대원 1명 회복. 침식 리셋 시 <strong>+1칸 추가 하강</strong>. 메인 세션에 침식 경감·응급 리소스 <strong>1회</strong> 제공.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="free">기본</span><br><span class="lbl">유지</span> <span class="free">면제</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 2</div>
+        <div class="eff">부상 회복 2명. 침식 <strong>임계(●●●) 1명을 과부하로 강제 하향</strong>(1회/사이클). 세션 지원 2회.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">3</span><br><span class="lbl">유지</span> <span class="b">2</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 3</div>
+        <div class="eff"><span class="sig">로스트 판정 시 재굴림 1회</span>(사이클당 1회) — '한 번은 사람을 구할 수 있는' 시설. 세션 지원 3회.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+4</span><br><span class="lbl">유지</span> <span class="b">3</span></div>
+      </div>
+    </div>
+    <div class="fnote"><b>세션 연동</b> — 의무실 Lv은 현장요원 PC가 세션 중 쓸 수 있는 침식 경감·응급 리소스로 작용. 지부를 키우면 현장이 그만큼 오래 버팁니다.</div>
+  </div>
+
+  <!-- 훈련장 -->
+  <div class="fac train">
+    <div class="fhead">
+      <span class="ico">🎯</span>
+      <div class="tt"><h2>훈련장</h2><div class="role">태그 · 승급</div></div>
+      <span class="en">Training</span>
+    </div>
+    <div class="levels">
+      <div class="lv">
+        <div class="tier">Lv 1</div>
+        <div class="eff"><strong>태그 훈련 개방</strong>. 대원 1명을 훈련 슬롯에 배치, <strong>2사이클 연속</strong> 시 태그 1개 추가(등급 상한 내).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">2</span><br><span class="lbl">유지</span> <span class="b">1</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 2</div>
+        <div class="eff">동시 훈련 <strong>2명</strong> + <strong>재훈련</strong>(기존 태그 1개를 다른 태그로 교체, 2사이클).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+3</span><br><span class="lbl">유지</span> <span class="b">2</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 3</div>
+        <div class="eff"><span class="sig">승급 과정 개방</span> — 서사적 성취를 이룬 대원이 1사이클 과정을 거치면 <strong>B→A, A→S 승급</strong>. 태그 상한↑ + 임금 상승 동반.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+4</span><br><span class="lbl">유지</span> <span class="b">3</span></div>
+      </div>
+    </div>
+    <div class="fnote"><b>교관 지도</b> — 「교관」 태그 대원을 함께 배치하면 훈련 소요 2사이클 → <b>1사이클</b>로 단축. ※ 훈련 중인 대원은 그 사이클 다른 슬롯·현장 배치 불가 (성장엔 기회비용).</div>
+  </div>
+
+  <!-- 작전실 -->
+  <div class="fac ops">
+    <div class="fhead">
+      <span class="ico">📡</span>
+      <div class="tt"><h2>작전실</h2><div class="role">정보 우위</div></div>
+      <span class="en">Operations</span>
+    </div>
+    <div class="levels">
+      <div class="lv">
+        <div class="tier">Lv 1</div>
+        <div class="eff">매 사이클 <strong>정보력 +1</strong> 자동 회복(상한 내).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">2</span><br><span class="lbl">유지</span> <span class="b">1</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 2</div>
+        <div class="eff">내정 <strong>'정보 수집' 판정에 상시 +1</strong>.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+3</span><br><span class="lbl">유지</span> <span class="b">2</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 3</div>
+        <div class="eff">현장 진입 전 <span class="sig">사건 단서 1개를 무료 사전 공개</span>(사이클당 1회).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+4</span><br><span class="lbl">유지</span> <span class="b">3</span></div>
+      </div>
+    </div>
+    <div class="fnote"><b>세션 연동</b> — 정보력이 높을수록 현장요원 PC가 세션 시작 시 쥐는 사전 단서(핸드아웃)가 늘어납니다.</div>
+  </div>
+
+  <!-- 숙소 -->
+  <div class="fac house">
+    <div class="fhead">
+      <span class="ico">🏠</span>
+      <div class="tt"><h2>숙소</h2><div class="role">보호 수용력</div></div>
+      <span class="en">Quarters</span>
+    </div>
+    <div class="levels">
+      <div class="lv">
+        <div class="tier">Lv 1</div>
+        <div class="eff"><strong>보호 수용력 2</strong>. 수용 중인 오버드 1명당 <strong>사기 상시 +1</strong>(이념 실현의 보람).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">2</span><br><span class="lbl">유지</span> <span class="b">1</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 2</div>
+        <div class="eff"><strong>보호 수용력 4</strong>. <span class="sig">육성 루트 개방</span> — 수용 오버드를 훈련시켜 대원 후보로 전환(가챠 대신).</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+3</span><br><span class="lbl">유지</span> <span class="b">2</span></div>
+      </div>
+      <div class="lv">
+        <div class="tier">Lv 3</div>
+        <div class="eff"><strong>보호 수용력 7</strong>. 정식 <strong>NEST 격상</strong> — 2세대 오버드 대원 등장 등 서사 확장.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="b">+4</span><br><span class="lbl">유지</span> <span class="b">3</span></div>
+      </div>
+    </div>
+    <div class="fnote"><b>수용력 초과 시</b> — 여력 없이 또 구출하면 그 오버드를 못 지킴: <span style="color:var(--text-2)">본부 이송(사기 −1) / 헬리오스 회수(경계도↑) / NOX가 데려감(적으로 재등장)</span> 중 하나. "구하고 싶어도 재울 곳이 없다"는 압박.</div>
+  </div>
+
+  <!-- 휴게실 -->
+  <div class="fac lounge">
+    <div class="fhead">
+      <span class="ico">🍜</span>
+      <div class="tt"><h2>휴게실</h2><div class="role">사기 · 일상</div></div>
+      <span class="en">Lounge</span>
+    </div>
+    <div class="levels">
+      <div class="lv">
+        <div class="tier">Lv 1</div>
+        <div class="eff">매 사이클 <strong>사기 +1</strong> 자동 회복(상한 내). 대원들의 일상 씬이 벌어지는 무대 — 무거운 톤을 환기하는 공간.</div>
+        <div class="cost"><span class="lbl">건설</span> <span class="free">기본</span><br><span class="lbl">유지</span> <span class="free">면제</span></div>
+      </div>
+    </div>
+    <div class="fnote">성능은 소박하지만, <b>'대원 = 사람'</b>을 자연스럽게 보여주는 연출 무대. 테마 유지에 실질적으로 기여합니다.</div>
+  </div>
+
+  <!-- 운영 원칙 -->
+  <div class="rules">
+    <span class="eyebrow">건설 운영 원칙</span>
+    <ul>
+      <li><b>파산 하한선</b> — 자금이 0이 되어도 휴게실·의무실 Lv1(무료)은 계속 작동. 사기 회복과 기본 치료는 절대 끊기지 않아, 데스스파이럴이 방지됩니다.</li>
+      <li><b>고정비 경고</b> — 유지비 있는 시설(Lv2+)의 유지비 + 대원 임금이 매 사이클 수입을 넘으면 적자. 확장 속도를 스스로 조절하는 게 의도된 압박.</li>
+      <li><b>우선순위 딜레마</b> — "의무실을 올려 대원을 지킬까, 작전실을 올려 사건을 유리하게 풀까." 이 선택 자체가 지부장 플레이의 핵심.</li>
+      <li><b>시작 시설</b> — 부임 시 휴게실 Lv1 + 의무실 Lv1 기본 제공. 나머지는 자금을 모아 지어나갑니다.</li>
+    </ul>
+  </div>
+
+  <div class="foot">태양의 그림자 · 지부 시설 참조 · Housing</div>
+</main>
+
+</body>
+</html>

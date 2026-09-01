@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전임 지부장 · 개인 수첩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Chakra+Petch:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --desk:#14100C;--desk-2:#1B1611;
+    --paper:#E7DCC2;--paper-2:#E1D4B6;--paper-dk:#D8C9A6;
+    --ink:#2A2318;--ink-blue:#28303f;--ink-soft:#5A4E3B;
+    --red:#9E3B32;--coffee:#6b4a2a;
+    --tape:rgba(210,195,150,.5);
+    --tag:#B98F3C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(circle at 20% 10%, #1e1811, transparent 40%),
+      radial-gradient(circle at 85% 80%, #191410, transparent 45%),
+      var(--desk);
+    min-height:100vh;padding:44px 18px 80px;
+    font-family:"Nanum Pen Script",cursive;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stack{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+
+  /* evidence tag header */
+  .evi{text-align:center;margin-bottom:6px}
+  .evi .tag{
+    display:inline-block;font-family:"Chakra Petch",sans-serif;font-weight:600;
+    letter-spacing:.2em;text-transform:uppercase;font-size:.6rem;color:var(--tag);
+    border:1px solid rgba(185,143,60,.4);border-radius:2px;padding:6px 14px;
+  }
+  .evi .sub{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:#6b6153;letter-spacing:.06em;margin-top:10px}
+
+  /* paper page */
+  .page{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:34px 34px 40px;
+    position:relative;
+    box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 0 60px rgba(150,120,70,.12);
+    background-image:
+      repeating-linear-gradient(transparent 0 37px, rgba(90,78,59,.18) 37px 38px);
+    background-position:0 42px;
+    line-height:38px;
+    font-size:1.5rem;
+  }
+  .page::after{ /* subtle grain/aging */
+    content:"";position:absolute;inset:0;border-radius:3px;pointer-events:none;
+    background:radial-gradient(circle at 15% 90%, rgba(120,90,50,.14), transparent 30%),
+               radial-gradient(circle at 90% 8%, rgba(120,90,50,.1), transparent 26%);
+    mix-blend-mode:multiply;
+  }
+  .page .margin-line{position:absolute;top:0;bottom:0;left:56px;width:1px;background:rgba(158,59,50,.25)}
+  .page p{position:relative;z-index:1;margin-left:14px}
+  .page .meta{
+    font-family:"IBM Plex Mono",monospace;font-size:.6rem;line-height:1.5;
+    color:var(--ink-soft);letter-spacing:.05em;position:absolute;top:12px;right:16px;text-align:right;opacity:.7;
+  }
+  .red{color:var(--red)}
+  .u{border-bottom:2px solid var(--red);padding-bottom:1px}
+  .big{font-size:1.85rem}
+  .tilt-l{transform:rotate(-1.4deg)}
+  .tilt-r{transform:rotate(1.2deg)}
+  .heavy{font-family:"Gaegu",cursive;font-weight:700;color:#1f1a12;font-size:1.25rem;line-height:34px}
+
+  /* coffee stain */
+  .coffee{
+    position:absolute;width:150px;height:130px;border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(107,74,42,.28) 46%, rgba(107,74,42,.14) 54%, transparent 62%),
+      radial-gradient(circle at 55% 48%, rgba(107,74,42,.1) 0 45%, transparent 60%);
+    top:20px;right:26px;transform:rotate(12deg);pointer-events:none;mix-blend-mode:multiply;
+  }
+
+  /* torn page */
+  .torn{
+    clip-path:polygon(0 0,100% 0,100% 76%,94% 80%,88% 74%,80% 82%,72% 75%,63% 84%,54% 76%,45% 85%,36% 77%,27% 86%,18% 78%,9% 85%,0 78%);
+    padding-bottom:26px;
+  }
+  .torn .cut{color:var(--ink-soft);font-size:1.2rem}
+
+  /* back cover — darker, hurried */
+  .backcover{
+    background:var(--paper-dk);
+    background-image:repeating-linear-gradient(transparent 0 37px, rgba(90,78,59,.14) 37px 38px);
+    box-shadow:0 14px 34px rgba(0,0,0,.55), inset 0 0 70px rgba(120,90,50,.18);
+  }
+  .backcover p{font-family:"Gaegu",cursive;font-weight:400;font-size:1.15rem;line-height:33px;color:#241d14}
+  .backcover .label{font-family:"IBM Plex Mono",monospace;font-size:.6rem;color:var(--ink-soft);letter-spacing:.05em;opacity:.7;display:block;margin-bottom:10px}
+
+  /* clipped fake form */
+  .clip-wrap{position:relative;padding-top:16px}
+  .paperclip{
+    position:absolute;top:-6px;left:44px;width:26px;height:64px;z-index:3;
+    border:3px solid #9a9488;border-radius:13px 13px 4px 4px;border-bottom:none;
+    box-shadow:1px 1px 2px rgba(0,0,0,.4);transform:rotate(-6deg);
+  }
+  .form{
+    background:#EDE7DA;color:#2b2b2b;border-radius:2px;padding:26px 30px 30px;
+    font-family:"IBM Plex Mono",monospace;font-size:.82rem;line-height:1.9;
+    box-shadow:0 10px 26px rgba(0,0,0,.45);transform:rotate(-1deg);position:relative;
+    border:1px solid #cfc7b4;
+  }
+  .form::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(120,90,50,.08),transparent 40%);mix-blend-mode:multiply;pointer-events:none}
+  .form .ft{font-family:"Chakra Petch",sans-serif;font-weight:600;letter-spacing:.1em;font-size:.78rem;text-align:center;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid #bbb2a0}
+  .form .fr{display:flex;gap:10px}
+  .form .fr .k{color:#726a5a;min-width:96px}
+  .form .fr .v{color:#2b2b2b}
+  .form .smudge{color:#8a8375;font-style:normal}
+  .form .stamp{
+    position:absolute;bottom:16px;right:22px;font-family:"Chakra Petch",sans-serif;font-weight:600;
+    color:rgba(158,59,50,.55);border:2px solid rgba(158,59,50,.45);border-radius:3px;
+    padding:3px 10px;font-size:.66rem;letter-spacing:.1em;transform:rotate(-8deg);
+  }
+
+  .foot{text-align:center;margin-top:8px;font-family:"IBM Plex Mono",monospace;font-size:.62rem;color:#5b5348;letter-spacing:.08em}
+
+  @media(max-width:520px){
+    .page{padding:26px 24px 34px;font-size:1.35rem;line-height:34px}
+    .tilt-l,.tilt-r,.form{transform:none}
+    .coffee{width:110px;height:96px}
+  }
+</style>
+</head>
+<body>
+  <div class="stack">
+
+    <div class="evi">
+      <span class="tag">Evidence · 전임 지부장 유품</span>
+      <div class="sub">개인 수첩 1권 · 사무실 서랍에서 발견 · 낱장 순서 뒤죽박죽</div>
+    </div>
+
+    <!-- 낱장 1 -->
+    <div class="page tilt-l">
+      <span class="margin-line"></span>
+      <span class="meta">낱장 · 001</span>
+      <p>확인 필요.</p>
+      <p><span class="red">아직 아무에게도 말하지 말 것.</span></p>
+      <p>&nbsp;</p>
+      <p>이름 — 확인됨. 주소도 확인됨.</p>
+      <p>집주인은 아직 모름. 알면 곤란해짐.</p>
+      <p>&nbsp;</p>
+      <p>패턴이 또 나왔다. <span class="u big">세 번째다.</span></p>
+    </div>
+
+    <!-- 낱장 2 (커피) -->
+    <div class="page tilt-r">
+      <span class="coffee"></span>
+      <span class="margin-line"></span>
+      <span class="meta">낱장 · 002</span>
+      <p>헬리오스 쪽 기록엔 없음.</p>
+      <p>없다는 게 이상함.</p>
+      <p>없어야 할 게 없는 건 원래</p>
+      <p>이상한 게 아닌데, 이번엔 좀 다르다.</p>
+      <p>&nbsp;</p>
+      <p><span class="red">Y</span>한테 물어볼 것. 걔라면 알지도.</p>
+      <p>— 근데 Y도 요즘 이상함. 말을 아낌.</p>
+    </div>
+
+    <!-- 낱장 3 (다른 펜, 필압 셈) -->
+    <div class="page tilt-l">
+      <span class="margin-line"></span>
+      <span class="meta">낱장 · 003</span>
+      <p class="heavy">은채한테 말할까 말까.</p>
+      <p class="heavy">말하면 걔가 걱정할 거고,</p>
+      <p class="heavy">안 말하면 나중에 화낼 거고.</p>
+      <p>&nbsp;</p>
+      <p class="heavy">태호는 절대 안 됨.</p>
+      <p class="heavy">걔는 입이 가벼운 게 아니라</p>
+      <p class="heavy">얼굴이 가볍다.</p>
+    </div>
+
+    <!-- 낱장 4 (찢김) -->
+    <div class="page torn tilt-r">
+      <span class="margin-line"></span>
+      <span class="meta">낱장 · 004</span>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p><span class="cut">…정도면 우연이 아니다.</span></p>
+      <p><span class="cut">세 명 다 같은 —</span></p>
+    </div>
+
+    <!-- 뒤표지 -->
+    <div class="page backcover tilt-l">
+      <span class="meta">뒤표지 안쪽 · 서두른 글씨</span>
+      <span class="label">// 필체 확인 결과 본인의 것</span>
+      <p>만약 이걸 다른 사람이 읽고 있다면.</p>
+      <p>&nbsp;</p>
+      <p>미안하다. 자세히 안 써놨다.</p>
+      <p>확신이 없어서 그랬다.</p>
+      <p>확신이 있었으면 진작 위에 보고했겠지.</p>
+      <p>&nbsp;</p>
+      <p>이름 하나만 남긴다. 나머지는 알아서 찾아라.</p>
+      <p><span class="red">그게 제일 안전한 방법이다.</span></p>
+    </div>
+
+    <!-- 별첨 위조 서류 -->
+    <div class="clip-wrap">
+      <span class="paperclip"></span>
+      <div class="form">
+        <div class="ft">민원 접수 확인서 (사본)</div>
+        <div class="fr"><span class="k">접수 부서</span><span class="v smudge">▨▨▨ (도장 번짐 · 판독 불가)</span></div>
+        <div class="fr"><span class="k">민원 요지</span><span class="v">"이웃이 며칠째 안 보임.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;문 앞에 우유가 쌓여있음."</span></div>
+        <div class="fr"><span class="k">처리 결과</span><span class="v">확인 완료. 자택 내 부재 확인.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;특이사항 없음.</span></div>
+        <div class="fr"><span class="k">담당자 서명</span><span class="v smudge">ㅅ ㄱ ㅎ (판독 어려움)</span></div>
+        <span class="stamp">사 본</span>
+      </div>
+    </div>
+
+    <div class="foot">— 낱장은 순서 없이 끼워져 있었다. 무엇을 먼저 믿을지는, 읽는 사람의 몫이다 —</div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Taeyang City Branch · Control</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="control-page">
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">UGN</span><span><b>TAEYANG CITY BRANCH</b><small>GM CONTROL / RESTRICTED</small></span></a>
+    <div class="system-state"><i style="background:#d35f62;box-shadow:0 0 12px #d35f62"></i><span>CONTROL LINK</span><b style="color:#e98688">AUTHORIZED ONLY</b></div>
+  </header>
+  <main class="control-main">
+    <div class="control-head"><div><span class="eyebrow">OPERATIONS CONTROL</span><h1>관제실</h1></div><a class="secondary-button" href="/">플레이어 화면</a></div>
+    <div class="control-grid">
+      <section class="panel"><div class="panel-head"><span>ACTIVE PHASE</span><em>LIVE</em></div><div class="phase-buttons" id="control-phase"><button data-phase="1">01 · 내정</button><button data-phase="2">02 · 현장</button><button data-phase="3">03 · 정산</button></div></section>
+      <section class="panel"><div class="panel-head"><span>BRANCH INDICATORS</span><span>0—10</span></div><form class="control-form" id="stats-form"><label>사기<input name="morale" type="number" min="0" max="10"></label><label>경계도<input name="alert" type="number" min="0" max="10"></label><label>정보력<input name="intel" type="number" min="0" max="10"></label><label>자금<input name="funds" type="number" min="0"></label><label class="full">본부 신뢰<select name="trust"><option>우호</option><option>표준</option><option>경계</option><option>동결</option></select></label><button class="primary-button" type="submit">지부 상태 반영</button></form></section>
+      <section class="panel"><div class="panel-head"><span>PRIORITY CHANNEL</span><span>BROADCAST</span></div><form class="control-form" id="notice-form"><label class="full">알림 제목<input name="title" maxlength="100" required></label><label class="full">내용<textarea name="body" maxlength="240" required></textarea></label><label class="full"><input name="priority" type="checkbox"> 긴급 알림으로 표시</label><button class="primary-button" type="submit">공용 단말에 송신</button></form></section>
+      <section class="panel"><div class="panel-head"><span>RECENT LOG</span><span>60 MAX</span></div><ul class="control-log" id="control-log"></ul></section>
+      <section class="panel wide"><div class="panel-head"><span>DOCUMENT APPROVAL</span><span id="pending-count">0 PENDING</span></div><div class="approval-list" id="approval-list"></div><div class="empty-state" id="approval-empty"><span>QUEUE CLEAR</span><h3>승인 대기 중인 서류가 없습니다.</h3></div></section>
+    </div>
+  </main>
+  <div class="gate" id="control-gate">
+    <form class="gate-card" id="control-login"><span class="gate-mark" style="color:#d35f62;border-color:#d35f62">UGN</span><div><span class="eyebrow" style="color:#d35f62">RESTRICTED CONTROL ACCESS</span><h1>GM Authorization</h1><p>관제 접근 코드를 입력하십시오.</p></div><label>CONTROL CODE<input id="control-code" type="password" required></label><p class="form-error" id="control-error"></p><button class="danger-button" type="submit">관제실 접속</button></form>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script type="module" src="/control.js"></script>
+</body>
+</html>

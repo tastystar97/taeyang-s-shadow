@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UGN 태양시 지부 · 이세아 귀환 의료기록</title>
+  <style>
+    :root{
+      --bg:#070a12;--paper:#0d1220;--paper2:#11192a;--line:#27334c;
+      --text:#e7edf6;--muted:#92a0b5;--dim:#59677d;
+      --blue:#4cc8e5;--mag:#f047a5;--red:#f05b6e;--amber:#e8b35c;--green:#72c69a;
+      --shadow:0 22px 80px rgba(0,0,0,.42)
+    }
+    *{box-sizing:border-box}
+    html{background:var(--bg)}
+    body{margin:0;color:var(--text);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;background:
+      radial-gradient(circle at 12% 8%,rgba(76,200,229,.08),transparent 28%),
+      radial-gradient(circle at 88% 14%,rgba(240,71,165,.07),transparent 25%),var(--bg);line-height:1.55}
+    button{font:inherit}
+    .classification{position:fixed;z-index:10;top:0;left:0;right:0;height:5px;background:repeating-linear-gradient(90deg,var(--red) 0 28px,transparent 28px 38px)}
+    .wrap{width:min(1180px,calc(100% - 32px));margin:34px auto 70px}
+    header{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding:24px 26px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(17,25,42,.96),rgba(9,14,25,.96));box-shadow:var(--shadow);position:relative;overflow:hidden}
+    header::after{content:"";position:absolute;width:340px;height:340px;border:1px solid rgba(76,200,229,.09);border-radius:50%;right:-150px;top:-185px;box-shadow:0 0 0 38px rgba(76,200,229,.025),0 0 0 74px rgba(240,71,165,.018)}
+    .kicker,.label{font:800 .65rem/1.2 ui-monospace,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+    h1{margin:8px 0 5px;font-size:clamp(1.7rem,4vw,3rem);letter-spacing:-.045em;line-height:1}
+    h1 span{font-weight:300;color:var(--muted)}
+    .subtitle{margin:0;color:var(--muted);font-size:.82rem}
+    .record{position:relative;z-index:1;text-align:right;color:var(--muted);font:400 .69rem/1.75 ui-monospace,Consolas,monospace;white-space:nowrap}
+    .record b{color:var(--red);letter-spacing:.09em}
+    .toolbar{display:flex;justify-content:flex-end;gap:7px;margin:10px 0}
+    .toolbar button{background:#111827;border:1px solid var(--line);color:var(--muted);padding:7px 11px;border-radius:5px;cursor:pointer;font-size:.73rem}
+    .toolbar button:hover{color:#fff;border-color:var(--blue)}
+    .identity{display:grid;grid-template-columns:1.25fr repeat(3,minmax(0,1fr));border:1px solid var(--line);border-top:0;background:var(--paper)}
+    .idcell{padding:15px 17px;border-right:1px solid var(--line)}
+    .idcell:last-child{border-right:0}.idcell strong{display:block;margin-top:4px;font-size:.92rem}.idcell.primary strong{font-size:1.18rem}
+    .status-strip{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:10px;margin:14px 0}
+    .status{padding:16px 18px;border:1px solid var(--line);background:linear-gradient(180deg,var(--paper2),var(--paper));min-height:100px;position:relative}
+    .status::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+    .status.warn::before{background:var(--amber)}.status.danger::before{background:var(--red)}
+    .status .value{font-weight:900;font-size:1.3rem;margin:7px 0 3px;letter-spacing:-.025em}
+    .status p{margin:0;color:var(--muted);font-size:.73rem}
+    .status .value em{font-style:normal;color:var(--red)}
+    .verdict{margin:14px 0 18px;padding:17px 20px;background:#1b0d18;border:1px solid #63233e;border-left:5px solid var(--mag);display:flex;gap:18px;align-items:center}
+    .verdict .mark{font:900 1.65rem/1 ui-monospace,Consolas,monospace;color:var(--mag)}
+    .verdict strong{display:block;font-size:.98rem}.verdict p{margin:3px 0 0;color:#c6a6ba;font-size:.78rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(320px,.82fr);gap:14px}
+    .panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(17,25,42,.94),rgba(10,15,27,.97));box-shadow:var(--shadow);margin-bottom:14px}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 15px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
+    .panel-head h2{margin:0;font-size:.85rem;letter-spacing:.015em}.panel-head span{font:400 .62rem ui-monospace,Consolas,monospace;color:var(--dim)}
+    .panel-body{padding:16px}
+    .chart-wrap{position:relative;padding-top:5px}
+    .chart-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.68rem;margin-bottom:8px}
+    .chart-meta b{color:var(--text)}
+    svg{display:block;width:100%;height:auto;background:linear-gradient(rgba(76,200,229,.018),rgba(240,71,165,.018));border:1px solid #1f2a40}
+    .axis{stroke:#26334a;stroke-width:1}.threshold{stroke:var(--red);stroke-width:1.5;stroke-dasharray:6 6;opacity:.75}.curve{fill:none;stroke:url(#gradient);stroke-width:4;stroke-linejoin:round;stroke-linecap:round}.area{fill:url(#area)}.point{fill:#0b1020;stroke:var(--mag);stroke-width:2}.last{fill:var(--red);stroke:#fff;stroke-width:2}
+    .chart-note{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #1f2a40;border-top:0}
+    .chart-note div{padding:10px 12px;border-right:1px solid #1f2a40}.chart-note div:last-child{border-right:0}.chart-note b{display:block;font:900 .86rem ui-monospace,Consolas,monospace}.chart-note span{font-size:.64rem;color:var(--dim)}
+    table{width:100%;border-collapse:collapse;font-size:.76rem}
+    th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #202b40;vertical-align:top}
+    th{font:800 .62rem ui-monospace,Consolas,monospace;letter-spacing:.09em;color:var(--dim);text-transform:uppercase;background:rgba(0,0,0,.14)}
+    tr:last-child td{border-bottom:0}td:first-child{color:var(--blue);font-weight:800;width:27%}
+    .risk{display:inline-block;padding:2px 7px;border:1px solid #783044;background:#23101a;color:#ff8293;border-radius:99px;font-size:.62rem;font-weight:800}
+    .observations{display:grid;gap:8px}
+    .obs{display:grid;grid-template-columns:86px 1fr;gap:11px;padding:10px 0;border-bottom:1px solid #202b40}.obs:last-child{border-bottom:0}.obs b{font-size:.72rem;color:var(--blue)}.obs p{margin:0;color:var(--muted);font-size:.75rem}
+    .checklist{display:grid;gap:7px}.check{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border:1px solid #202b40;background:rgba(0,0,0,.13);font-size:.74rem;color:var(--muted)}.check i{font-style:normal;color:var(--green);font-weight:900}.check.hold i{color:var(--red)}
+    .note{padding:14px 16px;border:1px solid #3a3146;background:linear-gradient(135deg,rgba(240,71,165,.055),rgba(76,200,229,.035));color:#bdc6d5;font-size:.76rem}
+    .note b{color:var(--mag)}
+    .sign{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    .sig{padding:13px;border:1px solid var(--line);background:var(--paper);min-height:82px}.sig .line{margin-top:27px;border-top:1px solid #40506c;padding-top:5px;color:var(--dim);font-size:.65rem}
+    footer{display:flex;justify-content:space-between;gap:18px;margin-top:17px;padding-top:12px;border-top:1px solid var(--line);color:var(--dim);font:400 .62rem/1.5 ui-monospace,Consolas,monospace}
+    .print-only{display:none}
+    @media(max-width:820px){.identity{grid-template-columns:1fr 1fr}.idcell:nth-child(2){border-right:0}.idcell:nth-child(-n+2){border-bottom:1px solid var(--line)}.status-strip,.layout{grid-template-columns:1fr}.record{text-align:left}.chart-note{grid-template-columns:1fr}.chart-note div{border-right:0;border-bottom:1px solid #1f2a40}.chart-note div:last-child{border-bottom:0}}
+    @media(max-width:560px){.wrap{width:min(100% - 18px,1180px);margin-top:18px}header{display:block;padding:20px}.record{margin-top:18px}.identity{grid-template-columns:1fr}.idcell{border-right:0!important;border-bottom:1px solid var(--line)}.idcell:last-child{border-bottom:0}.verdict{align-items:flex-start}.obs{grid-template-columns:1fr;gap:3px}.sign{grid-template-columns:1fr}}
+    @media print{body{background:#fff;color:#111}.classification,.toolbar{display:none}.wrap{width:100%;margin:0}.print-only{display:block}header,.panel,.status,.idcell,.sig{box-shadow:none;background:#fff;color:#111}.identity,.panel,.status,header,.idcell,.sig,.note,.verdict{border-color:#888}.subtitle,.record,.status p,.obs p,.note,.check{color:#333}.layout{grid-template-columns:1.3fr .7fr}.panel{break-inside:avoid}.verdict{background:#f5f5f5}.chart-note span,footer{color:#555}}
+  </style>
+</head>
+<body>
+<div class="classification" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <div>
+      <span class="kicker">UGN Taeyang City Branch · Medical Division</span>
+      <h1>귀환 후 의료기록 <span>/ POST-OP</span></h1>
+      <p class="subtitle">현장요원 긴급 평가 · 「빈방」 루미나스 비밀 병동 침투 작전</p>
+    </div>
+    <div class="record"><b>RESTRICTED · LEVEL B</b><br>RECORD TYB-MED/ACT2-SEA-01<br>2043 · 작전 종료 직후<br>STATUS: FINALIZED</div>
+  </header>
+
+  <div class="toolbar"><button type="button" onclick="window.print()">인쇄 / PDF 저장</button></div>
+
+  <div class="identity">
+    <div class="idcell primary"><span class="label">Subject</span><strong>이세아 · 17세</strong></div>
+    <div class="idcell"><span class="label">Affiliation</span><strong>UGN 태양시 지부</strong></div>
+    <div class="idcell"><span class="label">Syndrome</span><strong>브람=스토커 / 샐러맨더</strong></div>
+    <div class="idcell"><span class="label">Exam Type</span><strong>전투 귀환 긴급 평가</strong></div>
+  </div>
+
+  <div class="status-strip">
+    <div class="status"><span class="label">Consciousness</span><div class="value">의식 명료</div><p>자력 보행 및 의사소통 가능. 귀환 직후 지남력 이상 관찰되지 않음.</p></div>
+    <div class="status warn"><span class="label">Physical Trauma</span><div class="value">경상 <small>(잠정)</small></div><p>반복적 자가재생으로 외견상 상처가 폐쇄되어 심부 손상 평가가 제한됨.</p></div>
+    <div class="status danger"><span class="label">Renegade Encroachment</span><div class="value"><em>95%</em> · 고위험 잔류</div><p>최고 119% 도달 후 백트랙 성공. 기준선 미만으로 복귀했으나 즉시 재투입 부적합.</p></div>
+  </div>
+
+  <div class="verdict">
+    <div class="mark">HOLD</div>
+    <div><strong>판정: 생환 · 의무 관찰 필요 · 현장 투입 보류</strong><p>현재 상태는 ‘정상 복귀’가 아니라 로스트 위험에서 간신히 이탈한 상태로 평가한다.</p></div>
+  </div>
+
+  <div class="layout">
+    <main>
+      <section class="panel">
+        <div class="panel-head"><h2>침식률 추이</h2><span>OBSERVED EFFECT LOG / %</span></div>
+        <div class="panel-body">
+          <div class="chart-wrap">
+            <div class="chart-meta"><span>최초 확인치 <b>82%</b></span><span>최고치 <b class="red">119%</b></span><span>귀환치 <b>95%</b></span></div>
+            <svg viewBox="0 0 760 255" role="img" aria-label="이세아의 작전 중 침식률이 82에서 119까지 상승한 뒤 백트랙으로 95까지 하강한 그래프">
+              <defs>
+                <linearGradient id="gradient" x1="0" x2="1"><stop offset="0" stop-color="#4cc8e5"/><stop offset=".63" stop-color="#f047a5"/><stop offset="1" stop-color="#f05b6e"/></linearGradient>
+                <linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f047a5" stop-opacity=".2"/><stop offset="1" stop-color="#4cc8e5" stop-opacity="0"/></linearGradient>
+              </defs>
+              <line class="axis" x1="50" y1="210" x2="730" y2="210"/><line class="axis" x1="50" y1="165" x2="730" y2="165"/><line class="threshold" x1="50" y1="119" x2="730" y2="119"/><line class="axis" x1="50" y1="74" x2="730" y2="74"/>
+              <text x="12" y="214" fill="#59677d" font-size="13">80</text><text x="12" y="169" fill="#59677d" font-size="13">90</text><text x="5" y="123" fill="#f05b6e" font-size="13">100</text><text x="5" y="78" fill="#59677d" font-size="13">110</text>
+              <path class="area" d="M50 201 L95 187 L140 174 L185 165 L230 160 L275 137 L320 128 L365 123 L410 110 L455 96 L500 74 L545 64 L590 60 L635 46 L680 32 L730 142 L730 210 L50 210 Z"/>
+              <polyline class="curve" points="50,201 95,187 140,174 185,165 230,160 275,137 320,128 365,123 410,110 455,96 500,74 545,64 590,60 635,46 680,32 730,142"/>
+              <circle class="point" cx="50" cy="201" r="5"/><circle class="point" cx="275" cy="137" r="5"/><circle class="point" cx="455" cy="96" r="5"/><circle class="last" cx="680" cy="32" r="7"/><circle class="last" cx="730" cy="142" r="7"/>
+              <text x="650" y="21" fill="#f05b6e" font-size="13" font-weight="700">119</text><text x="711" y="133" fill="#e7edf6" font-size="13" font-weight="700">95</text>
+              <text x="50" y="235" fill="#59677d" font-size="12">침투</text><text x="329" y="235" fill="#59677d" font-size="12">교전</text><text x="642" y="235" fill="#59677d" font-size="12">탈출</text><text x="705" y="235" fill="#59677d" font-size="12">귀환</text>
+            </svg>
+            <div class="chart-note"><div><b>+37</b><span>확인 구간 누적 상승</span></div><div><b>−24</b><span>백트랙 감소량 · 1배</span></div><div><b>5 LOIS</b><span>백트랙 선언 시 보유</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>관찰된 전투·이펙트 부담</h2><span>CLINICAL CORRELATION</span></div>
+        <div class="panel-body" style="padding:0">
+          <table>
+            <thead><tr><th>관찰 항목</th><th>의료 소견</th><th>위험</th></tr></thead>
+            <tbody>
+              <tr><td>얼음의 방패</td><td>반복적인 고강도 방어. 저체온성 말초 반응과 미세혈관 수축 가능성.</td><td><span class="risk">중간</span></td></tr>
+              <tr><td>붉은 검 / 파괴의 피</td><td>자가 혈액 소모와 조직 손상을 전제로 한 무기 생성. 빈혈·순환량 변동 주의.</td><td><span class="risk">높음</span></td></tr>
+              <tr><td>염신의 분노</td><td>육체 능력의 강제 증폭. 외견상 손상이 작아도 근섬유·관절 부담이 누적될 수 있음.</td><td><span class="risk">높음</span></td></tr>
+              <tr><td>불사자의 은총</td><td>자가재생으로 전투 지속. 상처 폐쇄가 완전한 회복을 의미하지 않으며 통증·피로가 은폐됨.</td><td><span class="risk">높음</span></td></tr>
+              <tr><td>장시간 보호전</td><td>공격보다 가드와 구조를 우선. 단말기 방어 및 구조대상 운반으로 신체 부담 증가.</td><td><span class="risk">중간</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>진찰 요약</h2><span>POST-MISSION EXAM</span></div>
+        <div class="panel-body observations">
+          <div class="obs"><b>외상</b><p>다발성 둔상 및 방어성 손상 의심. 자가재생 이후 육안상 활동성 출혈 없음. 심부 손상 여부는 추가 검사 필요.</p></div>
+          <div class="obs"><b>순환·체온</b><p>혈액 소모형 이펙트와 냉기 발현을 연속 사용. 수분·철분 보충 및 말초 순환 관찰 권고.</p></div>
+          <div class="obs"><b>신경·침식</b><p>119% 도달 기록. 백트랙에는 성공했으나 95% 잔류. 수면 부족·추가 발현·급성 스트레스가 재상승 요인이 될 수 있음.</p></div>
+          <div class="obs"><b>정신 상태</b><p>의식과 판단력은 유지. 구출 대상의 안전을 반복 확인하며 임무 중 추가 구조를 우선한 정황이 있음. 병적 반응으로 단정하지 말고 충분한 휴식 후 재평가.</p></div>
+          <div class="obs"><b>종합</b><p>자가재생 능력 때문에 상태가 실제보다 양호하게 보일 가능성이 높다. “움직일 수 있음”을 “회복됨”으로 판단하지 말 것.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <section class="panel">
+        <div class="panel-head"><h2>즉시 처치 지시</h2><span>MEDICAL ORDER</span></div>
+        <div class="panel-body checklist">
+          <div class="check"><i>✓</i><span>의무실 Lv1 응급 리소스 적용 및 최소 1회 정밀 관찰.</span></div>
+          <div class="check"><i>✓</i><span>수분·전해질·철분 보충. 혈액 소모 회복 전 추가 채혈 최소화.</span></div>
+          <div class="check"><i>✓</i><span>체온과 말초 순환 확인. 냉기 발현 후 감각 저하 여부 관찰.</span></div>
+          <div class="check"><i>✓</i><span>자가재생으로 가려진 골격·연부조직 손상 검사.</span></div>
+          <div class="check"><i>✓</i><span>로이스 상태 및 백트랙 후 정서적 안정성 대면 확인.</span></div>
+          <div class="check hold"><i>!</i><span>지부장 승인 전 현장 재투입 보류.</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>재투입 조건</h2><span>RETURN TO DUTY</span></div>
+        <div class="panel-body checklist">
+          <div class="check"><i>01</i><span>연속 휴식 및 수면 확보.</span></div>
+          <div class="check"><i>02</i><span>심부 외상 없음 또는 통제 가능 판정.</span></div>
+          <div class="check"><i>03</i><span>침식 잔류 상태 재측정.</span></div>
+          <div class="check"><i>04</i><span>구출자와 분리된 상태에서 임무 판단력 확인.</span></div>
+          <div class="check"><i>05</i><span>의무 담당 및 지부장 공동 승인.</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>지부장 전달 사항</h2><span>COMMAND NOTICE</span></div>
+        <div class="panel-body">
+          <div class="note"><b>운영 판단:</b> 세아를 즉시 다음 현장에 투입하면 전력은 확보되지만, 낮은 여유 침식 때문에 평소와 동일한 이펙트 운용도 빠르게 위험 구간에 도달한다. 다음 사이클에서 의무실 지원을 세아에게 배정할지, 세라·수환의 안정에 사용할지 결정이 필요하다.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>기록 한계</h2><span>LIMITATIONS</span></div>
+        <div class="panel-body">
+          <p style="margin:0;color:var(--muted);font-size:.73rem">본 기록은 현장 로그와 귀환 직후 관찰을 기준으로 작성되었다. 구체적인 활력징후·영상검사·혈액검사 수치는 확보되지 않았으므로 기재하지 않았다. 외상 등급은 자가재생 이후의 잠정 평가다.</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="sign">
+    <div class="sig"><span class="label">Medical Officer</span><div class="line">담당자 / 서명</div></div>
+    <div class="sig"><span class="label">Branch Director</span><div class="line">최영호 / 확인</div></div>
+  </div>
+
+  <footer><span>UGN TAEYANG CITY BRANCH · MEDICAL RECORD</span><span>UNAUTHORIZED DISCLOSURE PROHIBITED</span></footer>
+</div>
+</body>
+</html>

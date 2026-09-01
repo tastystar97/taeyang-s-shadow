@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>이강준 수첩 · 003 페이지</title>
+  <style>
+    :root{--paper:#e9dfc3;--ink:#26394b;--pencil:#414344;--red:#963e35;--rule:rgba(82,133,164,.32);--margin:rgba(174,76,70,.35)}
+    *{box-sizing:border-box}
+    html{background:#151719}
+    body{min-height:100vh;margin:0;background:radial-gradient(circle at 50% 12%,#454139 0,#232322 38%,#111213 100%);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;color:var(--pencil)}
+    .toolbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:11px 18px;color:#e9e5d8;background:rgba(18,20,21,.94);border-bottom:1px solid #565148;font-size:.78rem;letter-spacing:.08em;backdrop-filter:blur(8px)}
+    .toolbar button{padding:8px 13px;border:1px solid #777165;border-radius:3px;color:#f1eee5;background:#34332f;font-weight:800;cursor:pointer}
+    main{width:min(850px,calc(100% - 28px));margin:34px auto 56px;filter:drop-shadow(0 30px 28px rgba(0,0,0,.55))}
+    .page{position:relative;min-height:1080px;padding:72px 58px 62px 104px;overflow:hidden;background:
+      radial-gradient(circle at 15% 7%,rgba(113,78,34,.12),transparent 15%),
+      radial-gradient(circle at 87% 88%,rgba(91,55,24,.13),transparent 20%),
+      repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px),
+      linear-gradient(100deg,rgba(255,255,255,.22),transparent 11%,transparent 88%,rgba(102,68,30,.12)),
+      var(--paper);
+    }
+    .page:before{content:"";position:absolute;left:72px;top:0;bottom:0;width:2px;background:var(--margin);box-shadow:4px 0 0 rgba(174,76,70,.10)}
+    .page:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(55,43,28,.10) .7px,transparent .7px);background-size:7px 9px;mix-blend-mode:multiply;opacity:.5}
+    .holes{position:absolute;z-index:3;left:22px;top:120px;bottom:100px;display:flex;flex-direction:column;justify-content:space-between}
+    .hole{width:28px;height:28px;border-radius:50%;background:#242321;box-shadow:inset 4px 3px 7px #070707,2px 1px 0 rgba(255,255,255,.2)}
+    .folio{position:absolute;top:22px;right:38px;color:rgba(55,55,51,.62);font:italic 700 1rem Georgia,serif;transform:rotate(2deg)}
+    .stamp{position:absolute;z-index:4;right:45px;top:58px;padding:5px 10px;border:2px solid rgba(118,54,48,.55);color:rgba(118,54,48,.58);font:800 .68rem/1.2 Consolas,monospace;letter-spacing:.16em;transform:rotate(4deg)}
+    .hand{position:relative;z-index:2;font-family:"Segoe Print","Comic Sans MS","Malgun Gothic",cursive;font-weight:700;letter-spacing:.01em;text-shadow:.25px .25px 0 rgba(0,0,0,.15)}
+    .topline{display:flex;align-items:end;justify-content:space-between;margin-right:78px}
+    .case{display:inline-block;margin:4px 0 18px;color:var(--red);font:900 5.4rem/.95 "Segoe Print","Comic Sans MS",cursive;letter-spacing:-.08em;transform:rotate(-3deg);border-bottom:5px double rgba(150,62,53,.72)}
+    .third{margin-bottom:21px;color:#3c4144;font-size:1.22rem;transform:rotate(1deg)}
+    .third strong{color:var(--red);font-size:1.55rem}
+    .route{position:relative;margin:5px 20px 10px 3px;padding:8px 16px 11px;border:2px solid rgba(49,63,73,.55);font-size:1.14rem;line-height:1.65;transform:rotate(-.7deg)}
+    .route b{color:#243d52;font-size:1.35rem}.route .arrow{padding:0 8px;color:var(--red)}
+    .route:after{content:"왜 병원이 폐업한 업체에?";position:absolute;right:2px;bottom:-29px;color:var(--red);font-size:.85rem;transform:rotate(2deg)}
+    .middle{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;margin-top:38px}
+    .sketch{position:relative;min-height:325px;padding:22px 19px;border:1px solid rgba(55,64,66,.2);transform:rotate(.5deg)}
+    .sketch-title{font-size:.88rem;color:#344a5b}
+    .collar{position:relative;width:230px;height:145px;margin:42px auto 15px;border:6px solid rgba(46,52,55,.76);border-radius:50%;transform:rotate(-8deg);box-shadow:inset 0 0 0 4px rgba(46,52,55,.18)}
+    .collar:before{content:"";position:absolute;right:-12px;top:40px;width:31px;height:48px;border:5px solid rgba(46,52,55,.76);background:var(--paper);transform:rotate(12deg)}
+    .collar:after{content:"003";position:absolute;right:-8px;top:51px;color:var(--red);font:900 1rem Consolas,monospace;transform:rotate(12deg)}
+    .contact{position:absolute;width:8px;height:15px;border-radius:50%;background:rgba(46,52,55,.72)}
+    .c1{left:38px;top:20px}.c2{left:88px;top:4px}.c3{left:140px;top:10px}.c4{left:55px;bottom:10px}.c5{left:120px;bottom:0}
+    .callout{position:absolute;color:#3f4a4f;font-size:.73rem}.a{left:7px;top:96px;transform:rotate(-4deg)}.b{right:-4px;top:202px;transform:rotate(3deg)}.c{left:25px;bottom:12px;color:var(--red);transform:rotate(-2deg)}
+    .line{position:absolute;height:1px;background:rgba(45,50,52,.6);transform-origin:left center}.la{left:69px;top:115px;width:60px;transform:rotate(18deg)}.lb{right:62px;top:215px;width:66px;transform:rotate(-15deg)}
+    .notes{padding:2px 8px;font-size:1rem;line-height:1.85;transform:rotate(-1deg)}
+    .notes p{margin:0 0 7px}.circle{display:inline-block;padding:0 7px;border:2px solid rgba(150,62,53,.72);border-radius:50%;color:var(--red);transform:rotate(-4deg)}
+    .under{text-decoration:underline;text-decoration-color:rgba(150,62,53,.7);text-decoration-thickness:2px;text-underline-offset:4px}
+    .plate{display:inline-block;padding:1px 9px;border:2px solid rgba(42,52,59,.65);font:800 1.1rem Consolas,monospace;letter-spacing:.11em;transform:rotate(1deg)}
+    .address{margin:26px 0 0 8px;padding:10px 16px;border-left:4px solid rgba(150,62,53,.67);font-size:1.1rem;line-height:1.75;transform:rotate(.6deg)}
+    .address b{font-size:1.25rem;color:#263e51}.scratch{display:inline-block;position:relative;color:rgba(54,56,56,.82)}
+    .scratch:after{content:"";position:absolute;left:-2px;right:-2px;top:52%;height:4px;background:rgba(51,51,49,.65);transform:rotate(-3deg)}
+    .bottom{display:grid;grid-template-columns:1fr .85fr;gap:28px;margin-top:24px}
+    .time{padding:8px 13px;color:#263c4c;font-size:1.35rem;line-height:1.55;transform:rotate(-1deg)}
+    .time strong{color:var(--red);font-size:1.7rem;border-bottom:3px solid rgba(150,62,53,.65)}
+    .question{padding:7px 12px 7px 20px;border:2px solid rgba(45,54,58,.45);font-size:.98rem;line-height:1.65;transform:rotate(1.2deg)}
+    .question b{color:var(--red);font-size:1.15rem}
+    .last{margin:24px 15px 0;text-align:right;color:#353d42;font-size:1.06rem;transform:rotate(-2deg)}
+    .last strong{color:var(--red);font-size:1.3rem}
+    .smudge{position:absolute;z-index:1;border-radius:50%;background:rgba(55,43,29,.08);filter:blur(2px)}.s1{width:130px;height:45px;right:70px;top:330px;transform:rotate(18deg)}.s2{width:80px;height:110px;left:118px;bottom:60px;transform:rotate(-22deg)}
+    .tear{position:absolute;z-index:5;left:0;right:0;bottom:0;height:15px;background:linear-gradient(135deg,transparent 7px,var(--paper) 0) 0 0/18px 18px repeat-x;filter:drop-shadow(0 2px 1px rgba(0,0,0,.2))}
+    @media(max-width:700px){main{width:min(100% - 12px,850px);margin-top:10px}.page{min-height:1040px;padding:60px 24px 52px 72px}.page:before{left:54px}.holes{left:13px}.middle,.bottom{grid-template-columns:1fr}.case{font-size:4rem}.route{font-size:.92rem}.sketch{min-height:300px}.notes{font-size:.92rem}.folio,.stamp{display:none}}
+    @page{size:A4 portrait;margin:0}
+    @media print{html,body{background:#fff}.toolbar{display:none}main{width:210mm;margin:0;filter:none}.page{width:210mm;height:297mm;min-height:297mm;padding:18mm 15mm 15mm 27mm;break-after:page}.tear{display:none}}
+  </style>
+</head>
+<body>
+  <div class="toolbar"><span>PLAYER HANDOUT · 이강준 개인 수첩</span><button type="button" onclick="window.print()">인쇄 / PDF 저장</button></div>
+  <main>
+    <article class="page" aria-label="이강준 수첩의 003 조사 메모">
+      <div class="holes" aria-hidden="true"><i class="hole"></i><i class="hole"></i><i class="hole"></i><i class="hole"></i><i class="hole"></i></div>
+      <span class="folio">p. 47</span><span class="stamp">PERSONAL / NOT FILED</span>
+      <i class="smudge s1"></i><i class="smudge s2"></i>
+
+      <div class="hand">
+        <div class="topline"><div class="case">003</div><div class="third">“<strong>세 번째</strong>”라고 했다.</div></div>
+
+        <div class="route"><b>LUMINOUS B2</b><span class="arrow">→</span><b>T.M.W. ?</b><span class="arrow">→</span><b>목적지 공란</b></div>
+
+        <div class="middle">
+          <section class="sketch" aria-label="초커 정비 각인 스케치">
+            <div class="sketch-title">목 뒤쪽 잠금부 — 기억나는 대로</div>
+            <div class="collar"><i class="contact c1"></i><i class="contact c2"></i><i class="contact c3"></i><i class="contact c4"></i><i class="contact c5"></i></div>
+            <span class="callout a">안쪽 접점<br>주사침?</span><i class="line la"></i>
+            <span class="callout b">정비 각인<br><b>같은 마크</b></span><i class="line lb"></i>
+            <span class="callout c">목걸이가 아니라 제어기다.</span>
+          </section>
+
+          <section class="notes" aria-label="운송업체 조사 메모">
+            <p><span class="circle">T.M.W.</span> 의료폐기물 운송</p>
+            <p>법인은 <span class="under">3년 전 폐업 처리</span>.</p>
+            <p>그런데 루미나스 입금은 계속.</p>
+            <p>차량은 늘 같은 것.</p>
+            <p class="plate">태양 81바 6248</p>
+            <p>후문 출입증은 매번 임시 발급.</p>
+          </section>
+        </div>
+
+        <div class="address">
+          <b>창고?</b><br>
+          구도심 산업로 <span class="scratch">17-4</span> 1□번지<br>
+          폐기물 집하장 뒤 — 철문 / 표지판 없음<br>
+          <span class="under">주소가 장부마다 다르다.</span>
+        </div>
+
+        <div class="bottom">
+          <div class="time">매주 <strong>목요일 21:00</strong><br>빈 차로 들어가서 무게가 늘어 나온다.</div>
+          <div class="question"><b>003은 환자인가, 화물인가?</b><br>초커 각인과 운송표 번호가 같다.<br>다른 번호도 있을 것.</div>
+        </div>
+
+        <div class="last">다음 목요일, 직접 본다.<br><strong>윤하에게는 아직 말하지 말 것.</strong></div>
+      </div>
+      <div class="tear" aria-hidden="true"></div>
+    </article>
+  </main>
+</body>
+</html>

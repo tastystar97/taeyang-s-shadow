@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="UGN Korea · Taeyang City Branch 통합 작전 및 기록 시스템">
+  <title>Taeyang City Branch · UGN Secure Network</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="scanline" aria-hidden="true"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#command" aria-label="Taeyang City Branch 홈">
+        <span class="brand-mark">UGN</span>
+        <span><b>TAEYANG CITY BRANCH</b><small>INTEGRATED OPERATIONS &amp; RECORDS SYSTEM</small></span>
+      </a>
+      <div class="system-state"><i></i><span>SECURE LINK</span><b>ONLINE</b></div>
+    </header>
+
+    <aside class="sidebar" aria-label="주 메뉴">
+      <nav>
+        <button class="nav-item active" data-view="command"><span>01</span>COMMAND</button>
+        <button class="nav-item" data-view="branch"><span>02</span>BRANCH</button>
+        <button class="nav-item" data-view="city"><span>03</span>CITY NET</button>
+        <button class="nav-item" data-view="archive"><span>04</span>ARCHIVE</button>
+        <button class="nav-item" data-view="workflow"><span>05</span>WORKFLOW</button>
+      </nav>
+      <div class="clearance">
+        <span>TERMINAL</span><b>TCB-COMMON-01</b>
+        <span>CLEARANCE</span><b>BRANCH INTERNAL</b>
+      </div>
+    </aside>
+
+    <main id="main" class="main" tabindex="-1">
+      <section class="view active" id="view-command" aria-labelledby="command-title">
+        <div class="view-head">
+          <div><span class="eyebrow">COMMAND OVERVIEW</span><h1 id="command-title">지부 공용 단말</h1></div>
+          <time id="system-clock">2043.08.31 · 21:43 KST</time>
+        </div>
+
+        <div class="alert-strip"><span>PRIORITY CHANNEL</span><b id="priority-message">본부 긴급 공문 1건이 수신되었습니다.</b><button data-go="archive">열람</button></div>
+
+        <div class="dashboard-grid">
+          <article class="panel operation-panel">
+            <div class="panel-head"><span>CURRENT OPERATION</span><em>ACTIVE</em></div>
+            <p class="kicker" id="operation-act">ACT II</p><h2 id="operation-title">배신</h2>
+            <div class="phase-row"><span>현재 페이즈</span><b id="phase-label">PHASE 01 · 내정</b></div>
+            <div class="phase-track" id="phase-track"><i class="done"></i><i></i><i></i></div>
+            <p class="muted">배치에서 결정한 선택지가 현장의 가능성이 됩니다.</p>
+          </article>
+
+          <article class="panel notice-panel">
+            <div class="panel-head"><span>RECENT SIGNALS</span><button class="text-button" data-go="archive">전체 기록</button></div>
+            <ul class="signal-list" id="signal-list"></ul>
+          </article>
+
+          <article class="panel status-panel">
+            <div class="panel-head"><span>BRANCH STATUS</span><button class="text-button" data-go="branch">상세</button></div>
+            <div class="metrics" id="command-metrics"></div>
+            <div class="fund"><span>가용 자금</span><b id="fund-value">6 UNIT</b><small id="trust-value">본부 신뢰 · 표준</small></div>
+          </article>
+
+          <article class="panel checklist-panel">
+            <div class="panel-head"><span>PHASE CHECKLIST</span><button class="text-button" data-go="workflow">업무 화면</button></div>
+            <div id="command-checklist"></div>
+            <div class="completion"><span id="command-completion">0 / 0 COMPLETE</span><i><b id="command-progress"></b></i></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-branch" aria-labelledby="branch-title">
+        <div class="view-head"><div><span class="eyebrow">BRANCH STATUS</span><h1 id="branch-title">지부 운영</h1></div><span class="view-code">TCB / LIVE STATUS</span></div>
+        <div class="branch-layout">
+          <article class="panel branch-state-card">
+            <div class="panel-head"><span>OPERATIONAL INDICATORS</span><em id="branch-condition">주의</em></div>
+            <div class="large-metrics" id="branch-metrics"></div>
+          </article>
+          <article class="panel roster-card"><div class="panel-head"><span>ACTIVE ROSTER</span><span>현원 2명</span></div><div id="roster-list"></div></article>
+        </div>
+        <div class="section-head"><div><span>FACILITIES</span><h2>지부 시설</h2></div><p>가동 중인 시설과 현재 효과</p></div>
+        <div class="facility-grid" id="facility-grid"></div>
+      </section>
+
+      <section class="view" id="view-city" aria-labelledby="city-title">
+        <div class="view-head"><div><span class="eyebrow">CITY NETWORK</span><h1 id="city-title">태양시 정보망</h1></div><span class="view-code">TAEYANG METROPOLITAN AREA</span></div>
+        <div class="city-intro panel"><div><span class="city-index">34°56′N / 127°41′E</span><h2>빛과 그림자의 도시</h2><p>그라운드 제로를 품은 산업도시. 신도심과 구도심 사이에 UGN, H.E.L.I.O.S., NOX의 이해가 겹친다.</p></div><button class="primary-button" data-doc="city-locations">도시 로케이션 열람</button></div>
+        <div class="district-grid">
+          <article><span>SECTOR 01</span><h3>신도심</h3><p>루미나스 병원과 행정 중심지. 통제된 빛이 밤새 꺼지지 않는다.</p></article>
+          <article><span>SECTOR 02</span><h3>구도심</h3><p>재개발에서 밀려난 오래된 주거지. 빈방 사건의 잔향이 남아 있다.</p></article>
+          <article><span>SECTOR 03</span><h3>도시 근교</h3><p>폐쇄된 산업시설과 그라운드 제로의 접근 제한 구역.</p></article>
+          <article><span>SECTOR 04</span><h3>대학가</h3><p>젊은 유동인구와 실종 신고가 교차하는 감시 취약 구역.</p></article>
+        </div>
+        <button class="record-banner" data-doc="city-history"><span>CHRONOLOGY / 1973—2043</span><b>태양시 역사와 주요 조직 기록 열람</b><i>→</i></button>
+      </section>
+
+      <section class="view" id="view-archive" aria-labelledby="archive-title">
+        <div class="view-head"><div><span class="eyebrow">RECORD ARCHIVE</span><h1 id="archive-title">문서보관소</h1></div><span class="view-code" id="archive-count">0 RECORDS RELEASED</span></div>
+        <div class="archive-tools"><label><span class="sr-only">문서 검색</span><input id="archive-search" type="search" placeholder="문서명, 분류, 키워드 검색"></label><div id="archive-filters" class="filter-row"></div></div>
+        <div class="archive-table-wrap"><table class="archive-table"><thead><tr><th>분류</th><th>문서명</th><th>보안등급</th><th>상태</th><th></th></tr></thead><tbody id="archive-rows"></tbody></table></div>
+      </section>
+
+      <section class="view" id="view-workflow" aria-labelledby="workflow-title">
+        <div class="view-head"><div><span class="eyebrow">BRANCH WORKFLOW</span><h1 id="workflow-title">서류 및 체크리스트</h1></div><button class="primary-button" id="new-form-button">+ 새 서류 작성</button></div>
+        <div class="workflow-tabs" role="tablist"><button class="active" data-workflow-tab="checklist">PHASE CHECKLIST</button><button data-workflow-tab="forms">E-DOCUMENTS <span id="form-badge">0</span></button></div>
+        <div class="workflow-pane active" id="workflow-checklist">
+          <div class="phase-summary panel"><div><span>ACTIVE PHASE</span><b id="workflow-phase">PHASE 01 · 내정</b></div><div><span>PROGRESS</span><b id="workflow-progress-label">0 / 0</b></div><i><b id="workflow-progress-bar"></b></i></div>
+          <div class="checklist-work" id="workflow-checklist-items"></div>
+          <aside class="deadline-card"><span>P-07 COMPLIANCE</span><h3>보호대상 보고 기한</h3><ol><li><b>06H</b>초동 등록</li><li><b>24H</b>안정화 평가</li><li><b>72H</b>보호계획 제출</li></ol><button class="secondary-button" data-template="protection-record">관련 서류 작성</button></aside>
+        </div>
+        <div class="workflow-pane" id="workflow-forms">
+          <div class="form-toolbar"><p>지부장 전자서명 후 제출된 서류는 관제 승인 전까지 잠깁니다.</p><button class="secondary-button" id="new-form-button-secondary">새 서류</button></div>
+          <div class="document-list" id="document-list"></div>
+          <div class="empty-state" id="forms-empty"><span>NO DOCUMENTS</span><h3>아직 작성된 서류가 없습니다.</h3><p>작전 명령서나 본부 보고서를 새로 작성하세요.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><span>UGN-KR · TCB/IOS</span><span>UNAUTHORIZED ACCESS WILL BE LOGGED</span><span id="sync-label">CONNECTING…</span></footer>
+  </div>
+
+  <div class="gate" id="access-gate" hidden>
+    <form class="gate-card" id="access-form">
+      <span class="gate-mark">UGN</span><div><span class="eyebrow">SECURE TERMINAL ACCESS</span><h1>Taeyang City Branch</h1><p>지부 공용 접근 코드를 입력하십시오.</p></div>
+      <label>ACCESS CODE<input id="access-code" type="password" autocomplete="current-password" required></label>
+      <p class="form-error" id="access-error" role="alert"></p><button class="primary-button" type="submit">단말 접속</button>
+    </form>
+  </div>
+
+  <dialog class="document-dialog" id="document-dialog"><div class="dialog-head"><div><span id="document-classification">INTERNAL</span><b id="document-dialog-title">DOCUMENT VIEWER</b></div><button class="icon-button" data-close-document aria-label="문서 닫기">×</button></div><iframe id="document-frame" title="UGN 문서 뷰어"></iframe><div class="dialog-foot"><span>UGN-KR · TAEYANG CITY BRANCH ARCHIVE</span><a id="document-new-tab" target="_blank" rel="noopener">새 탭에서 열기</a></div></dialog>
+
+  <dialog class="form-dialog" id="form-dialog">
+    <form id="document-form" method="dialog"><div class="dialog-head"><div><span id="form-classification">BRANCH INTERNAL</span><b id="form-dialog-title">전자서류 작성</b></div><button class="icon-button" value="cancel" aria-label="서류 닫기">×</button></div><div class="form-body"><label class="form-template-label">서식 종류<select id="form-template" required></select></label><div class="dynamic-fields" id="dynamic-fields"></div><label class="signature-field">지부장 전자서명<input id="form-signature" name="signature" placeholder="성명 입력" maxlength="40" required></label><p class="form-error" id="form-error" role="alert"></p></div><div class="form-actions"><span id="autosave-label">변경사항 없음</span><button class="secondary-button" type="button" id="save-draft-button">임시저장</button><button class="primary-button" type="button" id="submit-form-button">서명 후 제출</button></div></form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

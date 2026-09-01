@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>태양의 그림자 · 지부 운영 서머리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13100C;
+    --ink-2:#1B1712;
+    --panel:#211C16;
+    --panel-2:#282219;
+    --line:#3A3125;
+    --line-soft:#2E271E;
+    --gold:#EDB04A;
+    --gold-dim:#C88A2E;
+    --corona:#F5C868;
+    --erode:#D2506A;      /* 침식 */
+    --wound:#C96A3C;      /* 부상 */
+    --cyan:#6FA6AE;       /* 기관/헬리오스 */
+    --text:#ECE1CE;
+    --text-2:#B4A891;
+    --text-3:#867B68;
+    --ok:#8FB07A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:"IBM Plex Sans KR",system-ui,sans-serif;
+    font-weight:300;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---------- shared type ---------- */
+  .eyebrow{
+    font-family:"Chakra Petch",sans-serif;
+    font-weight:600;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-size:.66rem;
+    color:var(--gold-dim);
+  }
+  h2{
+    font-family:"IBM Plex Sans KR",sans-serif;
+    font-weight:700;
+    font-size:clamp(1.5rem,3.2vw,2.1rem);
+    letter-spacing:-.01em;
+    line-height:1.15;
+  }
+  h3{font-weight:600;font-size:1.06rem;letter-spacing:-.005em}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  .lead{color:var(--text-2);font-weight:300}
+  strong{font-weight:600;color:var(--text)}
+  .gold{color:var(--gold)}
+
+  /* ---------- hero ---------- */
+  header{
+    position:relative;
+    padding:96px 0 72px;
+    border-bottom:1px solid var(--line-soft);
+    overflow:hidden;
+  }
+  .eclipse{
+    position:absolute;
+    top:-140px;right:-120px;
+    width:460px;height:460px;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, #0d0b08 0 46%, transparent 47%),
+               radial-gradient(circle at 50% 50%, transparent 44%, var(--corona) 46%, rgba(245,200,104,.18) 52%, transparent 62%);
+    filter:blur(.3px);
+    opacity:.9;
+    animation:corona 7s ease-in-out infinite;
+  }
+  @keyframes corona{
+    0%,100%{transform:scale(1);opacity:.86}
+    50%{transform:scale(1.035);opacity:1}
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:52px 52px;
+    -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.5),transparent 70%);
+            mask-image:linear-gradient(180deg,rgba(0,0,0,.5),transparent 70%);
+    opacity:.35;
+  }
+  header .wrap{position:relative}
+  .kicker{display:flex;gap:14px;align-items:center;margin-bottom:26px;flex-wrap:wrap}
+  .kicker .tag{
+    font-family:"Chakra Petch",sans-serif;font-weight:500;letter-spacing:.16em;
+    font-size:.64rem;text-transform:uppercase;color:var(--cyan);
+    border:1px solid var(--line);border-radius:2px;padding:5px 10px;
+  }
+  header h1{
+    font-family:"IBM Plex Sans KR",sans-serif;
+    font-weight:700;
+    font-size:clamp(2.6rem,7vw,4.6rem);
+    line-height:.98;
+    letter-spacing:-.03em;
+    margin-bottom:8px;
+  }
+  header h1 .thin{font-weight:300;color:var(--text-2)}
+  .subtitle{
+    font-family:"Chakra Petch",sans-serif;letter-spacing:.22em;text-transform:uppercase;
+    font-size:.78rem;color:var(--gold);margin-bottom:30px;
+  }
+  .pitch{max-width:560px;color:var(--text-2);font-size:1.04rem}
+  .pitch b{color:var(--gold);font-weight:600}
+
+  /* ---------- section frame ---------- */
+  section{padding:66px 0;border-bottom:1px solid var(--line-soft)}
+  .sec-head{margin-bottom:38px}
+  .sec-head .eyebrow{display:block;margin-bottom:12px}
+  .sec-head p{color:var(--text-2);max-width:640px;margin-top:12px;font-size:.98rem}
+
+  /* ---------- cycle loop ---------- */
+  .loop{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:stretch}
+  .phase{
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    padding:24px 22px;position:relative;
+  }
+  .phase .num{
+    font-family:"Chakra Petch",monospace;font-weight:700;font-size:.72rem;
+    color:var(--gold-dim);letter-spacing:.1em;
+  }
+  .phase h3{margin:8px 0 10px}
+  .phase p{font-size:.9rem;color:var(--text-2)}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--gold-dim);font-size:1.3rem;padding:0 4px}
+  .loop-note{margin-top:20px;font-size:.86rem;color:var(--text-3)}
+  .loop-note .mono{color:var(--gold-dim)}
+
+  /* ---------- resource cards ---------- */
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;
+  }
+  .stat .name{font-weight:600;font-size:1.02rem;margin-bottom:4px}
+  .stat .rng{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--gold-dim);letter-spacing:.05em}
+  .stat p{font-size:.86rem;color:var(--text-2);margin-top:9px}
+  .stat.fund{border-color:var(--gold-dim);background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  .stat.fund .rng{color:var(--gold)}
+
+  /* ---------- gauges ---------- */
+  .gauges{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .gauge{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px}
+  .gauge.erode{border-top:2px solid var(--erode)}
+  .gauge.wound{border-top:2px solid var(--wound)}
+  .gauge h3{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .gauge .sub{font-size:.82rem;color:var(--text-3);margin-bottom:16px}
+  .row{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--line-soft);font-size:.88rem}
+  .row:first-of-type{border-top:none}
+  .dots{font-family:"IBM Plex Mono",monospace;letter-spacing:.12em;font-size:.95rem;min-width:52px}
+  .e0{color:var(--text-3)} .e1,.e2,.e3{color:var(--erode)}
+  .w0{color:var(--text-3)} .w1,.w2,.w3{color:var(--wound)}
+  .row .lbl{font-weight:500;min-width:56px}
+  .row .desc{color:var(--text-2);font-size:.82rem}
+  .row .desc b{color:var(--text)}
+  .fatal{color:var(--erode);font-weight:600}
+  .fatal.w{color:var(--wound)}
+  .gauge-foot{margin-top:14px;font-size:.8rem;color:var(--text-3);line-height:1.5}
+
+  /* ---------- agent card ---------- */
+  .agentcard{
+    background:#0F0D0A;border:1px solid var(--line);border-radius:5px;
+    padding:20px 22px;font-family:"IBM Plex Mono",monospace;font-size:.82rem;
+    overflow-x:auto;
+  }
+  .agentcard .l{white-space:nowrap;padding:3px 0;color:var(--text-2)}
+  .agentcard .l .nm{color:var(--gold);font-weight:600}
+  .agentcard .l .gr{color:var(--cyan)}
+  .agentcard .l .tg{color:var(--text)}
+  .agentcard .l .oo{color:var(--text-3)}
+  .agentcard .l .skill{color:var(--erode)}
+  .cardnote{font-size:.84rem;color:var(--text-2);margin-top:16px}
+  .cardnote code{font-family:"IBM Plex Mono",monospace;background:var(--panel-2);padding:2px 6px;border-radius:3px;color:var(--gold);font-size:.8rem}
+
+  /* ---------- tag grid ---------- */
+  .tagcols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .tagcol{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 18px 8px}
+  .tagcol .cat{
+    font-family:"Chakra Petch",sans-serif;letter-spacing:.16em;text-transform:uppercase;
+    font-size:.66rem;color:var(--gold-dim);padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--line-soft);
+  }
+  .tagitem{padding:9px 0;border-top:1px solid var(--line-soft)}
+  .tagitem:first-of-type{border-top:none}
+  .tagitem .t{font-weight:600;color:var(--gold);font-size:.92rem}
+  .tagitem .c{font-size:.78rem;color:var(--text-2);margin-top:2px}
+  .fit{margin-top:20px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:16px 18px;font-size:.86rem;color:var(--text-2);display:flex;gap:20px;flex-wrap:wrap}
+  .fit b{color:var(--gold)}
+  .fit .plus{font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- facilities ---------- */
+  .fac{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px}
+  .fac .ico{font-size:1.2rem;margin-bottom:8px}
+  .fac h3{font-size:1rem;margin-bottom:4px}
+  .fac .role{font-size:.78rem;color:var(--gold-dim);font-family:"Chakra Petch",sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .fac p{font-size:.85rem;color:var(--text-2)}
+  .fac .free{display:inline-block;margin-top:10px;font-size:.7rem;color:var(--ok);border:1px solid rgba(143,176,122,.4);border-radius:2px;padding:2px 7px;font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- money / hq table ---------- */
+  .money-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .block{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px}
+  .block h3{margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .wage{display:flex;gap:10px;margin:4px 0}
+  .wage .g{font-family:"IBM Plex Mono",monospace;color:var(--gold);font-weight:600;min-width:34px}
+  .wage .v{color:var(--text-2);font-size:.9rem}
+  .hqtable{width:100%;border-collapse:collapse;font-size:.86rem}
+  .hqtable td{padding:9px 6px;border-top:1px solid var(--line-soft)}
+  .hqtable tr:first-child td{border-top:none}
+  .hqtable .trust{font-weight:600}
+  .hqtable .amt{font-family:"IBM Plex Mono",monospace;color:var(--gold);text-align:right;white-space:nowrap}
+  .t-good{color:var(--ok)} .t-std{color:var(--gold)} .t-warn{color:var(--wound)} .t-frozen{color:var(--erode)}
+  .block small{display:block;margin-top:14px;color:var(--text-3);font-size:.8rem;line-height:1.5}
+  .income{font-size:.86rem;color:var(--text-2);margin:8px 0;padding-left:16px;position:relative}
+  .income::before{content:"▹";position:absolute;left:0;color:var(--gold-dim)}
+  .income b{color:var(--text)}
+
+  /* ---------- start state ---------- */
+  .startbar{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--gold-dim);border-radius:5px;padding:26px 24px;
+  }
+  .startbar .eyebrow{color:var(--gold);margin-bottom:18px;display:block}
+  .startline{
+    font-family:"IBM Plex Mono",monospace;font-size:.9rem;color:var(--text);
+    display:flex;flex-wrap:wrap;gap:8px 18px;
+  }
+  .startline span{white-space:nowrap}
+  .startline b{color:var(--gold)}
+  .startroster{margin-top:20px;display:grid;gap:8px}
+
+  /* ---------- footer ---------- */
+  footer{padding:50px 0 70px;text-align:center}
+  footer .theme{max-width:600px;margin:0 auto 22px;color:var(--text-2);font-size:1.02rem;font-style:italic}
+  footer .theme b{color:var(--gold);font-style:normal}
+  footer .meta{font-family:"Chakra Petch",sans-serif;letter-spacing:.2em;text-transform:uppercase;font-size:.64rem;color:var(--text-3)}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:820px){
+    .loop{grid-template-columns:1fr}
+    .arrow{transform:rotate(90deg);padding:6px 0}
+    .g4,.g3{grid-template-columns:1fr 1fr}
+    .tagcols{grid-template-columns:1fr}
+    .money-grid{grid-template-columns:1fr}
+    .gauges{grid-template-columns:1fr}
+    .eclipse{width:300px;height:300px;top:-90px;right:-90px}
+  }
+  @media(max-width:520px){
+    .g4,.g3,.g2{grid-template-columns:1fr}
+    section{padding:48px 0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .eclipse{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero-grid"></div>
+  <div class="eclipse" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="kicker">
+      <span class="tag">UGN · T-SECTOR</span>
+      <span class="tag">Player Summary</span>
+      <span class="tag">더블크로스 기반</span>
+    </div>
+    <h1>태양의 <span class="thin">그림자</span></h1>
+    <div class="subtitle">지부 운영 시스템 · 신임 지부장 서머리</div>
+    <p class="pitch">당신은 UGN 태양시 지부에 부임한 <b>신임 지부장</b>입니다. 대원을 뽑고, 배치하고, 현장에 내보내고, 지부를 지킨다 — 그리고 매번, 누군가를 잃을지 결정한다. 이 문서는 그 <b>한 사이클</b>을 어떻게 돌리는지에 대한 요약입니다.</p>
+  </div>
+</header>
+
+<!-- CYCLE -->
+<section id="cycle">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">01 · The Cycle</span>
+      <h2>한 사이클은 세 페이즈로 돈다</h2>
+      <p>배치는 자동 처리가 아니라 <strong>현장에서 무엇을 할 수 있는지를 미리 정하는 행위</strong>입니다. 내정에서 깐 판이 현장의 선택지가 됩니다.</p>
+    </div>
+    <div class="loop">
+      <div class="phase">
+        <div class="num">PHASE 01</div>
+        <h3>내정</h3>
+        <p>가챠로 대원을 뽑고, 내정·현장 슬롯에 배치. 이번 사이클의 판을 깝니다.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="phase">
+        <div class="num">PHASE 02</div>
+        <h3>현장</h3>
+        <p>메인은 더블크로스 세션(현장요원 PC), 동시 전선은 경량 판정으로. 침식·부상이 여기서 오릅니다.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="phase">
+        <div class="num">PHASE 03</div>
+        <h3>정산</h3>
+        <p>임금·유지비 지불, 지표·자금 갱신, 상실 확정, 다음 훅 공개.</p>
+      </div>
+    </div>
+    <p class="loop-note">정산 순서 <span class="mono">임금 → 유지비·수입 → 침식·부상 갱신 → 사기 정산</span> — 이 순서만 밟으면 지표가 자동으로 굴러갑니다.</p>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">02 · Branch Resources</span>
+      <h2>지부 상태 — 지표 셋 + 자금 풀</h2>
+      <p>관리할 건 이게 전부입니다. 지표 3개는 0~10, 자금은 상한 없는 누적 풀.</p>
+    </div>
+    <div class="grid g4">
+      <div class="card stat">
+        <div class="name">사기</div><div class="rng">0 – 10</div>
+        <p>대원의 신뢰·의욕. 0이면 지부 붕괴 위기 — 연쇄 이탈.</p>
+      </div>
+      <div class="card stat">
+        <div class="name">경계도</div><div class="rng">0 – 10 · 낮을수록 ↑</div>
+        <p>헬리오스가 지부를 주시하는 정도. 8+면 감사·현장 개입.</p>
+      </div>
+      <div class="card stat">
+        <div class="name">정보력</div><div class="rng">0 – 10</div>
+        <p>현장 진입 시 자동 확보되는 단서량. 0이면 맨땅 조사.</p>
+      </div>
+      <div class="card stat fund">
+        <div class="name gold">자금</div><div class="rng">누적 풀 · 상한 없음</div>
+        <p>임금·가챠·시설로 나가고, 사건·조달로 들어온다. 0이면 파산.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAUGES -->
+<section id="gauges">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">03 · Two Paths to Loss</span>
+      <h2>대원을 잃는 두 갈래</h2>
+      <p>현장에 나간 대원에게만 붙는 개인 게이지. <strong>더 강해지려다 잃거나(침식), 버티려다 잃거나(부상).</strong> 둘 다 영구적이며 가챠로만 보충됩니다.</p>
+    </div>
+    <div class="gauges">
+      <div class="gauge erode">
+        <h3>침식 <span class="dots e3">●●●</span></h3>
+        <div class="sub">힘을 끌어올린 대가 · 보너스와 리스크를 함께 준다</div>
+        <div class="row"><span class="dots e0">○○○</span><span class="lbl">안정</span><span class="desc">정상.</span></div>
+        <div class="row"><span class="dots e1">●○○</span><span class="lbl">고양</span><span class="desc">힘이 돈다. 판정 <b>+보너스</b>.</span></div>
+        <div class="row"><span class="dots e2">●●○</span><span class="lbl">과부하</span><span class="desc">강력하지만 위태로움. 큰 보너스.</span></div>
+        <div class="row"><span class="dots e3">●●●</span><span class="lbl fatal">임계</span><span class="desc">다음 상승 시 <b class="fatal">로스트 판정</b>.</span></div>
+        <p class="gauge-foot">"안전하게 갈까, 힘을 끌어올려 지금 이길까" — 매 씬의 유혹.</p>
+      </div>
+      <div class="gauge wound">
+        <h3>부상 <span class="dots w3">●●●</span></h3>
+        <div class="sub">몸이 상한 결과 · 페널티만 주는 순수 리스크</div>
+        <div class="row"><span class="dots w0">○○○</span><span class="lbl">멀쩡</span><span class="desc">±0.</span></div>
+        <div class="row"><span class="dots w1">●○○</span><span class="lbl">경상</span><span class="desc">판정 <b>−1</b>. 아직 움직일 만함.</span></div>
+        <div class="row"><span class="dots w2">●●○</span><span class="lbl">중상</span><span class="desc">판정 <b>−2</b>. 지속은 무리.</span></div>
+        <div class="row"><span class="dots w3">●●●</span><span class="lbl fatal w">치명상</span><span class="desc"><b class="fatal w">즉시 사망</b> — 판정 유예 없음.</span></div>
+        <p class="gauge-foot">"다친 대원을 언제 후퇴시킬까" — 예방이 전부. 정산 시 한 칸 회복.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT CARD -->
+<section id="agents">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">04 · Agent Card</span>
+      <h2>대원 카드 — 한 줄이 전부</h2>
+      <p>가챠 대원의 스탯은 <strong>태그가 전부</strong>입니다. 능력치 수치는 없고, 판정은 태그 적합도로만. <strong>등급 = 태그 수(적용 범위)</strong> — B급 1개 / A급 2개 / S급 3개 + 고유 능력 카드.</p>
+    </div>
+    <div class="agentcard">
+      <div class="l"><span class="nm">하은채</span> | <span class="gr">A급</span> | 노이만 | <span class="tg">행정·탐문</span> | <span class="oo">침식 ○○○</span> | <span class="oo">부상 ○○○</span> | "귀찮다면서 결국 다 해주는 밀당 마스터"</div>
+      <div class="l"><span class="nm">진태호</span> | <span class="gr">B급</span> | 키마이라 | <span class="tg">전투</span> | <span class="oo">침식 ○○○</span> | <span class="oo">부상 ○○○</span> | "자신감이 실력을 반 보 앞서는 돌격대장"</div>
+      <div class="l"><span class="nm">백하람</span> | <span class="gr">S급</span> | 발로르 | <span class="tg">제압·잠입·의료</span> | <span class="oo">침식 ○○○</span> | <span class="oo">부상 ○○○</span> | "말수 적은 베테랑. 과거는 아무도 모름"</div>
+      <div class="l" style="padding-left:1.5em"><span class="skill">└ 「중력의 요람」</span> <span class="oo">1회/사이클 — 아군 1인의 부상 상승 1회를 무효화</span></div>
+    </div>
+    <p class="cardnote">형식 <code>[이름 | 등급 | 신드롬 | 태그 | 침식 | 부상 | 성격 한 줄]</code> — 신드롬은 수치 효과 없이 연출·침식 묘사의 근거. 성격 한 줄은 필수: 애착의 원천이자, 잃었을 때 무게의 원천.</p>
+  </div>
+</section>
+
+<!-- TAGS -->
+<section id="tags">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">05 · Tag List</span>
+      <h2>태그 12종 — 이 안에서만 고른다</h2>
+      <p>목록 밖 태그는 즉석에서 만들지 않습니다. 태그가 늘면 적합도 판정이 흐려지니까.</p>
+    </div>
+    <div class="tagcols">
+      <div class="tagcol">
+        <div class="cat">현장계</div>
+        <div class="tagitem"><div class="t">전투</div><div class="c">정면 전투, 화력, 위협 무력화</div></div>
+        <div class="tagitem"><div class="t">제압</div><div class="c">비살상 확보, 오버드 구출·호송</div></div>
+        <div class="tagitem"><div class="t">잠입</div><div class="c">은밀 침투, 감시 회피, 흔적 지우기</div></div>
+        <div class="tagitem"><div class="t">추적</div><div class="c">미행, 흔적 읽기, 도주 차단</div></div>
+      </div>
+      <div class="tagcol">
+        <div class="cat">두뇌계</div>
+        <div class="tagitem"><div class="t">탐문</div><div class="c">발로 뛰는 조사, 증언·소문 수집</div></div>
+        <div class="tagitem"><div class="t">분석</div><div class="c">증거 해석, 패턴 발견, 프로파일링</div></div>
+        <div class="tagitem"><div class="t">기술</div><div class="c">해킹, 장비 운용, 감식</div></div>
+        <div class="tagitem"><div class="t">교섭</div><div class="c">설득, 거래, 대외 창구</div></div>
+      </div>
+      <div class="tagcol">
+        <div class="cat">운영계</div>
+        <div class="tagitem"><div class="t">행정</div><div class="c">서류, 본부 보고, 예산 (본부 신뢰 직결)</div></div>
+        <div class="tagitem"><div class="t">조달</div><div class="c">자금·물자 마련, 인맥 동원</div></div>
+        <div class="tagitem"><div class="t">의료</div><div class="c">치료, 침식 케어, 심리 상담</div></div>
+        <div class="tagitem"><div class="t">교관</div><div class="c">훈련, 육성, 신입 멘토링</div></div>
+      </div>
+    </div>
+    <div class="fit">
+      <span><b>적합도</b> — 임무의 태그와 대원 태그를 대조</span>
+      <span class="plus"><b class="gold">정태그 +2</b> · 인접 +1 · 무관 +0</span>
+      <span>정태그 보정은 <b>등급 무관 동일</b>. B급도 자기 분야에선 S급과 같은 값.</span>
+    </div>
+  </div>
+</section>
+
+<!-- FACILITIES -->
+<section id="facilities">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">06 · Housing</span>
+      <h2>지부 시설 다섯</h2>
+      <p>모든 시설은 새 스탯 없이 <strong>기존 지표·판정에 보정만</strong> 겁니다. 휴게실·의무실 Lv1은 무료 — 파산해도 이 둘은 계속 돌아 데스스파이럴을 막습니다.</p>
+    </div>
+    <div class="grid g3">
+      <div class="fac">
+        <div class="ico">🏥</div><h3>의무실</h3>
+        <div class="role">회복 · 침식 케어</div>
+        <p>부상 회복, 침식 리셋 강화. Lv3은 로스트 판정 <b>재굴림 1회</b> — 한 번은 구할 기회. 세션 PC에게 침식 경감 리소스로도 작용.</p>
+        <span class="free">Lv1 무료</span>
+      </div>
+      <div class="fac">
+        <div class="ico">🎯</div><h3>훈련장</h3>
+        <div class="role">태그 · 승급</div>
+        <p>대원 카드를 영구히 바꾸는 곳. 2사이클 훈련 → 태그 +1(교관 지도 시 1사이클), Lv3은 <b>B→A→S 승급</b> 과정 개방.</p>
+      </div>
+      <div class="fac">
+        <div class="ico">📡</div><h3>작전실</h3>
+        <div class="role">정보 우위</div>
+        <p>매 사이클 정보력 자동 회복, '정보 수집' 판정 상시 보정, Lv3은 진입 전 단서 무료 공개.</p>
+      </div>
+      <div class="fac">
+        <div class="ico">🏠</div><h3>숙소</h3>
+        <div class="role">보호 수용력</div>
+        <p>동시에 지킬 수 있는 오버드 수(Lv1:2 / Lv2:4 / Lv3:7·NEST). 수용마다 사기↑. Lv2+는 구한 오버드를 <b>대원으로 육성</b>.</p>
+      </div>
+      <div class="fac">
+        <div class="ico">🍜</div><h3>휴게실</h3>
+        <div class="role">사기 · 일상</div>
+        <p>매 사이클 사기 자동 회복. 대원들의 일상 씬이 벌어지는 무대 — 무거운 톤을 환기하는 공간.</p>
+        <span class="free">Lv1 무료</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY -->
+<section id="money">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">07 · Economy</span>
+      <h2>돈은 어떻게 도나</h2>
+      <p>사건 보수와 본부 지원금만으로 파산 없이 유지되게 설계돼 있습니다. 나머지는 '더 벌기 위한' 선택.</p>
+    </div>
+    <div class="money-grid">
+      <div class="block">
+        <h3>나가는 돈 — 임금</h3>
+        <p style="color:var(--text-2);font-size:.9rem;margin-bottom:14px">매 사이클 고정 지출. 등급별 차등.</p>
+        <div class="wage"><span class="g">B급</span><span class="v">1 / 사이클</span></div>
+        <div class="wage"><span class="g">A급</span><span class="v">2 / 사이클</span></div>
+        <div class="wage"><span class="g">S급</span><span class="v">3 / 사이클</span></div>
+        <small>"S급 하나로 갈까, B급 셋으로 물량 갈까." 무작정 뽑으면 급여로 파산. 체불 시 사기 −1, 2연속이면 이탈.</small>
+      </div>
+      <div class="block">
+        <h3>들어오는 돈 — 본부 지원금</h3>
+        <p style="color:var(--text-2);font-size:.9rem;margin-bottom:14px">순응하면 안정적, 독단하면 마른다.</p>
+        <table class="hqtable">
+          <tr><td class="trust t-good">우호</td><td class="amt">+3</td><td style="color:var(--text-3);font-size:.8rem">규정대로 인계·보고</td></tr>
+          <tr><td class="trust t-std">표준</td><td class="amt">+2</td><td style="color:var(--text-3);font-size:.8rem">기본 (시작값)</td></tr>
+          <tr><td class="trust t-warn">경계</td><td class="amt">+1</td><td style="color:var(--text-3);font-size:.8rem">규정 외 행동 적발</td></tr>
+          <tr><td class="trust t-frozen">동결</td><td class="amt">0</td><td style="color:var(--text-3);font-size:.8rem">독단 반복 + 감사</td></tr>
+        </table>
+        <small>딜레마 — 오버드를 규정대로 넘기면 돈은 들어오지만, 그가 헬리오스로 갈 수도. 숙소에 지키면 지원금이 마른다.</small>
+      </div>
+    </div>
+    <div style="margin-top:16px" class="block">
+      <h3>그 외 수입</h3>
+      <p class="income"><b>사건 보수</b> — 주 밥줄. 성공 시 +3 기준. 오버드를 규정대로 보호하면 본부 평가↑로 가산.</p>
+      <p class="income"><b>내정 자금 조달 배치</b> — 대원을 슬롯에 넣고 경량 판정. 성공 +2. 기회비용은 그 대원이 다른 일을 못 하는 것.</p>
+      <p class="income"><b>관계·서사 자금</b> — NPC 관계발 일회성. GM 서사 보상.</p>
+    </div>
+  </div>
+</section>
+
+<!-- START STATE -->
+<section id="start" style="border-bottom:none">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">08 · Cycle Zero</span>
+      <h2>부임 첫날, 당신이 쥔 것</h2>
+    </div>
+    <div class="startbar">
+      <span class="eyebrow">Branch Status · Initial</span>
+      <div class="startline">
+        <span>사기 <b>3</b></span>
+        <span>경계도 <b>2</b></span>
+        <span>정보력 <b>1</b></span>
+        <span>자금 풀 <b>6</b></span>
+        <span>본부 신뢰 <b>표준</b> (지원금 +2)</span>
+        <span>시설 <b>휴게실·의무실 Lv1</b></span>
+      </div>
+      <div class="startroster">
+        <div class="agentcard" style="border-color:var(--line-soft)">
+          <div class="l"><span class="nm">하은채</span> | <span class="gr">A급</span> · 임금 2 | 노이만 | <span class="tg">행정·탐문</span> | <span class="oo">부지부장 대행</span></div>
+          <div class="l"><span class="nm">진태호</span> | <span class="gr">B급</span> · 임금 1 | 키마이라 | <span class="tg">전투</span> | <span class="oo">현장 요원</span></div>
+        </div>
+      </div>
+      <p style="margin-top:18px;color:var(--text-2);font-size:.9rem">매 사이클 임금 <b class="gold">3</b> 고정. 자금 6에서 임금 떼면 3 — 가챠 한 번(자금 3) 돌리면 잔고가 바닥난다. 첫 턴부터 '무엇을 포기할지'를 묻는 값입니다.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="theme">로스트든 사망이든, 대원을 잃는 건 자원 소모가 아니라 <b>구하지 못한 사람</b>이다. "오버드도 인간"이라는 이념이, 잃을 때마다 지부장에게 무게로 돌아온다.</p>
+    <div class="meta">태양의 그림자 · 지부 운영 시스템 · Player Summary</div>
+  </div>
+</footer>
+
+</body>
+</html>

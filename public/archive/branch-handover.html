@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>지부장 인수인계서 · UGN T-Sector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E9EBEE;--paper-2:#DFE2E6;--edge:#C4C9D0;
+    --ink:#1C222B;--ink-2:#3D4652;--faint:#6C7480;
+    --rule:#B7BDC6;--field:#F4F6F8;
+    --stamp:#B23A3A;--stamp-2:#8F2E2E;--navy:#26374F;
+    --redact:#171B22;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#2A2E34;
+    font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-weight:400;
+    color:var(--ink);line-height:1.6;padding:34px 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sheet{
+    max-width:760px;margin:0 auto;background:var(--paper);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    border:1px solid var(--edge);position:relative;overflow:hidden;
+    background-image:linear-gradient(180deg,rgba(255,255,255,.5),transparent 8%);
+  }
+  .sheet::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.012) 0 1px,transparent 1px 3px);
+    mix-blend-mode:multiply;opacity:.6;
+  }
+  .pad{padding:44px 52px 56px}
+
+  /* letterhead */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .org .mark{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:.06em;color:var(--navy)}
+  .org .sub{font-family:"Chakra Petch",sans-serif;font-weight:500;letter-spacing:.24em;font-size:.62rem;color:var(--faint);text-transform:uppercase;margin-top:2px}
+  .org .kr{font-size:.74rem;color:var(--ink-2);margin-top:6px;font-weight:500}
+  .docmeta{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--ink-2);line-height:1.7}
+  .docmeta .cls{display:inline-block;color:#fff;background:var(--stamp);font-weight:600;letter-spacing:.1em;padding:2px 8px;border-radius:1px;margin-bottom:6px}
+
+  .title{text-align:center;margin:28px 0 8px}
+  .title h1{font-size:1.7rem;font-weight:700;letter-spacing:.14em;color:var(--ink)}
+  .title .en{font-family:"Chakra Petch",sans-serif;letter-spacing:.28em;text-transform:uppercase;font-size:.6rem;color:var(--faint);margin-top:6px}
+  .rule{height:1px;background:var(--rule);margin:22px 0}
+
+  /* parties */
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule)}
+  .party{padding:14px 18px}
+  .party+.party{border-left:1px solid var(--rule)}
+  .party .lab{font-family:"Chakra Petch",sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:.58rem;color:var(--faint);margin-bottom:6px}
+  .party .who{font-size:1.02rem;font-weight:600}
+  .party .role{font-size:.76rem;color:var(--ink-2);margin-top:2px}
+  .party.vacant .who{color:var(--stamp)}
+  .fillin{color:var(--navy);border-bottom:1.5px dotted var(--navy);padding:0 20px 1px;font-family:"IBM Plex Mono",monospace}
+
+  .reason{margin:20px 0;padding:14px 18px;background:var(--field);border-left:3px solid var(--stamp);font-size:.9rem}
+  .reason .lab{font-family:"Chakra Petch",sans-serif;letter-spacing:.12em;text-transform:uppercase;font-size:.58rem;color:var(--faint);margin-bottom:5px}
+
+  /* section */
+  .sec{margin-top:30px}
+  .sec-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.94rem;letter-spacing:.04em;margin-bottom:12px}
+  .sec-title .no{font-family:"IBM Plex Mono",monospace;color:#fff;background:var(--navy);font-size:.66rem;padding:2px 7px;border-radius:1px}
+
+  table.grid{width:100%;border-collapse:collapse;font-size:.86rem}
+  table.grid td,table.grid th{border:1px solid var(--rule);padding:9px 12px;text-align:left;vertical-align:top}
+  table.grid th{background:var(--paper-2);font-weight:600;font-family:"Chakra Petch",sans-serif;letter-spacing:.06em;font-size:.72rem;color:var(--ink-2);width:34%}
+  table.grid td .mono{font-family:"IBM Plex Mono",monospace}
+  .flag{font-family:"IBM Plex Mono",monospace;font-size:.7rem;padding:1px 7px;border-radius:2px;border:1px solid;margin-left:6px}
+  .flag.warn{color:var(--stamp);border-color:var(--stamp)}
+  .flag.ok{color:#2f7d4f;border-color:#2f7d4f}
+
+  /* roster */
+  .roster{width:100%;border-collapse:collapse;font-size:.84rem}
+  .roster th,.roster td{border:1px solid var(--rule);padding:8px 11px;text-align:left}
+  .roster th{background:var(--paper-2);font-family:"Chakra Petch",sans-serif;font-size:.66rem;letter-spacing:.08em;color:var(--ink-2);text-transform:uppercase}
+  .roster .g{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--navy)}
+
+  /* case files + item */
+  ul.cases{list-style:none;font-size:.86rem}
+  ul.cases li{padding:8px 0 8px 22px;border-bottom:1px dashed var(--rule);position:relative}
+  ul.cases li::before{content:"▪";position:absolute;left:4px;color:var(--faint)}
+  ul.cases li b{color:var(--ink)}
+  ul.cases li .new{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:#fff;background:var(--stamp);padding:1px 6px;border-radius:1px;margin-left:8px}
+  .item-row{display:flex;gap:12px;align-items:baseline;font-size:.86rem;margin-top:10px;padding:12px 14px;background:var(--field);border:1px dashed var(--faint)}
+  .item-row .ic{font-size:1rem}
+  .item-row b{color:var(--ink)}
+  .item-row .note{color:var(--ink-2);font-size:.8rem}
+
+  /* directives */
+  .directives{font-size:.86rem;counter-reset:d}
+  .directives li{list-style:none;padding:9px 0 9px 30px;position:relative;border-bottom:1px solid var(--rule)}
+  .directives li::before{counter-increment:d;content:counter(d,decimal-leading-zero);position:absolute;left:0;top:9px;font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--stamp);font-weight:600}
+  .directives li b{color:var(--ink)}
+
+  /* redaction */
+  .redact{background:var(--redact);color:transparent;padding:0 8px;border-radius:1px;user-select:none;white-space:nowrap}
+
+  /* signature block */
+  .sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px}
+  .sign .box{border-top:1px solid var(--ink);padding-top:8px}
+  .sign .lab{font-family:"Chakra Petch",sans-serif;letter-spacing:.12em;text-transform:uppercase;font-size:.58rem;color:var(--faint)}
+  .sign .line{height:34px;display:flex;align-items:flex-end}
+  .sign .line .name{font-family:"IBM Plex Mono",monospace;color:var(--ink-2)}
+  .sign .line .blank{color:var(--faint);font-size:.8rem}
+
+  /* stamps */
+  .stamp{
+    position:absolute;font-family:"Chakra Petch",sans-serif;font-weight:700;
+    letter-spacing:.14em;color:var(--stamp);border:3px double var(--stamp);
+    padding:8px 16px;border-radius:4px;text-transform:uppercase;
+    opacity:.82;mix-blend-mode:multiply;
+  }
+  .stamp.done{top:120px;right:48px;transform:rotate(-11deg);font-size:1.1rem}
+  .stamp.seal{
+    bottom:60px;right:70px;width:104px;height:104px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:.56rem;line-height:1.4;letter-spacing:.1em;transform:rotate(6deg);
+  }
+  .foot{margin-top:40px;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:.62rem;color:var(--faint);letter-spacing:.06em;border-top:1px solid var(--rule);padding-top:14px}
+
+  @media(max-width:600px){
+    .pad{padding:30px 24px 40px}
+    .parties,.sign{grid-template-columns:1fr}
+    .party+.party{border-left:none;border-top:1px solid var(--rule)}
+    table.grid th{width:42%}
+    .stamp.done{right:20px;font-size:.9rem}
+    .stamp.seal{right:16px;width:84px;height:84px}
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <span class="stamp done">인수인계 완료</span>
+    <span class="stamp seal">UGN<br>KOREA<br>公式印</span>
+    <div class="pad">
+
+      <div class="head">
+        <div class="org">
+          <div class="mark">U · G · N</div>
+          <div class="sub">Under Ground Network</div>
+          <div class="kr">한국관구 · 태양시 지부 [T-Sector]</div>
+        </div>
+        <div class="docmeta">
+          <span class="cls">기밀 · 대외비</span><br>
+          문서번호 UGN-T/HR-2043-017<br>
+          발행 2043-06-30<br>
+          보존연한 영구
+        </div>
+      </div>
+
+      <div class="title">
+        <h1>지 부 장 인 수 인 계 서</h1>
+        <div class="en">Branch Command · Handover of Office</div>
+      </div>
+
+      <div class="parties">
+        <div class="party">
+          <div class="lab">인수자 · Incoming</div>
+          <div class="who"><span class="fillin">　　　　　</span></div>
+          <div class="role">신임 태양시 지부장</div>
+        </div>
+        <div class="party vacant">
+          <div class="lab">인계자 · Outgoing</div>
+          <div class="who">— 공석 —</div>
+          <div class="role">전임 지부장 순직으로 갈음</div>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="lab">교체 사유</div>
+        전임 지부장의 <b>순직</b>에 따른 지부장 궐위. 본부 인사명령에 의거, 상기 인수자를 태양시 지부장으로 보임하고 지부 일체를 인계함. 순직 경위 상세는 <span class="redact">본 문서 열람 권한 범위를 초과함</span>.
+      </div>
+
+      <!-- 01 인력 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">01</span>인계 인력 (현원)</div>
+        <table class="roster">
+          <tr><th>성명</th><th>등급</th><th>직책</th><th>비고</th></tr>
+          <tr><td>하은채</td><td class="g">A</td><td>부지부장 대행</td><td>실무 총괄. 재직 3년.</td></tr>
+          <tr><td>진태호</td><td class="g">B</td><td>현장 요원</td><td>입사 2년차.</td></tr>
+        </table>
+        <p style="font-size:.78rem;color:var(--ink-2);margin-top:8px">※ 현원 <b>2명</b>. 정원 대비 심각한 결원 상태이며, 지부 규모는 사실상 1개 팀으로 축소 운영 중.</p>
+      </div>
+
+      <!-- 02 재정/지표 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">02</span>재정 및 지부 상태</div>
+        <table class="grid">
+          <tr><th>보유 자금</th><td class="mono">6 (누적 풀)</td></tr>
+          <tr><th>본부 지원금</th><td class="mono">표준 등급 · +2 / 사이클 <span class="flag ok">정상</span></td></tr>
+          <tr><th>사기</th><td class="mono">3 / 10 <span class="flag warn">주의 · 저하</span></td></tr>
+          <tr><th>경계도 (헬리오스)</th><td class="mono">2 / 10</td></tr>
+          <tr><th>정보력</th><td class="mono">1 / 10 <span class="flag warn">빈약</span></td></tr>
+        </table>
+      </div>
+
+      <!-- 03 시설 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">03</span>인계 시설</div>
+        <table class="grid">
+          <tr><th>휴게실</th><td>Lv1 · 기본 설비 (유지비 면제)</td></tr>
+          <tr><th>의무실</th><td>Lv1 · 기본 설비 (유지비 면제)</td></tr>
+          <tr><th>기타</th><td class="mono">없음 — 작전실 · 훈련장 · 숙소 미설치</td></tr>
+        </table>
+      </div>
+
+      <!-- 04 사건철 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">04</span>미제 사건철 인계</div>
+        <ul class="cases">
+          <li><b>다수의 미결 사건</b> 인계. 상세 목록은 별첨 대장 참조.</li>
+          <li>최근 접수 — 대학가 인근 원룸 세입자 실종 건 <b>'빈방'</b> <span class="new">신규</span></li>
+          <li>경찰 종결(단순 가출)로 처리되었으나, <span class="redact">특정 사유로</span> 지부 이관됨.</li>
+        </ul>
+      </div>
+
+      <!-- 05 유류품 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">05</span>전임자 유류품</div>
+        <div class="item-row">
+          <span class="ic">📓</span>
+          <div>
+            <b>개인 수첩 1권</b> — 사망 후 사무실 서랍에서 발견. 정리팀 스캔 후 보관함 이관.
+            <div class="note">신임 지부장 열람 요청 접수·승인됨. 별도 교부. ※ 공식 사건철에는 미포함.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 본부 지침 -->
+      <div class="sec">
+        <div class="sec-title"><span class="no">06</span>본부 지침 (준수 요망)</div>
+        <ol class="directives">
+          <li>확보한 오버드는 <b>본부 규정에 따라 보고·인계</b>할 것. 규정 외 사적 보호·은닉 금지.</li>
+          <li><b>정기 보고 의무</b>를 이행할 것. 지원금 등급은 본부 신뢰에 연동됨.</li>
+          <li>헬리오스·NOX 등 외부 세력과의 <b>무단 접촉·밀약</b>을 금함.</li>
+          <li>상기 지침 위반 적발 시 지원금 <b>삭감 또는 동결</b> 및 감사관 파견될 수 있음.</li>
+        </ol>
+      </div>
+
+      <div class="sign">
+        <div class="box">
+          <div class="lab">인수자 서명</div>
+          <div class="line"><span class="blank">（　　　　　　　　）　㊞</span></div>
+        </div>
+        <div class="box">
+          <div class="lab">본부 인사담당 확인</div>
+          <div class="line"><span class="name">UGN KOREA / 人事 　㊞</span></div>
+        </div>
+      </div>
+
+      <div class="foot">UGN-T/HR-2043-017 · 본 문서는 열람 권한자 외 반출·복제를 금함 · 太陽市 支部</div>
+    </div>
+  </div>
+</body>
+</html>

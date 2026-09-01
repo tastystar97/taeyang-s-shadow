@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="더블크로스 3rd 캠페인 배경도시 태양시의 역사 연표와 주요 조직 기록" />
+  <title>태양시 기록보관소 | 역사와 주요 조직</title>
+
+  <style>
+    :root {
+      --bg: #0d0f13;
+      --surface: #15181e;
+      --surface-2: #1b1f27;
+      --line: #343945;
+      --text: #e8e9ec;
+      --muted: #9ba1ad;
+      --red: #d72638;
+      --orange: #f5a623;
+      --blue: #56a8d8;
+      --green: #6fcf97;
+      --purple: #a987d9;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(215, 38, 56, 0.13), transparent 28rem),
+        radial-gradient(circle at 90% 20%, rgba(245, 166, 35, 0.08), transparent 25rem),
+        var(--bg);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 440px;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(13, 15, 19, 0.96) 0%, rgba(13, 15, 19, 0.78) 50%, rgba(13, 15, 19, 0.92) 100%),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0,
+          transparent 79px,
+          rgba(255, 255, 255, 0.022) 80px
+        );
+      pointer-events: none;
+    }
+
+    .sun-mark {
+      position: absolute;
+      top: 50%;
+      right: max(5vw, 32px);
+      width: min(32vw, 360px);
+      aspect-ratio: 1;
+      transform: translateY(-52%);
+      border: 2px solid rgba(245, 166, 35, 0.38);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 28px rgba(215, 38, 56, 0.035),
+        0 0 0 72px rgba(245, 166, 35, 0.025);
+    }
+
+    .sun-mark::before,
+    .sun-mark::after {
+      content: "";
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .sun-mark::before {
+      width: 52%;
+      height: 52%;
+      border-radius: 50%;
+      background: linear-gradient(90deg, var(--orange) 0 50%, #111318 50% 100%);
+      box-shadow: 0 0 45px rgba(245, 166, 35, 0.16);
+    }
+
+    .sun-mark::after {
+      width: 1px;
+      height: 138%;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: -58px 0 0 rgba(255, 255, 255, 0.06), 58px 0 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 80px 0 64px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--orange);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(2.5rem, 6vw, 5.6rem);
+      line-height: 0.98;
+      letter-spacing: -0.065em;
+    }
+
+    h1 span {
+      display: block;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-summary {
+      max-width: 680px;
+      margin: 28px 0 0;
+      color: #c9ccd2;
+      font-size: 1.03rem;
+    }
+
+    .status-strip {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: -28px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: rgba(21, 24, 30, 0.94);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .status-item {
+      min-height: 108px;
+      padding: 22px 24px;
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .status-item:last-child {
+      border-right: 0;
+    }
+
+    .status-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.11em;
+    }
+
+    .status-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    main {
+      padding: 92px 0 120px;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 32px;
+      margin-bottom: 56px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: var(--orange);
+      font-size: 0.8rem;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+
+    .section-heading p {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .timeline {
+      position: relative;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 189px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--line) 4%, var(--line) 96%, transparent);
+    }
+
+    .timeline-item {
+      --event-color: var(--orange);
+      position: relative;
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 60px;
+      padding: 0 0 54px;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 182px;
+      width: 13px;
+      height: 13px;
+      border: 3px solid var(--bg);
+      border-radius: 50%;
+      background: var(--event-color);
+      box-shadow: 0 0 0 1px var(--event-color), 0 0 18px color-mix(in srgb, var(--event-color), transparent 55%);
+    }
+
+    .year {
+      padding-top: 2px;
+      color: var(--event-color);
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      text-align: right;
+    }
+
+    .event-card {
+      position: relative;
+      padding: 28px 30px 27px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(27, 31, 39, 0.96), rgba(21, 24, 30, 0.92));
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.17);
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+
+    .event-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 3px;
+      background: var(--event-color);
+    }
+
+    .event-card:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--event-color), transparent 45%);
+    }
+
+    .event-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .event-title {
+      margin: 0;
+      font-size: 1.23rem;
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border: 1px solid color-mix(in srgb, var(--event-color), transparent 56%);
+      border-radius: 999px;
+      color: var(--event-color);
+      background: color-mix(in srgb, var(--event-color), transparent 90%);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .event-card p {
+      margin: 0;
+      color: #c5c9d0;
+    }
+
+    .event-card p + p {
+      margin-top: 10px;
+    }
+
+    .event-card strong {
+      color: #ffffff;
+    }
+
+    .industry { --event-color: var(--orange); }
+    .luminous { --event-color: var(--purple); }
+    .anomaly { --event-color: var(--red); }
+    .government { --event-color: var(--blue); }
+    .ugn { --event-color: var(--green); }
+    .disaster { --event-color: var(--red); }
+    .current { --event-color: #ffffff; }
+
+
+
+    .section-divider {
+      height: 1px;
+      margin: 92px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 18%, rgba(255,255,255,0.13) 82%, transparent);
+    }
+
+    .organization-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .organization-card {
+      --org-color: var(--orange);
+      position: relative;
+      min-height: 100%;
+      padding: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--org-color), transparent 94%), transparent 46%),
+        linear-gradient(145deg, rgba(27, 31, 39, 0.98), rgba(21, 24, 30, 0.94));
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.19);
+    }
+
+    .organization-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--org-color), transparent 86%);
+    }
+
+    .organization-card::after {
+      content: attr(data-code);
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      color: color-mix(in srgb, var(--org-color), transparent 79%);
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      pointer-events: none;
+    }
+
+    .organization-card.police { --org-color: var(--blue); }
+    .organization-card.helios { --org-color: var(--orange); }
+    .organization-card.ugn-org { --org-color: var(--green); }
+    .organization-card.nox { --org-color: var(--red); }
+
+    .org-kicker {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 7px;
+      color: var(--org-color);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .organization-card h3 {
+      position: relative;
+      z-index: 1;
+      max-width: 75%;
+      margin: 0;
+      font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+    }
+
+    .org-full-name {
+      position: relative;
+      z-index: 1;
+      min-height: 1.6em;
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .org-motto {
+      position: relative;
+      z-index: 1;
+      margin: 24px 0 25px;
+      padding: 15px 17px;
+      border-left: 2px solid var(--org-color);
+      background: rgba(0, 0, 0, 0.15);
+      color: #f0f1f3;
+      font-family: Georgia, "Noto Serif KR", serif;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .org-facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .org-fact {
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.065);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .org-fact span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .org-fact strong {
+      color: #f2f3f5;
+      font-size: 0.9rem;
+    }
+
+    .org-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .org-body p {
+      margin: 0;
+      color: #c5c9d0;
+    }
+
+    .org-body p + p {
+      margin-top: 12px;
+    }
+
+    .org-body strong {
+      color: #fff;
+    }
+
+    .org-conflict {
+      position: relative;
+      z-index: 1;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .org-conflict span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--org-color);
+      font-size: 0.7rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .org-conflict p {
+      margin: 0;
+      color: #eceef1;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .archive-note {
+      margin-top: 80px;
+      padding: 34px 38px;
+      border: 1px solid rgba(215, 38, 56, 0.28);
+      border-radius: 14px;
+      background:
+        linear-gradient(90deg, rgba(215, 38, 56, 0.085), transparent 50%),
+        var(--surface);
+    }
+
+    .archive-note h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .archive-note p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 28px 0 44px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: #737986;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 800px) {
+      .sun-mark {
+        right: -130px;
+        width: 330px;
+        opacity: 0.5;
+      }
+
+      .status-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .status-item:nth-child(2) {
+        border-right: 0;
+      }
+
+      .status-item:nth-child(-n + 2) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .section-heading {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .organization-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline::before {
+        left: 8px;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+        gap: 11px;
+        padding-left: 34px;
+      }
+
+      .timeline-item::before {
+        top: 8px;
+        left: 1px;
+      }
+
+      .year {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page-shell {
+        width: min(100% - 22px, 1120px);
+      }
+
+      .hero-content {
+        padding: 72px 0 58px;
+      }
+
+      .hero-summary {
+        font-size: 0.94rem;
+      }
+
+      .status-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .status-item,
+      .status-item:nth-child(2) {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .status-item:last-child {
+        border-bottom: 0;
+      }
+
+      main {
+        padding-top: 72px;
+      }
+
+      .event-card {
+        padding: 24px 22px;
+      }
+
+      .event-title-row {
+        display: block;
+      }
+
+      .tag {
+        display: inline-block;
+        margin-top: 10px;
+      }
+
+  
+
+    .section-divider {
+      height: 1px;
+      margin: 92px 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 18%, rgba(255,255,255,0.13) 82%, transparent);
+    }
+
+    .organization-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .organization-card {
+      --org-color: var(--orange);
+      position: relative;
+      min-height: 100%;
+      padding: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--org-color), transparent 94%), transparent 46%),
+        linear-gradient(145deg, rgba(27, 31, 39, 0.98), rgba(21, 24, 30, 0.94));
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.19);
+    }
+
+    .organization-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--org-color), transparent 86%);
+    }
+
+    .organization-card::after {
+      content: attr(data-code);
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      color: color-mix(in srgb, var(--org-color), transparent 79%);
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      pointer-events: none;
+    }
+
+    .organization-card.police { --org-color: var(--blue); }
+    .organization-card.helios { --org-color: var(--orange); }
+    .organization-card.ugn-org { --org-color: var(--green); }
+    .organization-card.nox { --org-color: var(--red); }
+
+    .org-kicker {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 7px;
+      color: var(--org-color);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .organization-card h3 {
+      position: relative;
+      z-index: 1;
+      max-width: 75%;
+      margin: 0;
+      font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+    }
+
+    .org-full-name {
+      position: relative;
+      z-index: 1;
+      min-height: 1.6em;
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .org-motto {
+      position: relative;
+      z-index: 1;
+      margin: 24px 0 25px;
+      padding: 15px 17px;
+      border-left: 2px solid var(--org-color);
+      background: rgba(0, 0, 0, 0.15);
+      color: #f0f1f3;
+      font-family: Georgia, "Noto Serif KR", serif;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .org-facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .org-fact {
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.065);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .org-fact span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .org-fact strong {
+      color: #f2f3f5;
+      font-size: 0.9rem;
+    }
+
+    .org-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .org-body p {
+      margin: 0;
+      color: #c5c9d0;
+    }
+
+    .org-body p + p {
+      margin-top: 12px;
+    }
+
+    .org-body strong {
+      color: #fff;
+    }
+
+    .org-conflict {
+      position: relative;
+      z-index: 1;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .org-conflict span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--org-color);
+      font-size: 0.7rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .org-conflict p {
+      margin: 0;
+      color: #eceef1;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .archive-note {
+        padding: 28px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="sun-mark" aria-hidden="true"></div>
+
+    <div class="page-shell hero-content">
+      <p class="eyebrow">Taeyang Metropolitan Archive / Restricted Record</p>
+      <h1>
+        태양시의 역사
+        <span>1973 — 2043</span>
+      </h1>
+      <p class="hero-summary">
+        대한민국의 산업도시로 출발한 태양시는 첨단 바이오 연구와 도시 개발을 거치며 급성장했다.
+        그러나 루미나스, 프로메테우스 랩, H.E.L.I.O.S., 그리고 레네게이드 확산이 얽히면서
+        도시는 공식 기록과 은폐된 진실이 공존하는 통제구역으로 변모하였다.
+      </p>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <section class="status-strip" aria-label="태양시 기록 요약">
+      <div class="status-item">
+        <span class="status-label">ARCHIVE RANGE</span>
+        <strong class="status-value">1973–2043</strong>
+      </div>
+      <div class="status-item">
+        <span class="status-label">CURRENT STATUS</span>
+        <strong class="status-value">지부 재건 단계</strong>
+      </div>
+      <div class="status-item">
+        <span class="status-label">PRIMARY THREAT</span>
+        <strong class="status-value">레네게이드 확산</strong>
+      </div>
+      <div class="status-item">
+        <span class="status-label">SECURITY LEVEL</span>
+        <strong class="status-value">기밀 / 제한 열람</strong>
+      </div>
+    </section>
+
+    <main>
+      <section class="section-heading">
+        <h2>Chronology</h2>
+        <p>
+          아래 기록은 민간에 공개된 도시사와 UGN 내부 보고서를 통합한 연표다.
+          일부 사건은 정부 발표와 실제 정황이 일치하지 않는다.
+        </p>
+      </section>
+
+      <section id="history" class="timeline" aria-label="태양시 역사 연표">
+        <article class="timeline-item industry">
+          <div class="year">1973</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">태양군 원자력발전소 가동</h3>
+              <span class="tag">산업 기반</span>
+            </div>
+            <p>
+              태양군 원자력발전소의 건설이 완료되고 정상 가동이 시작되었다.
+              발전소는 이후 수십 년간 지역 산업화와 인구 유입을 견인하는 핵심 기반시설이 되었다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item industry">
+          <div class="year">1980–2006</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">거대 산업도시로의 성장</h3>
+              <span class="tag">도시 성장</span>
+            </div>
+            <p>
+              중공업과 제조업을 중심으로 빠르게 발전하며 대한민국을 대표하는 산업도시권으로 자리 잡았다.
+              발전소 주변에는 공업단지와 노동자 주거지가 확장되었고, 태양군의 행정·경제적 규모도 급격히 커졌다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item luminous">
+          <div class="year">1997</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">루미나스의 태양군 진출</h3>
+              <span class="tag">루미나스</span>
+            </div>
+            <p>
+              제약회사 <strong>루미나스</strong>가 태양군 일대에 대규모 부동산 투자를 단행하고 연구소를 설립했다.
+              이는 이후 태양시의 바이오 산업 육성과 정부 합작 연구의 기반이 되었다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item anomaly">
+          <div class="year">2000</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">첫 번째 ‘희귀 질병’ 보고</h3>
+              <span class="tag">이상 징후</span>
+            </div>
+            <p>
+              태양군에서 원인을 특정할 수 없는 희귀 질병 사례가 집단적으로 보고되었다.
+              루미나스는 무상 치료와 역학조사에 개입했으나, 관련 환자 기록과 연구자료의 상당수는 비공개 처리되었다.
+            </p>
+            <p>
+              UGN은 이 시기 파견된 임시 대응팀을 통해 태양 지역의 레네게이드 징후를 처음 확인한 것으로 추정된다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item industry">
+          <div class="year">2006</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">태양시 승격</h3>
+              <span class="tag">행정 개편</span>
+            </div>
+            <p>
+              산업단지 확대와 인구 증가에 따라 태양군이 <strong>태양시</strong>로 승격되었다.
+              기존 공업지대와 주거지역은 이후 ‘구도심’으로 분류되기 시작했다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item government">
+          <div class="year">2010–2030</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">신도심 개발과 도시 양극화</h3>
+              <span class="tag">스마트 시티</span>
+            </div>
+            <p>
+              정부 주도의 신도심 개발 프로젝트가 추진되었다. IT, 바이오 산업과 첨단 기술 연구소가 집중 유치되며
+              태양시는 ‘미래형 스마트 도시’로 브랜드화되었다.
+            </p>
+            <p>
+              그러나 투자와 행정 역량이 신도심에 집중되면서 기존 공업지대와 주거지역의 노후화가 가속되었다.
+              구도심과 신도심 사이의 경제·치안·복지 격차는 도시 내부의 구조적인 양극화로 굳어졌다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item government">
+          <div class="year">2011</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">프로메테우스 랩 발족</h3>
+              <span class="tag">정부 연구</span>
+            </div>
+            <p>
+              루미나스와 정부가 합작 연구팀 <strong>프로메테우스 랩</strong>을 발족했다.
+              표면상 목적은 희귀 질병 연구와 첨단 생명공학 개발이었으나, 내부적으로는 레네게이드 감염자와 오버드를
+              분류·통제하기 위한 기술 개발이 진행되었다.
+            </p>
+            <p>이 조직은 훗날 H.E.L.I.O.S.로 재편되는 비공식 전신 조직이 되었다.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item ugn">
+          <div class="year">2017</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">UGN 태양시 지부 설립</h3>
+              <span class="tag">UGN</span>
+            </div>
+            <p>
+              2000년 희귀 질병 사건 당시 파견되었던 임시 대응팀이 정식 지부로 격상되었다.
+              UGN Korea는 태양시 전역에서 증가하는 오버드를 보호하고 레네게이드 사건을 은폐·수습하기 위해
+              <strong>UGN 태양시 지부</strong>를 설립했다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item anomaly">
+          <div class="year">2022</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">첫 공개 ‘이상현상’ 보도</h3>
+              <span class="tag">정보 유출</span>
+            </div>
+            <p>
+              특정 지역에서 발생한 초자연적 사건과 신체 변이 사례가 언론과 인터넷을 통해 확산되었다.
+              목격담과 영상 자료가 빠르게 퍼졌지만, 정부는 조작 영상과 집단 히스테리로 규정하며 공식적으로 부정했다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item government">
+          <div class="year">2025</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">H.E.L.I.O.S. 창설</h3>
+              <span class="tag">통제 기관</span>
+            </div>
+            <p>
+              프로메테우스 랩의 연구자료와 인력을 기반으로 정부 직속 통제기관
+              <strong>H.E.L.I.O.S.</strong>가 창설되었다.
+              기관은 이상인간의 탐지, 평가, 격리 및 전력화를 담당하며 태양시를 주요 실증 지역으로 지정했다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item disaster">
+          <div class="year">2035</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">그라운드 제로</h3>
+              <span class="tag">대재해</span>
+            </div>
+            <p>
+              태양시 원자력발전소가 폐쇄되었다. 정부의 공식 발표는 환경 문제와 노후 설비로 인한 가동 중단이었으나,
+              이후 ‘발전소 폭발 사고’와 비밀 실험에 관한 소문이 도시괴담처럼 퍼졌다.
+            </p>
+            <p>
+              실제로는 발전소 내부에서 대규모 레네게이드 폭주가 발생했으며, 이후 태양시 전역의 바이러스 농도와
+              오버드 발생률이 통제 불능 수준으로 증가했다. 해당 지역은 내부 문서에서 <strong>그라운드 제로</strong>로 명명되었다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item disaster">
+          <div class="year">2037</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">검은 태양의 날</h3>
+              <span class="tag">대형 참사</span>
+            </div>
+            <p>
+              그라운드 제로에서 살아남은 실험체 <strong>이카루스</strong>가 특이점을 초월한 힘을 발현하며
+              태양시 전역에서 무차별적인 파괴를 시작했다.
+            </p>
+            <p>
+              이카루스는 자신의 출력을 감당하지 못하고 폭주 10시간 만에 자멸했으나, 사건의 규모가 커지면서
+              성혈회, H.E.L.I.O.S., UGN의 임시 연합작전이 개시되었다. UGN 태양시 지부는 이 과정에서 막대한 인적 손실을 입었다.
+            </p>
+            <p>사건은 민간에 대규모 테러 사건으로 조작되어 발표되었다.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item ugn">
+          <div class="year">2042</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">태양시 지부의 와해</h3>
+              <span class="tag">UGN</span>
+            </div>
+            <p>
+              누적된 인적 손실과 전임 지부장의 사망으로 지부의 지휘체계가 붕괴했다.
+              남은 인원들의 사기와 작전 수행 능력도 크게 저하되면서 태양시 지부는 사실상 와해 상태에 들어갔다.
+            </p>
+          </div>
+        </article>
+
+        <article class="timeline-item current">
+          <div class="year">2043</div>
+          <div class="event-card">
+            <div class="event-title-row">
+              <h3 class="event-title">현재 — 최영호 지부장 부임</h3>
+              <span class="tag">현재 시점</span>
+            </div>
+            <p>
+              UGN Korea는 붕괴 직전의 태양시 지부를 수습하기 위해 <strong>최영호</strong>를 신임 지부장으로 발령했다.
+              그러나 지부에는 인력, 예산, 장비가 모두 부족하며 H.E.L.I.O.S.와 성혈회, 루미나스의 이해관계가 도시 전역에서 충돌하고 있다.
+            </p>
+            <p>
+              공식적으로 태양시는 재건 중인 첨단 산업도시다. 비공식적으로는 대한민국에서 가장 높은 레네게이드 위험도를 가진 도시 중 하나다.
+            </p>
+          </div>
+        </article>
+      </section>
+
+
+
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <section id="organizations" aria-labelledby="organizations-title">
+        <div class="section-heading">
+          <h2 id="organizations-title">Organizations</h2>
+          <p>
+            태양시의 질서는 서로 다른 정의를 내세우는 네 조직의 긴장 위에 서 있다.
+            이들은 모두 시민의 일상과 오버드의 생존을 말하지만, 보호와 통제, 원칙과 폭력의 경계에 대해서는 전혀 다른 답을 내린다.
+          </p>
+        </div>
+
+        <div class="organization-grid">
+          <article class="organization-card police" data-code="POLICE">
+            <p class="org-kicker">Legitimate Law Enforcement</p>
+            <h3>대한민국 경찰</h3>
+            <p class="org-full-name">태양시경찰청 · 형사과 및 관할 경찰서</p>
+            <blockquote class="org-motto">“국민에게 책임을 다하는 희망의 새 경찰.”</blockquote>
+
+            <div class="org-facts" aria-label="대한민국 경찰 조직 요약">
+              <div class="org-fact"><span>공식 지위</span><strong>정당한 사법집행기관</strong></div>
+              <div class="org-fact"><span>주요 활동</span><strong>치안 유지·범죄 수사</strong></div>
+              <div class="org-fact"><span>핵심 문제</span><strong>H.E.L.I.O.S.의 수사권 침해</strong></div>
+              <div class="org-fact"><span>현재 상태</span><strong>조직적 무력감과 내부 저항</strong></div>
+            </div>
+
+            <div class="org-body">
+              <p>
+                대한민국 경찰은 어두운 구도심의 복잡한 뒷골목에서 벌어지는 강력범죄부터 신도심의 화려한 기업 빌딩에서 발생하는 사건까지,
+                태양시의 치안을 책임지는 정당한 사법집행기관이다.
+              </p>
+              <p>
+                그러나 태양시에서 반복되는 <strong>특정한 유사성을 가진 실종사건</strong>은 대부분 H.E.L.I.O.S.에 의해 수사권이 강제로 이관된다.
+                이에 반발하는 수사관은 사건에서 배제되거나 좌천되며, 이런 개입은 이제 형사과 내부에서 공공연한 현실로 받아들여지고 있다.
+              </p>
+              <p>
+                장기간 이어진 무력감은 수사 의욕을 바닥까지 떨어뜨렸고 도시 치안에도 악영향을 주었다.
+                그럼에도 일부 수사관은 포기하지 않고, 공식적으로 종결되거나 이관된 사건들을 비밀리에 추적하고 있다.
+              </p>
+            </div>
+
+            <div class="org-conflict">
+              <span>Player Question</span>
+              <p>법과 원칙만으로 진실에 닿을 수 없는 도시에서도, 당신은 자신의 정의를 위해 끝까지 원칙을 지킬 것인가?</p>
+            </div>
+          </article>
+
+          <article class="organization-card helios" data-code="H.E.L.I.O.S.">
+            <p class="org-kicker">Hazard Control Authority</p>
+            <h3>H.E.L.I.O.S.</h3>
+            <p class="org-full-name">Hazard Evaluation &amp; Limitation of Irregular Overhuman Subjects<br>변칙 초인 개체의 위험 평가 및 제한국</p>
+            <blockquote class="org-motto">“빛은 어둠을 태우고, 질서는 혼돈을 정리한다.”</blockquote>
+
+            <div class="org-facts" aria-label="헬리오스 조직 요약">
+              <div class="org-fact"><span>전신 조직</span><strong>국가 변칙 개체 대응팀</strong></div>
+              <div class="org-fact"><span>명목상 소속</span><strong>경찰청 산하 비밀기관</strong></div>
+              <div class="org-fact"><span>주요 임무</span><strong>감시·평가·회수·제거</strong></div>
+              <div class="org-fact"><span>실질적 성격</span><strong>초법적 무력 통제기관</strong></div>
+            </div>
+
+            <div class="org-body">
+              <p>
+                H.E.L.I.O.S., 통칭 <strong>헬리오스</strong>는 태양시의 이면에서 활동하는 경찰청 산하 비밀기관이다.
+                전신은 ‘국가 변칙 개체 대응팀’이며, 현재는 오버드를 감시·분류하고 위험요소를 사전에 제거하는 과격한 무력집단으로 기능한다.
+              </p>
+              <p>
+                명목상 경찰 조직의 일부지만 실질적으로는 독립된 초법기관에 가깝다.
+                오버드 관련 사건의 징후가 확인되면 일반 경찰의 개입을 즉시 중지시키고 사건 기록과 수사권을 회수한 뒤 단독 작전에 착수한다.
+              </p>
+              <p>
+                헬리오스는 모든 조치가 시민의 안정적인 <strong>‘일상’</strong>을 유지하기 위한 것이라고 주장한다.
+                실제로 오버드는 통상적인 경찰력으로 감당하기 어려운 존재다. 그러나 감시와 회수에 응하지 않는 대상을 제거하는 방식까지 정당화될 수 있는지는 별개의 문제다.
+              </p>
+            </div>
+
+            <div class="org-conflict">
+              <span>Core Doctrine</span>
+              <p>위험은 범죄를 저지른 뒤 처벌하는 것이 아니라, 위험이 되기 전에 통제해야 한다.</p>
+            </div>
+          </article>
+
+          <article class="organization-card ugn-org" data-code="UGN">
+            <p class="org-kicker">Collapsed Local Branch</p>
+            <h3>UGN 태양시 지부</h3>
+            <p class="org-full-name">Universal Guardians Network · Taeyang City Branch</p>
+            <blockquote class="org-motto">“우린 이미 패배했다. 하지만 그렇다고 죽을 날만 기다리고 있을 순 없지.”</blockquote>
+
+            <div class="org-facts" aria-label="UGN 태양시 지부 조직 요약">
+              <div class="org-fact"><span>설립</span><strong>2017년 정식 지부 승격</strong></div>
+              <div class="org-fact"><span>붕괴 원인</span><strong>누적 손실·지부장 사망</strong></div>
+              <div class="org-fact"><span>현 지부장</span><strong>최영호</strong></div>
+              <div class="org-fact"><span>현재 상태</span><strong>철수 직전의 마지막 보루</strong></div>
+            </div>
+
+            <div class="org-body">
+              <p>
+                UGN 태양시 지부는 2035년 그라운드 제로 이후 급증한 레네게이드 사건에 대응하며 막대한 피해를 입었다.
+                특히 2037년 <strong>검은 태양의 날</strong> 이후에는 일부 충성심 높은 요원들과 전임 지부장의 헌신만으로 간신히 명맥을 유지했다.
+              </p>
+              <p>
+                그러나 2042년 전임 지부장이 사망하자 조직의 구심점이 무너졌고, 남아 있던 인원 대부분이 전출·탈주하거나 현장을 떠났다.
+                장비와 예산, 정보망까지 붕괴한 지부는 이름만 남은 상태가 되었다.
+              </p>
+              <p>
+                본부는 태양시에서 완전히 철수하기 전 마지막 조치로, 비전투원 출신의 일반인 사무원 <strong>최영호</strong>를 이례적으로 지부장에 발탁했다.
+                그의 임무는 승리하는 것이 아니라, 아직 남아 있는 사람들과 함께 지부가 사라지지 않도록 버티는 것이다.
+              </p>
+            </div>
+
+            <div class="org-conflict">
+              <span>Current Mission</span>
+              <p>이미 무너진 조직을 다시 세우고, 보호받지 못한 오버드들에게 마지막 피난처를 제공한다.</p>
+            </div>
+          </article>
+
+          <article class="organization-card nox" data-code="NOX">
+            <p class="org-kicker">False Hearts Shell</p>
+            <h3>F.H. Shell — NOX</h3>
+            <p class="org-full-name">False Hearts · Radical Overed Liberation Cell</p>
+            <blockquote class="org-motto">“우린 괴물이 아냐. 괴물은, 우리를 만든 너희지.”</blockquote>
+
+            <div class="org-facts" aria-label="NOX 조직 요약">
+              <div class="org-fact"><span>기원</span><strong>그라운드 제로 생존자 은신처</strong></div>
+              <div class="org-fact"><span>재조직</span><strong>2037년 검은 태양의 날 이후</strong></div>
+              <div class="org-fact"><span>소속</span><strong>펄스하츠 셸</strong></div>
+              <div class="org-fact"><span>목표</span><strong>기존 질서 파괴와 재구성</strong></div>
+            </div>
+
+            <div class="org-body">
+              <p>
+                NOX는 2035년 그라운드 제로 이후 급증한 오버드 범죄자와 감염자들의 은신처에서 출발했다.
+                구성원 대부분은 갑작스러운 신체 변화와 초능력 발현으로 사회에서 밀려나 구도심의 뒷골목을 전전하던 생존자들이었다.
+              </p>
+              <p>
+                2037년 검은 태양의 날, 초월적인 힘으로 태양시를 불태운 오버드 <strong>이카루스</strong>가 등장하면서 이들에게 하나의 상징이 생겼다.
+                NOX는 이카루스의 의지를 계승한다는 명분 아래 펄스하츠의 셸로 재조직되었다.
+              </p>
+              <p>
+                이후 NOX는 단순한 범죄 집단을 넘어 세계의 거짓을 폭로하고 기존 사회를 재구성하려는 급진적 이념집단으로 변모했다.
+                이들은 오버드를 착취하고 통제하는 기관들이 세운 질서를 모두 파괴한 뒤, <strong>오버드에 의한 오버드를 위한 질서</strong>를 세우려 한다.
+              </p>
+            </div>
+
+            <div class="org-conflict">
+              <span>Revolutionary Thesis</span>
+              <p>괴물을 만들어 놓고 인간의 법으로 심판하는 세계라면, 먼저 부서져야 하는 것은 그 법과 세계다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="archive-note">
+        <h2>기록관리국 주의사항</h2>
+        <p>
+          본 자료에는 일반 시민에게 공개되지 않은 UGN 내부 정보가 포함되어 있다.
+          그라운드 제로, 이카루스, 프로메테우스 랩과 관련된 기록의 외부 유출은 태양시 지부 보안규정에 따라 처리된다.
+        </p>
+      </aside>
+    </main>
+  </div>
+
+  <footer>
+    <div class="page-shell">
+      TAEYANG CITY BRANCH ARCHIVE · FILE NO. TY-73/43 · UGN INTERNAL USE ONLY
+    </div>
+  </footer>
+</body>
+</html>
