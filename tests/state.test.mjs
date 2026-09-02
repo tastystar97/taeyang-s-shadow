@@ -26,10 +26,35 @@ test("submitted forms are locked until control returns them", () => {
   assert.throws(() => applyAction(state, "save-form", { form }), /수정할 수 없습니다/);
   applyAction(state, "return-form", { id: "form-2", comment: "보완 필요" });
   assert.equal(state.forms[0].status, "RETURNED");
+  assert.equal(state.notices[0].title, "전자서류 반려");
+  assert.match(state.notices[0].body, /보고.*보완 필요/);
+  assert.equal(state.notices[0].priority, true);
+});
+
+test("players can delete drafts and returned forms only", () => {
+  const state = freshState();
+  const draft = { id: "draft-1", template: "hq-report", title: "초안", content: {}, signature: "" };
+  applyAction(state, "save-form", { form: draft });
+  applyAction(state, "delete-form", { id: "draft-1" });
+  assert.equal(state.forms.length, 0);
+
+  const submitted = { ...draft, id: "submitted-1", title: "제출본", signature: "최영호" };
+  applyAction(state, "submit-form", { form: submitted });
+  assert.throws(() => applyAction(state, "delete-form", { id: "submitted-1" }), /관제실에서만 삭제/);
+});
+
+test("control can delete a form in any status", () => {
+  const state = freshState();
+  applyAction(state, "submit-form", { form: { id: "submitted-2", template: "hq-report", title: "삭제 대상", content: {}, signature: "최영호" } });
+  applyAction(state, "delete-form-control", { id: "submitted-2" });
+  assert.equal(state.forms.length, 0);
+  assert.equal(state.activity[0].action, "FORM_DELETED_CONTROL");
 });
 
 test("control-only actions require GM role", () => {
   assert.equal(actionRole("set-phase"), "gm");
+  assert.equal(actionRole("delete-form-control"), "gm");
+  assert.equal(actionRole("delete-form"), "player");
   assert.equal(actionRole("add-evidence"), "gm");
   assert.equal(actionRole("save-form"), "player");
 });

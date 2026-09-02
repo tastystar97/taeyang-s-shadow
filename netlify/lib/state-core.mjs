@@ -6,8 +6,8 @@ const TEMPLATE_CHECKLIST = {
 };
 
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
-const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "mark-document-read", "save-archive-document"]);
-const GM_ACTIONS = new Set(["approve-form", "return-form", "set-phase", "add-notice", "add-evidence", "reset-state"]);
+const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "delete-form", "mark-document-read", "save-archive-document"]);
+const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "add-evidence", "reset-state"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -78,6 +78,14 @@ export function applyAction(state, action, payload = {}) {
     if (existing) Object.assign(existing, next); else state.forms.unshift(next);
     if (action === "submit-form") { completeChecklist(state, form.template); activity(state, "FORM_SUBMITTED", form.title); }
   }
+  if (action === "delete-form" || action === "delete-form-control") {
+    const index = state.forms.findIndex((entry) => entry.id === text(payload.id, 80));
+    if (index < 0) throw new Error("삭제할 서류를 찾을 수 없습니다.");
+    const form = state.forms[index];
+    if (action === "delete-form" && !["DRAFT", "RETURNED"].includes(form.status)) throw new Error("제출 또는 승인된 서류는 관제실에서만 삭제할 수 있습니다.");
+    state.forms.splice(index, 1);
+    activity(state, action === "delete-form-control" ? "FORM_DELETED_CONTROL" : "FORM_DELETED", form.title);
+  }
   if (action === "mark-document-read") {
     const document = state.documents.find((entry) => entry.id === text(payload.id, 80));
     if (document?.status === "NEW") document.status = "RELEASED";
@@ -95,6 +103,19 @@ export function applyAction(state, action, payload = {}) {
     form.comment = text(payload.comment, 600);
     form.updatedAt = new Date().toISOString();
     activity(state, action === "approve-form" ? "FORM_APPROVED" : "FORM_RETURNED", form.title);
+    if (action === "return-form") {
+      const reason = form.comment || "반려 사유가 입력되지 않았습니다.";
+      state.notices ||= [];
+      state.notices.unshift({
+        id: crypto.randomUUID(),
+        time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }),
+        title: "전자서류 반려",
+        body: `${form.title} · ${reason}`.slice(0, 240),
+        priority: true,
+        formId: form.id
+      });
+      state.notices = state.notices.slice(0, 20);
+    }
   }
   if (action === "set-phase") {
     const phase = Number(payload.phase);
