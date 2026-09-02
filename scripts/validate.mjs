@@ -14,6 +14,10 @@ for (const id of ["view-command", "view-personnel", "view-city", "view-archive",
 }
 if (html.includes('id="view-branch"') || html.includes('data-view="branch"')) throw new Error("삭제된 브랜치 상태 화면이 남아 있습니다.");
 if (!html.includes("data-close-form")) throw new Error("전자서류 취소 동작이 누락되었습니다.");
+for (const id of ["form-paper-title", "form-paper-status", "form-paper-code"]) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`UGN 공문 요소 누락: ${id}`);
+}
+if (!html.includes('class="official-form-paper"')) throw new Error("UGN 공문 양식이 누락되었습니다.");
 
 const archive = await readdir(join("public", "archive"));
 if (archive.filter((file) => file.endsWith(".html")).length < 12) throw new Error("플레이어용 보관 문서가 누락되었습니다.");

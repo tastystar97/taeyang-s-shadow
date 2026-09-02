@@ -129,7 +129,21 @@
   <dialog class="evidence-dialog" id="evidence-dialog"><div class="dialog-head"><div><span id="evidence-dialog-classification">VISUAL EVIDENCE</span><b id="evidence-dialog-title">현장사진 열람</b></div><button class="icon-button" data-close-evidence aria-label="사진 닫기">×</button></div><div class="evidence-viewer"><div class="evidence-image-stage"><img id="evidence-image" alt=""><span id="evidence-loading">SECURE IMAGE LOADING…</span></div><aside class="evidence-meta"><span class="evidence-case" id="evidence-case"></span><dl><div><dt>분류</dt><dd id="evidence-category"></dd></div><div><dt>촬영 시각</dt><dd id="evidence-captured"></dd></div><div><dt>촬영지</dt><dd id="evidence-location"></dd></div><div><dt>등록 파일</dt><dd id="evidence-filename"></dd></div></dl><div class="evidence-description"><span>기록 설명</span><p id="evidence-description"></p></div><a class="secondary-button" id="evidence-original" target="_blank" rel="noopener">원본 열기</a></aside></div></dialog>
 
   <dialog class="form-dialog" id="form-dialog">
-    <form id="document-form" method="dialog"><div class="dialog-head"><div><span id="form-classification">BRANCH INTERNAL</span><b id="form-dialog-title">전자서류 작성</b></div><button class="icon-button" type="button" data-close-form aria-label="서류 닫기">×</button></div><div class="form-body"><label class="form-template-label">서식 종류<select id="form-template" required></select></label><div class="dynamic-fields" id="dynamic-fields"></div><label class="signature-field">지부장 전자서명<input id="form-signature" name="signature" placeholder="성명 입력" maxlength="40" required></label><p class="form-error" id="form-error" role="alert"></p></div><div class="form-actions"><span id="autosave-label">변경사항 없음</span><button class="secondary-button" type="button" id="save-draft-button">임시저장</button><button class="primary-button" type="button" id="submit-form-button">서명 후 제출</button></div></form>
+    <form id="document-form" method="dialog">
+      <div class="dialog-head"><div><span id="form-classification">BRANCH INTERNAL</span><b id="form-dialog-title">전자서류 작성</b></div><button class="icon-button" type="button" data-close-form aria-label="서류 닫기">×</button></div>
+      <div class="form-body">
+        <article class="official-form-paper">
+          <div class="official-security"><span>UGN TAEYANG CITY BRANCH · ELECTRONIC RECORD</span><b>BRANCH INTERNAL</b></div>
+          <header class="official-masthead"><div class="official-emblem">UGN</div><div class="official-identity"><small>UNIVERSAL GUARDIANS NETWORK · KOREA</small><h2 id="form-paper-title">지부 전자공문</h2><p>태양시 지부 내부 기안 및 관제 결재 문서</p></div><div class="official-doc-state"><span id="form-paper-status">DRAFT</span><b id="form-paper-code">TCB/DOC</b></div></header>
+          <div class="official-meta-grid"><label class="form-template-label"><span>문서 구분</span><select id="form-template" required></select></label><div><span>기안 부서</span><b>태양시 지부</b></div><div><span>보안 등급</span><b>BRANCH INTERNAL</b></div><div><span>결재 상태</span><b>관제 승인 전</b></div></div>
+          <section class="official-form-section"><div class="official-section-title"><b>01</b><span>기안 내용</span><em>DOCUMENT BODY</em></div><div class="dynamic-fields" id="dynamic-fields"></div></section>
+          <section class="official-approval-section"><div class="official-section-title"><b>02</b><span>전자결재</span><em>AUTHORIZATION</em></div><div class="official-approval-grid"><label class="signature-field"><span>지부장 전자서명</span><input id="form-signature" name="signature" placeholder="성명 입력" maxlength="40" required></label><div class="official-approval-cell"><span>관제 확인</span><div class="official-seal">UGN<br>TCB</div><b>제출 후 결재</b></div></div></section>
+          <p class="form-error" id="form-error" role="alert"></p>
+          <footer class="official-form-footer"><span>UGN-KR / TCB / ELECTRONIC DOCUMENT</span><span>DO NOT FORWARD · AUDIT TRAIL ACTIVE</span></footer>
+        </article>
+      </div>
+      <div class="form-actions"><span id="autosave-label">변경사항 없음</span><button class="secondary-button" type="button" id="save-draft-button">임시저장</button><button class="primary-button" type="button" id="submit-form-button">서명 후 제출</button></div>
+    </form>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
