@@ -37,7 +37,8 @@ for (const file of [
   "public/media/evidence/ghost-waybill.webp", "public/media/evidence/yunha-report.webp", "public/media/evidence/doctor-disappeared.webp",
   "public/media/evidence/taeyang-city-view.webp", "public/media/evidence/taeyang-shadow-main.webp",
   "public/media/personnel/choi-youngho.webp", "public/media/personnel/ha-eunchae.webp", "public/media/personnel/jin-taeho.webp",
-  "public/media/personnel/lee-sea.webp", "public/media/personnel/lee-taeyang.webp"
+  "public/media/personnel/lee-sea.webp", "public/media/personnel/lee-taeyang.webp",
+  "public/media/signatures/choi-youngho-fitted.png"
 ]) await access(file);
 
 console.log(`Taeyang City Branch validation passed (${archive.length} archived documents).`);
