@@ -8,6 +8,7 @@ const TEMPLATE_CHECKLIST = {
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
 const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "delete-form", "mark-document-read", "save-archive-document"]);
 const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "delete-notice", "add-evidence", "update-evidence", "delete-evidence", "reset-state"]);
+const NOTICE_TARGETS = new Set(["command", "workflow", "archive", "evidence", "personnel", "city"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -112,6 +113,7 @@ export function applyAction(state, action, payload = {}) {
         title: "전자서류 반려",
         body: `${form.title} · ${reason}`.slice(0, 240),
         priority: true,
+        target: "workflow",
         formId: form.id
       });
       state.notices = state.notices.slice(0, 20);
@@ -124,9 +126,9 @@ export function applyAction(state, action, payload = {}) {
     activity(state, "PHASE_CHANGED", `PHASE ${phase}`);
   }
   if (action === "add-notice") {
-    const title = text(payload.title, 100); const body = text(payload.body, 240);
+    const title = text(payload.title, 100); const body = text(payload.body, 240); const requestedTarget = text(payload.target, 40); const target = NOTICE_TARGETS.has(requestedTarget) ? requestedTarget : "command"; const targetId = text(payload.targetId, 100);
     if (!title || !body) throw new Error("알림 제목과 내용이 필요합니다.");
-    state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title, body, priority: Boolean(payload.priority) });
+    state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title, body, priority: Boolean(payload.priority), target, ...(targetId ? { targetId } : {}) });
     state.notices = state.notices.slice(0, 20);
     activity(state, "NOTICE_SENT", title);
   }

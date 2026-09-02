@@ -41,9 +41,11 @@ if (!app.includes("notices.filter((notice) => !notice.priority)")) throw new Err
 if (!app.includes("function toggleFormSignature()") || !app.includes("choi-youngho-fitted.png")) throw new Error("공문 이미지 전자서명 기능이 누락되었습니다.");
 if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
 if (!app.includes('class="archive-row-link"') || !app.includes("문서 열기 →")) throw new Error("보관 문서 행 전체 열기 기능이 누락되었습니다.");
+if (!app.includes("function openNotice(id)") || !app.includes('data-notice-id=') || !app.includes("반려 서류 열기")) throw new Error("알림별 직관적 이동 기능이 누락되었습니다.");
 
 const control = await readFile("public/control.js", "utf8");
 if (!control.includes("data-delete-notice") || !control.includes("'delete-notice'")) throw new Error("관리자 알림 삭제 기능이 누락되었습니다.");
+if (!control.includes("NOTICE_TARGET_LABELS") || !html.includes('id="priority-open"')) throw new Error("알림 이동 경로 표시 기능이 누락되었습니다.");
 if (!control.includes("data-edit-evidence") || !control.includes("data-delete-evidence") || !control.includes("method: 'DELETE'")) throw new Error("관리자 증거물 수정·삭제 기능이 누락되었습니다.");
 
 const evidenceFunction = await readFile("netlify/functions/evidence.mjs", "utf8");

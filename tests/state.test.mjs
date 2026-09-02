@@ -29,6 +29,8 @@ test("submitted forms are locked until control returns them", () => {
   assert.equal(state.notices[0].title, "전자서류 반려");
   assert.match(state.notices[0].body, /보고.*보완 필요/);
   assert.equal(state.notices[0].priority, true);
+  assert.equal(state.notices[0].target, "workflow");
+  assert.equal(state.notices[0].formId, "form-2");
 });
 
 test("players can delete drafts and returned forms only", () => {
@@ -69,6 +71,14 @@ test("control can delete a broadcast notice", () => {
   applyAction(state, "delete-notice", { id: noticeId });
   assert.equal(state.notices.some((notice) => notice.id === noticeId), false);
   assert.equal(state.activity[0].action, "NOTICE_DELETED");
+});
+
+test("broadcast notices keep a safe click destination", () => {
+  const state = freshState();
+  applyAction(state, "add-notice", { title: "현장 사진", body: "새 증거를 확인", target: "evidence" });
+  assert.equal(state.notices[0].target, "evidence");
+  applyAction(state, "add-notice", { title: "잘못된 경로", body: "기본 화면으로 이동", target: "external-url" });
+  assert.equal(state.notices[0].target, "command");
 });
 
 test("signed archive documents can be saved as shared player records", () => {

@@ -4,6 +4,7 @@ const app = { state: null };
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+const NOTICE_TARGET_LABELS = { command: '지부 공용 단말', workflow: '전자서류 · 체크리스트', archive: '문서 보관소', evidence: '증거물 · 현장사진', personnel: '인사기록부', city: '태양시 정보' };
 
 async function api(path, options = {}) {
   const response = await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } });
@@ -53,7 +54,7 @@ function render() {
   const state = app.state;
   $$('[data-phase]').forEach((button) => button.classList.toggle('active', Number(button.dataset.phase) === state.operation.phase));
   const notices = state.notices || []; $('#notice-count').textContent = `${notices.length} ACTIVE`; $('#control-notice-empty').hidden = notices.length > 0;
-  $('#control-notice-list').innerHTML = notices.map((notice) => `<article class="control-notice-card"><time>${escapeHTML(notice.time || '--:--')}</time><div><span>${notice.priority ? 'PRIORITY' : 'SIGNAL'}</span><h3>${escapeHTML(notice.title)}</h3><p>${escapeHTML(notice.body)}</p></div><button class="danger-button" type="button" data-delete-notice="${escapeHTML(notice.id)}" aria-label="${escapeHTML(notice.title)} 알림 삭제">삭제</button></article>`).join('');
+  $('#control-notice-list').innerHTML = notices.map((notice) => { const target = notice.formId ? '반려된 전자서류 직접 열기' : (NOTICE_TARGET_LABELS[notice.target] || '지부 공용 단말'); return `<article class="control-notice-card"><time>${escapeHTML(notice.time || '--:--')}</time><div><span>${notice.priority ? 'PRIORITY' : 'SIGNAL'} · → ${escapeHTML(target)}</span><h3>${escapeHTML(notice.title)}</h3><p>${escapeHTML(notice.body)}</p></div><button class="danger-button" type="button" data-delete-notice="${escapeHTML(notice.id)}" aria-label="${escapeHTML(notice.title)} 알림 삭제">삭제</button></article>`; }).join('');
   const evidence = state.evidence || []; $('#evidence-register-count').textContent = `${evidence.length} REGISTERED`; $('#control-evidence-empty').hidden = evidence.length > 0;
   $('#control-evidence-list').innerHTML = evidence.map((item) => { const version = item.updatedAt || item.createdAt || ''; const source = `/api/evidence?id=${encodeURIComponent(item.id)}&v=${encodeURIComponent(version)}`; return `<article class="control-evidence-card"><img src="${source}" alt="${escapeHTML(item.title)}" loading="lazy"><div><span>${escapeHTML(item.category || '현장사진')} · ${escapeHTML(item.caseCode || 'NO CASE')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.location || '촬영지 미기록')} · ${escapeHTML(item.fileName || '원본 이미지')}</p></div><div class="approval-actions"><button class="secondary-button" type="button" data-edit-evidence="${escapeHTML(item.id)}">수정</button><button class="danger-button" type="button" data-delete-evidence="${escapeHTML(item.id)}">삭제</button></div></article>`; }).join('');
   const pending = state.forms.filter((form) => form.status === 'SUBMITTED'); $('#pending-count').textContent = `${pending.length} PENDING`; $('#approval-empty').hidden = pending.length > 0;

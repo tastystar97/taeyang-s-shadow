@@ -41,7 +41,7 @@
           <time id="system-clock">2043.08.31 · 21:43 KST</time>
         </div>
 
-        <div class="alert-strip"><span>PRIORITY CHANNEL</span><b id="priority-message">본부 긴급 공문 1건이 수신되었습니다.</b><button data-go="archive">열람</button></div>
+        <div class="alert-strip"><span>PRIORITY CHANNEL</span><b id="priority-message">본부 긴급 공문 1건이 수신되었습니다.</b><button id="priority-open" type="button">공문 열기</button></div>
 
         <div class="dashboard-grid">
           <article class="panel operation-panel">
@@ -54,7 +54,7 @@
           </article>
 
           <article class="panel notice-panel">
-            <div class="panel-head"><span>RECENT SIGNALS</span><button class="text-button" data-go="archive">전체 기록</button></div>
+            <div class="panel-head"><span>RECENT SIGNALS</span><span class="panel-route-hint">알림 선택 → 관련 화면</span></div>
             <ul class="signal-list" id="signal-list"></ul>
           </article>
 

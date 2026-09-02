@@ -4,9 +4,9 @@ const DEFAULT_STATE = {
   revision: 1,
   operation: { act: 'ACT II', title: '배신', phase: 1 },
   notices: [
-    { id: 'notice-1', time: '21:40', title: '본부 공문 수신', body: '루미나스 병원 확보 인원', priority: true },
-    { id: 'notice-2', time: '20:18', title: '기록 복구 완료', body: '이강준 수첩 · 003 페이지' },
-    { id: 'notice-3', time: '18:03', title: '의료기록 갱신', body: '이세아 귀환 후 경과' }
+    { id: 'notice-1', time: '21:40', title: '본부 공문 수신', body: '루미나스 병원 확보 인원', priority: true, target: 'archive', targetId: 'hq-urgent' },
+    { id: 'notice-2', time: '20:18', title: '기록 복구 완료', body: '이강준 수첩 · 003 페이지', target: 'archive', targetId: 'kangjun-note' },
+    { id: 'notice-3', time: '18:03', title: '의료기록 갱신', body: '이세아 귀환 후 경과', target: 'archive', targetId: 'medical-isea' }
   ],
   checklist: {
     1: [
@@ -48,6 +48,19 @@ const DEFAULT_STATE = {
 };
 
 const PHASE_NAMES = { 1: 'PHASE 01 · 내정', 2: 'PHASE 02 · 현장', 3: 'PHASE 03 · 정산' };
+const NOTICE_DESTINATIONS = {
+  command: { label: '지부 공용 단말', button: '공용 단말 보기' },
+  workflow: { label: '전자서류 · 체크리스트', button: '관련 서류 열기' },
+  archive: { label: '문서 보관소', button: '관련 문서 열기' },
+  evidence: { label: '증거물 · 현장사진', button: '증거물 보기' },
+  personnel: { label: '인사기록부', button: '인사기록 보기' },
+  city: { label: '태양시 정보', button: '도시 정보 보기' }
+};
+const LEGACY_NOTICE_DESTINATIONS = {
+  '본부 공문 수신': { target: 'archive', targetId: 'hq-urgent', button: '공문 열기' },
+  '기록 복구 완료': { target: 'archive', targetId: 'kangjun-note', button: '복구 기록 열기' },
+  '의료기록 갱신': { target: 'archive', targetId: 'medical-isea', button: '의료기록 열기' }
+};
 const DIRECTOR_SIGNATURE = { name: '최영호', image: '/media/signatures/choi-youngho-fitted.png' };
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(['hq-urgent', 'medical-isea', 'sera-profile', 'suhwan-card', 'handover']);
 const STATIC_EVIDENCE = [
@@ -141,13 +154,32 @@ async function mutate(action, payload) {
 function completeTemplateChecklist(templateId) { const template = FORM_TEMPLATES[templateId]; const items = app.state.checklist[app.state.operation.phase] || []; template?.checklist.forEach((id) => { const item = items.find((entry) => entry.id === id); if (item) item.done = true; }); }
 function renderAll() { renderCommand(); renderPersonnel(); renderArchive(); renderEvidence(); renderWorkflow(); }
 
+function noticeDestination(notice) {
+  if (notice.formId) return { target: 'workflow', targetId: notice.formId, label: '반려된 전자서류', button: '반려 서류 열기' };
+  const legacy = LEGACY_NOTICE_DESTINATIONS[notice.title];
+  const target = NOTICE_DESTINATIONS[notice.target] ? notice.target : (legacy?.target || 'command');
+  const destination = NOTICE_DESTINATIONS[target];
+  return { target, targetId: notice.targetId || legacy?.targetId || '', label: destination.label, button: legacy?.button || destination.button };
+}
+
+function openNotice(id) {
+  const notice = (app.state.notices || []).find((entry) => entry.id === id); if (!notice) return;
+  const destination = noticeDestination(notice); openView(destination.target);
+  if (notice.formId) { openForm(undefined, notice.formId); return; }
+  if (destination.target === 'archive' && destination.targetId) openDocument(destination.targetId);
+  if (destination.target === 'evidence' && destination.targetId) openEvidence(destination.targetId);
+  if (destination.target === 'personnel' && destination.targetId) openPersonnel(destination.targetId);
+}
+
 function renderCommand() {
   const { operation, notices } = app.state;
   $('#operation-act').textContent = operation.act; $('#operation-title').textContent = operation.title; $('#phase-label').textContent = PHASE_NAMES[operation.phase];
   $$('#phase-track i').forEach((node, index) => node.classList.toggle('done', index < operation.phase));
-  $('#priority-message').textContent = notices.find((notice) => notice.priority)?.body || '현재 긴급 수신 내용이 없습니다.';
+  const priority = notices.find((notice) => notice.priority); const priorityButton = $('#priority-open');
+  $('#priority-message').textContent = priority ? `${priority.title} · ${priority.body}` : '현재 긴급 수신 내용이 없습니다.';
+  priorityButton.hidden = !priority; priorityButton.dataset.noticeId = priority?.id || ''; priorityButton.textContent = priority ? noticeDestination(priority).button : '열기';
   const recentSignals = notices.filter((notice) => !notice.priority).slice(0, 4);
-  $('#signal-list').innerHTML = recentSignals.map((notice, index) => `<li><time>${escapeHTML(notice.time || '--:--')}</time><span><b>${escapeHTML(notice.title)}</b>${escapeHTML(notice.body)}</span>${index === 0 ? '<em>NEW</em>' : ''}</li>`).join('');
+  $('#signal-list').innerHTML = recentSignals.length ? recentSignals.map((notice, index) => { const destination = noticeDestination(notice); return `<li><button class="signal-entry" type="button" data-notice-id="${escapeHTML(notice.id)}" aria-label="${escapeHTML(notice.title)}: ${escapeHTML(destination.label)} 열기"><time>${escapeHTML(notice.time || '--:--')}</time><span><b>${escapeHTML(notice.title)}</b>${escapeHTML(notice.body)}</span><em>${index === 0 ? 'NEW · ' : ''}${escapeHTML(destination.label)} →</em></button></li>`; }).join('') : '<li class="signal-empty">현재 수신된 일반 알림이 없습니다.</li>';
   const items = app.state.checklist[operation.phase] || []; $('#command-checklist').innerHTML = items.slice(0, 5).map((item) => `<label><input data-check-id="${item.id}" type="checkbox" ${item.done ? 'checked' : ''}><span>${escapeHTML(item.title)}</span></label>`).join('');
   const done = items.filter((item) => item.done).length; const percent = items.length ? Math.round(done / items.length * 100) : 0; $('#command-completion').textContent = `${done} / ${items.length} COMPLETE`; $('#command-progress').style.width = `${percent}%`;
 }
@@ -239,7 +271,7 @@ async function saveForm(submit = false, quiet = false) {
 function scheduleAutosave() { if (!$('#form-dialog').open || $('#save-draft-button').hidden) return; $('#autosave-label').textContent = '저장 대기 중…'; clearTimeout(app.autosaveTimer); app.autosaveTimer = setTimeout(() => saveForm(false, true), 900); }
 
 document.addEventListener('click', (event) => {
-  const nav = event.target.closest('[data-view]'); if (nav) openView(nav.dataset.view); const go = event.target.closest('[data-go]'); if (go) openView(go.dataset.go); const doc = event.target.closest('[data-doc]'); if (doc) openDocument(doc.dataset.doc);
+  const notice = event.target.closest('[data-notice-id]'); if (notice) openNotice(notice.dataset.noticeId); const nav = event.target.closest('[data-view]'); if (nav) openView(nav.dataset.view); const go = event.target.closest('[data-go]'); if (go) openView(go.dataset.go); const doc = event.target.closest('[data-doc]'); if (doc) openDocument(doc.dataset.doc);
   const filter = event.target.closest('[data-archive-filter]'); if (filter) { app.archiveFilter = filter.dataset.archiveFilter; renderArchive(); } const template = event.target.closest('[data-template]'); if (template) openForm(template.dataset.template); const edit = event.target.closest('[data-edit-form]'); if (edit) openForm(undefined, edit.dataset.editForm);
   const deleteForm = event.target.closest('[data-delete-form]'); if (deleteForm && confirm('이 전자서류를 삭제할까? 삭제한 기록은 복구할 수 없어.')) mutate('delete-form', { id: deleteForm.dataset.deleteForm }).then(() => showToast('전자서류를 삭제했습니다.')).catch((error) => showToast(error.message));
   const evidenceFilter = event.target.closest('[data-evidence-filter]'); if (evidenceFilter) { app.evidenceFilter = evidenceFilter.dataset.evidenceFilter; renderEvidence(); } const evidence = event.target.closest('[data-evidence-id]'); if (evidence) openEvidence(evidence.dataset.evidenceId);

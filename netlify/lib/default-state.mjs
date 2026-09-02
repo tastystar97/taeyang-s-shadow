@@ -2,9 +2,9 @@ export const defaultState = {
   revision: 1,
   operation: { act: "ACT II", title: "배신", phase: 1 },
   notices: [
-    { id: "notice-1", time: "21:40", title: "본부 공문 수신", body: "루미나스 병원 확보 인원", priority: true },
-    { id: "notice-2", time: "20:18", title: "기록 복구 완료", body: "이강준 수첩 · 003 페이지" },
-    { id: "notice-3", time: "18:03", title: "의료기록 갱신", body: "이세아 귀환 후 경과" }
+    { id: "notice-1", time: "21:40", title: "본부 공문 수신", body: "루미나스 병원 확보 인원", priority: true, target: "archive", targetId: "hq-urgent" },
+    { id: "notice-2", time: "20:18", title: "기록 복구 완료", body: "이강준 수첩 · 003 페이지", target: "archive", targetId: "kangjun-note" },
+    { id: "notice-3", time: "18:03", title: "의료기록 갱신", body: "이세아 귀환 후 경과", target: "archive", targetId: "medical-isea" }
   ],
   checklist: {
     1: [
