@@ -47,7 +47,7 @@ async function boot() {
   catch { /* 로그인 화면 유지 */ }
 }
 
-$('#control-login').addEventListener('submit', async (event) => { event.preventDefault(); $('#control-error').textContent = ''; try { await api('/api/auth', { method: 'POST', body: JSON.stringify({ role: 'gm', code: $('#control-code').value }) }); $('#control-gate').hidden = true; await Promise.all([load(), playLoginSequence('gm')]); } catch (error) { $('#control-error').textContent = error.message; } });
+$('#control-login').addEventListener('submit', async (event) => { event.preventDefault(); $('#control-error').textContent = ''; const code = $('#control-code').value.trim(); try { await api('/api/auth', { method: 'POST', body: JSON.stringify({ role: 'gm', code }) }); $('#control-code').value = ''; $('#control-gate').hidden = true; await Promise.all([load(), playLoginSequence('gm')]); } catch (error) { $('#control-error').textContent = error.message; $('#control-code').select(); } });
 $('#control-phase').addEventListener('click', (event) => { const button = event.target.closest('[data-phase]'); if (button) mutate('set-phase', { phase: Number(button.dataset.phase) }); });
 $('#notice-form').addEventListener('submit', (event) => { event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form)); data.priority = form.elements.priority.checked; mutate('add-notice', data).then(() => { form.reset(); toast('공용 단말에 알림을 송신했습니다.'); }); });
 $('#evidence-upload-form').addEventListener('submit', (event) => { event.preventDefault(); uploadEvidence(event.currentTarget); });

@@ -16,6 +16,13 @@ function safeEqual(left, right) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+export function normalizeAccessCode(value) {
+  let normalized = String(value ?? "").normalize("NFKC").trim();
+  const quoted = (normalized.startsWith('"') && normalized.endsWith('"')) || (normalized.startsWith("'") && normalized.endsWith("'"));
+  if (quoted && normalized.length >= 2) normalized = normalized.slice(1, -1).trim();
+  return normalized;
+}
+
 function parseCookies(request) {
   return Object.fromEntries((request.headers.get("cookie") || "").split(";").map((part) => part.trim()).filter(Boolean).map((part) => {
     const index = part.indexOf("=");
@@ -47,7 +54,7 @@ export function clearSessionCookie(request) {
 export function validateCode(role, code) {
   const expected = role === "gm" ? process.env.CONTROL_ACCESS_CODE : process.env.BRANCH_ACCESS_CODE;
   if (!expected) return role === "player";
-  return safeEqual(expected, code || "");
+  return safeEqual(normalizeAccessCode(expected), normalizeAccessCode(code));
 }
 
 export function getSession(request) {
