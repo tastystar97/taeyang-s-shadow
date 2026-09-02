@@ -62,11 +62,11 @@ const STATIC_EVIDENCE = [
   { id: 'static-doctor-disappeared', title: '의사가 사라진 밤', category: '현장사진', caseCode: 'LUMINOUS / NIGHT', location: '촬영지 미기록', description: '의사 실종 사건과 관련된 현장 기록.', fileName: '의사가 사라진 밤.webp', src: '/media/evidence/doctor-disappeared.webp' }
 ];
 const PERSONNEL = [
-  { id: 'choi-youngho', name: '최영호', order: '01', image: '/media/personnel/choi-youngho.webp', fileName: '최영호.webp' },
-  { id: 'ha-eunchae', name: '하은채', order: '02', image: '/media/personnel/ha-eunchae.webp', fileName: '하은채.webp' },
-  { id: 'jin-taeho', name: '진태호', order: '03', image: '/media/personnel/jin-taeho.webp', fileName: '진태호.webp' },
-  { id: 'lee-sea', name: '이세아', order: '04', image: '/media/personnel/lee-sea.webp', fileName: '이세아.webp' },
-  { id: 'lee-taeyang', name: '이태양', order: '05', image: '/media/personnel/lee-taeyang.webp', fileName: '이태양.webp' }
+  { id: 'choi-youngho', name: '최영호', order: '01', employeeId: '2043-K-001', position: '지부장', division: '지부장실 · 통합관제', clearance: 'A-1', status: 'ACTIVE', assignment: '태양시 지부 총괄', appointed: '2043. 04. 01', duties: '태양시 지부 운영과 인사·작전 자원을 총괄하며, 본부 공문 대응·작전 최종 승인·대외 협조 여부를 결정한다.', qualifications: ['지부 작전 최종결재권', 'A급 보안문서 열람', 'P-07 보호조치 승인'], assessment: '상황 판단과 조직 통제가 안정적이다. 직접 현장 개입보다 정보 취합과 자원 조정, 책임 승인 임무를 우선한다.', note: '긴급 상황 발생 시 지부 내 최종 지휘권자. 장기 부재 또는 연락 두절 시 대한민국 지부본부 관제에 즉시 보고한다.', image: '/media/personnel/choi-youngho.webp', fileName: '최영호.webp' },
+  { id: 'ha-eunchae', name: '하은채', order: '02', employeeId: '2036-K-032', position: '선임 행정관', division: '운영지원 · 기록관리', clearance: 'B-1', status: 'ACTIVE', assignment: '지부 행정·문서 관제', appointed: '2036. 09. 18', duties: '인사·예산·보급 기록을 관리하고 문서보관소와 본부 정기보고 자료를 정리한다. 지부 내 행정 일정과 감사 대응을 조율한다.', qualifications: ['보안기록 관리', '물자·예산 정산', '전자문서 감사 대응'], assessment: '기록 정확도와 일정 통제 능력이 우수하다. 규정 이탈과 서류 누락을 빠르게 식별하며 장기 업무의 연속성을 안정적으로 유지한다.', note: '대외 접촉 및 인사 평가 기록은 지부장 결재 후 공개. 원본 문서 수정 이력은 별도 감사 로그에 영구 보존한다.', image: '/media/personnel/ha-eunchae.webp', fileName: '하은채.webp' },
+  { id: 'jin-taeho', name: '진태호', order: '03', employeeId: '2042-K-007', position: '현장 대응 요원', division: '작전팀 · 기동대응', clearance: 'C-3', status: 'ACTIVE', assignment: '초동대응 대기조', appointed: '2042. 07. 11', duties: '이상 사건 초동 대응, 현장 봉쇄, 민간인 대피와 확보 증거물의 안전한 인계를 담당한다. 작전팀의 선행 정찰 임무를 병행한다.', qualifications: ['근접 위협 대응', '현장 응급처치', '봉쇄선·대피로 운용'], assessment: '기동성과 현장 적응력이 우수하고 돌발 상황에 대한 반응이 빠르다. 단독 판단으로 작전 범위를 변경한 경우 사후 보고를 철저히 해야 한다.', note: '고위험 제한구역 투입은 B급 이상 감독자의 승인이 필요하다. 확보 증거물은 현장 종료 즉시 기록관리 담당자에게 인계한다.', image: '/media/personnel/jin-taeho.webp', fileName: '진태호.webp' },
+  { id: 'lee-sea', name: '이세아', order: '04', employeeId: '2033-K-082-C', position: '특수 대응 요원', division: '특수작전 · 보호대상 지원', clearance: 'S-4', status: 'MONITORED', assignment: '복귀 후 제한 배치', appointed: '2033. 12. 02', duties: '고위험 변칙현상 대응, 특수 보호대상 회수와 비정상 환경 정찰을 담당한다. 일반 대응팀이 접근하기 어려운 상황에 우선 배치된다.', qualifications: ['S등급 제한구역 접근', '고위험 대상 회수', '침식 대응 프로토콜'], assessment: '특수 환경 생존성과 임무 지속 능력이 매우 높다. 최근 복귀 이후 의료 경과와 인지 상태를 병행 관찰하며 단계적으로 배치 범위를 확대한다.', note: '의료기록 TCB/MED-002와 연동. 모든 현장 투입 전후에 인지·침식 평가를 실시하고 이상 수치 발생 시 즉시 임무에서 제외한다.', image: '/media/personnel/lee-sea.webp', fileName: '이세아.webp' },
+  { id: 'lee-taeyang', name: '이태양', order: '05', employeeId: '2045-K-107', position: '정보분석 요원', division: '정보분석 · 기술지원', clearance: 'B-1', status: 'ACTIVE', assignment: '정보분석실 상시근무', appointed: '2045. 03. 17', duties: '사건 데이터 상관분석, 통신·감시 기록 복구와 현장정보 시각화를 담당한다. 작전 전 브리핑 자료와 위험요소 예측치를 작성한다.', qualifications: ['디지털 포렌식', '도시 감시망 분석', '보안단말·기록복구 운용'], assessment: '분산된 정보의 연결과 반복 패턴 추적 능력이 우수하다. 분석 결과는 현장팀의 교차 확인을 거쳐 확정 정보로 승격한다.', note: '원본 데이터와 복호화 키의 외부 반출 금지. 분석 산출물은 기본적으로 BRANCH INTERNAL 등급을 적용한다.', image: '/media/personnel/lee-taeyang.webp', fileName: '이태양.webp' }
 ];
 const FORM_TEMPLATES = {
   'operation-order': { code: 'TCB-OPS/01', label: '작전 인원 배치 명령서', checklist: ['assignment', 'operation-order'], fields: [
@@ -159,7 +159,7 @@ function renderArchive() {
 }
 
 function renderPersonnel() {
-  $('#personnel-grid').innerHTML = PERSONNEL.map((person) => `<button class="personnel-card" data-personnel-id="${person.id}"><span class="personnel-photo"><img src="${person.image}" alt="${escapeHTML(person.name)} 사원증" loading="lazy"><i>${person.order}</i></span><span><small>UGN PERSONNEL FILE ${person.order}</small><b>${escapeHTML(person.name)}</b><em>사원증 원본 열람 →</em></span></button>`).join('');
+  $('#personnel-grid').innerHTML = PERSONNEL.map((person) => `<button class="personnel-card" data-personnel-id="${person.id}"><span class="personnel-photo"><img src="${person.image}" alt="${escapeHTML(person.name)} 사원증" loading="lazy"><i>${person.order}</i></span><span><small>UGN HR FILE ${person.order} · ${escapeHTML(person.employeeId)}</small><b>${escapeHTML(person.name)}</b><strong>${escapeHTML(person.position)} · ${escapeHTML(person.clearance)}</strong><em>인사기록 열람 →</em></span></button>`).join('');
 }
 
 function renderEvidence() {
@@ -191,9 +191,8 @@ function openEvidence(id) {
 
 function openPersonnel(id) {
   const person = PERSONNEL.find((entry) => entry.id === id); if (!person) return;
-  $('#evidence-dialog-classification').textContent = 'PERSONNEL ID'; $('#evidence-dialog-title').textContent = `${person.name} · 사원증`;
-  $('#evidence-case').textContent = `UGN PERSONNEL FILE ${person.order}`; $('#evidence-category').textContent = '직원 명부'; $('#evidence-captured').textContent = '발급 정보는 원본 참조'; $('#evidence-location').textContent = 'Taeyang City Branch'; $('#evidence-filename').textContent = person.fileName; $('#evidence-description').textContent = 'UGN 태양시 지부 직원 명부에 등록된 사원증 원본.';
-  $('#evidence-loading').textContent = 'SECURE ID LOADING…'; $('#evidence-loading').hidden = false; $('#evidence-image').alt = `${person.name} 사원증`; $('#evidence-image').src = person.image; $('#evidence-original').href = person.image; $('#evidence-dialog').showModal();
+  $('#personnel-dialog-title').textContent = `${person.name} · 인사기록부`; $('#personnel-file-number').textContent = `UGN HR FILE ${person.order} · ${person.employeeId}`; $('#personnel-id-image').alt = `${person.name} 사원증 원본`; $('#personnel-id-image').src = person.image; $('#personnel-original').href = person.image;
+  $('#personnel-record-name').textContent = person.name; $('#personnel-record-position').textContent = `${person.position} / ${person.division}`; $('#personnel-record-status').textContent = person.status; $('#personnel-record-id').textContent = person.employeeId; $('#personnel-record-clearance').textContent = person.clearance; $('#personnel-record-division').textContent = person.division; $('#personnel-record-assignment').textContent = person.assignment; $('#personnel-record-appointed').textContent = person.appointed; $('#personnel-record-duties').textContent = person.duties; $('#personnel-record-qualifications').innerHTML = person.qualifications.map((item) => `<li>${escapeHTML(item)}</li>`).join(''); $('#personnel-record-assessment').textContent = person.assessment; $('#personnel-record-note').textContent = person.note; $('#personnel-dialog').showModal();
 }
 
 function renderWorkflow() {
@@ -247,6 +246,7 @@ document.addEventListener('click', (event) => {
   const personnel = event.target.closest('[data-personnel-id]'); if (personnel) openPersonnel(personnel.dataset.personnelId);
   const tab = event.target.closest('[data-workflow-tab]'); if (tab) { $$('[data-workflow-tab]').forEach((button) => button.classList.toggle('active', button === tab)); $$('.workflow-pane').forEach((pane) => pane.classList.toggle('active', pane.id === `workflow-${tab.dataset.workflowTab}`)); }
   if (event.target.closest('[data-close-document]')) { $('#document-dialog').close(); $('#document-frame').src = 'about:blank'; }
+  if (event.target.closest('[data-close-personnel]')) { $('#personnel-dialog').close(); $('#personnel-id-image').src = ''; }
   if (event.target.closest('[data-close-form]')) { clearTimeout(app.autosaveTimer); $('#form-error').textContent = ''; $('#form-dialog').close(); }
   if (event.target.closest('[data-close-evidence]')) { $('#evidence-dialog').close(); $('#evidence-image').src = ''; }
 });

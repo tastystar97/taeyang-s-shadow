@@ -9,7 +9,7 @@ const required = [
 for (const file of required) await access(file);
 
 const html = await readFile("public/index.html", "utf8");
-for (const id of ["view-command", "view-personnel", "view-city", "view-archive", "view-evidence", "view-workflow", "document-dialog", "evidence-dialog", "form-dialog"]) {
+for (const id of ["view-command", "view-personnel", "view-city", "view-archive", "view-evidence", "view-workflow", "document-dialog", "personnel-dialog", "evidence-dialog", "form-dialog"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`필수 화면 누락: ${id}`);
 }
 if (html.includes('id="view-branch"') || html.includes('data-view="branch"')) throw new Error("삭제된 브랜치 상태 화면이 남아 있습니다.");
@@ -33,6 +33,10 @@ for (const id of ["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "h
 }
 
 const app = await readFile("public/app.js", "utf8");
+for (const employeeId of ["2043-K-001", "2036-K-032", "2042-K-007", "2033-K-082-C", "2045-K-107"]) {
+  if (!app.includes(employeeId)) throw new Error(`인사기록 사번 누락: ${employeeId}`);
+}
+if (!app.includes("personnel-record-qualifications") || !app.includes("personnel-record-assessment")) throw new Error("상세 인사기록 렌더링이 누락되었습니다.");
 if (!app.includes("notices.filter((notice) => !notice.priority)")) throw new Error("긴급 알람이 최근 신호에서 제외되지 않았습니다.");
 if (!app.includes("function toggleFormSignature()") || !app.includes("choi-youngho-fitted.png")) throw new Error("공문 이미지 전자서명 기능이 누락되었습니다.");
 if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
