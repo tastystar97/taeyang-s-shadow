@@ -28,6 +28,9 @@ for (const id of ["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "h
   if (!editor.includes(`'${id}'`) && !editor.includes(`${id}:`)) throw new Error(`작성 가능한 문서 서식 누락: ${id}`);
 }
 
+const app = await readFile("public/app.js", "utf8");
+if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
+
 for (const file of [
   "public/media/evidence/audit-eve.webp", "public/media/evidence/two-beds.webp", "public/media/evidence/luminous-pharma.webp",
   "public/media/evidence/white-noise-in-wall.webp", "public/media/evidence/incident-record.webp", "public/media/evidence/suhwan-collar.webp",

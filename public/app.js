@@ -168,8 +168,10 @@ function renderEvidence() {
   const items = evidence.filter((item) => (app.evidenceFilter === '전체' || item.category === app.evidenceFilter) && `${item.title} ${item.caseCode} ${item.location} ${item.description}`.toLowerCase().includes(term));
   $('#evidence-count').textContent = `${evidence.length} FILES RELEASED`;
   $('#evidence-empty').hidden = evidence.length > 0;
-  $('#evidence-grid').innerHTML = items.length ? items.map((item) => `<button class="evidence-card" data-evidence-id="${escapeHTML(item.id)}"><span class="evidence-thumb"><img src="/api/evidence?id=${encodeURIComponent(item.id)}" alt="${escapeHTML(item.title)}" loading="lazy"><i>${escapeHTML(item.category)}</i></span><span class="evidence-card-body"><small>${escapeHTML(item.caseCode || 'UNASSIGNED CASE')}</small><b>${escapeHTML(item.title)}</b><em>${escapeHTML(item.location || '촬영지 미기록')} · ${formatEvidenceDate(item.capturedAt)}</em></span></button>`).join('') : (evidence.length ? '<p class="evidence-no-results">검색 조건에 맞는 사진이 없습니다.</p>' : '');
+  $('#evidence-grid').innerHTML = items.length ? items.map((item) => `<button class="evidence-card" data-evidence-id="${escapeHTML(item.id)}"><span class="evidence-thumb"><img src="${escapeHTML(evidenceSource(item))}" alt="${escapeHTML(item.title)}" loading="lazy"><i>${escapeHTML(item.category)}</i></span><span class="evidence-card-body"><small>${escapeHTML(item.caseCode || 'UNASSIGNED CASE')}</small><b>${escapeHTML(item.title)}</b><em>${escapeHTML(item.location || '촬영지 미기록')} · ${formatEvidenceDate(item.capturedAt)}</em></span></button>`).join('') : (evidence.length ? '<p class="evidence-no-results">검색 조건에 맞는 사진이 없습니다.</p>' : '');
 }
+
+function evidenceSource(item) { return item.src || `/api/evidence?id=${encodeURIComponent(item.id)}`; }
 
 function formatEvidenceDate(value) {
   if (!value) return '촬영시각 미기록';
@@ -179,7 +181,7 @@ function formatEvidenceDate(value) {
 
 function openEvidence(id) {
   const item = [...STATIC_EVIDENCE, ...(app.state.evidence || [])].find((entry) => entry.id === id); if (!item) return;
-  const source = item.src || `/api/evidence?id=${encodeURIComponent(item.id)}`;
+  const source = evidenceSource(item);
   $('#evidence-dialog-classification').textContent = item.category || 'VISUAL EVIDENCE'; $('#evidence-dialog-title').textContent = item.title;
   $('#evidence-case').textContent = item.caseCode || 'UNASSIGNED CASE'; $('#evidence-category').textContent = item.category || '미분류'; $('#evidence-captured').textContent = formatEvidenceDate(item.capturedAt); $('#evidence-location').textContent = item.location || '미기록'; $('#evidence-filename').textContent = item.fileName || '원본 파일'; $('#evidence-description').textContent = item.description || '추가 설명 없음';
   $('#evidence-loading').textContent = 'SECURE IMAGE LOADING…'; $('#evidence-loading').hidden = false; $('#evidence-image').alt = item.title; $('#evidence-image').src = source; $('#evidence-original').href = source; $('#evidence-dialog').showModal();
