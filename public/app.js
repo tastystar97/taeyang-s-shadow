@@ -48,6 +48,7 @@ const DEFAULT_STATE = {
 };
 
 const PHASE_NAMES = { 1: 'PHASE 01 · 내정', 2: 'PHASE 02 · 현장', 3: 'PHASE 03 · 정산' };
+const DIRECTOR_SIGNATURE = { name: '최영호', image: '/media/signatures/choi-youngho-fitted.png' };
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(['hq-urgent', 'medical-isea', 'sera-profile', 'suhwan-card', 'handover']);
 const STATIC_EVIDENCE = [
   { id: 'static-audit-eve', title: '감사 전야', category: '현장사진', caseCode: 'TCB / FIELD RECORD', location: '촬영지 미기록', description: '태양시 지부 현장 기록. 세부 내용은 원본 이미지를 참조하십시오.', fileName: '감사 전야.webp', src: '/media/evidence/audit-eve.webp' },
@@ -209,8 +210,16 @@ function openDocument(id) { const doc = app.state.documents.find((entry) => entr
 
 function openForm(templateId = 'operation-order', formId = null) {
   app.formId = formId; const existing = formId ? app.state.forms.find((form) => form.id === formId) : null; const templateSelect = $('#form-template'); templateSelect.innerHTML = Object.entries(FORM_TEMPLATES).map(([id, template]) => `<option value="${id}">${template.label}</option>`).join('');
-  templateSelect.value = existing?.template || templateId; templateSelect.disabled = Boolean(existing); $('#form-signature').value = existing?.signature || ''; $('#form-dialog-title').textContent = existing ? (existing.title || FORM_TEMPLATES[existing.template].label) : '신규 전자서류 작성'; renderFormFields(existing?.content || {});
-  const editable = !existing || ['DRAFT', 'RETURNED'].includes(existing.status); $('#form-paper-status').textContent = existing?.status || 'DRAFT'; $$('#document-form input, #document-form textarea, #document-form select').forEach((field) => { if (field.id !== 'form-template') field.disabled = !editable; }); $('#save-draft-button').hidden = !editable; $('#submit-form-button').hidden = !editable; $('#autosave-label').textContent = editable ? '변경사항 없음' : `${existing.status} · 읽기 전용`; $('#form-dialog').showModal();
+  templateSelect.value = existing?.template || templateId; templateSelect.disabled = Boolean(existing); $('#form-signature').value = existing?.signature || ''; renderFormSignature(Boolean(existing?.signature)); $('#form-dialog-title').textContent = existing ? (existing.title || FORM_TEMPLATES[existing.template].label) : '신규 전자서류 작성'; renderFormFields(existing?.content || {});
+  const editable = !existing || ['DRAFT', 'RETURNED'].includes(existing.status); $('#form-paper-status').textContent = existing?.status || 'DRAFT'; $$('#document-form input, #document-form textarea, #document-form select').forEach((field) => { if (field.id !== 'form-template') field.disabled = !editable; }); $('#form-signature-button').disabled = !editable; $('#save-draft-button').hidden = !editable; $('#submit-form-button').hidden = !editable; $('#autosave-label').textContent = editable ? '변경사항 없음' : `${existing.status} · 읽기 전용`; $('#form-dialog').showModal();
+}
+
+function renderFormSignature(signed) {
+  const button = $('#form-signature-button'); button.classList.toggle('signed', signed); button.setAttribute('aria-pressed', String(signed)); button.setAttribute('aria-label', signed ? `${DIRECTOR_SIGNATURE.name} 전자서명 입력됨. 다시 누르면 삭제` : '서명란 클릭'); $('img', button).hidden = !signed; $('.signature-placeholder', button).hidden = signed;
+}
+
+function toggleFormSignature() {
+  if ($('#form-signature-button').disabled) return; const signed = Boolean($('#form-signature').value); $('#form-signature').value = signed ? '' : DIRECTOR_SIGNATURE.name; renderFormSignature(!signed); $('#form-error').textContent = ''; scheduleAutosave();
 }
 
 function renderFormFields(values = {}) {
@@ -222,7 +231,7 @@ function renderFormFields(values = {}) {
 function collectForm() { const templateId = $('#form-template').value; const template = FORM_TEMPLATES[templateId]; const content = {}; $$('[data-field]', $('#document-form')).forEach((field) => { content[field.dataset.field] = field.value.trim(); }); const firstField = template.fields[0]?.id; return { id: app.formId || crypto.randomUUID(), template: templateId, title: content[firstField] || template.label, content, signature: $('#form-signature').value.trim(), status: app.state.forms.find((form) => form.id === app.formId)?.status || 'DRAFT' }; }
 
 async function saveForm(submit = false, quiet = false) {
-  const formElement = $('#document-form'); const documentData = collectForm(); if (submit && !formElement.reportValidity()) return; $('#autosave-label').textContent = submit ? '제출 중…' : '저장 중…'; $('#form-paper-status').textContent = submit ? 'SUBMITTING' : 'SAVING';
+  clearTimeout(app.autosaveTimer); const formElement = $('#document-form'); const documentData = collectForm(); $('#form-error').textContent = ''; if (submit && !documentData.signature) { $('#form-error').textContent = '지부장 전자서명란을 눌러 서명한 뒤 제출해줘.'; $('#form-signature-button').focus(); return; } if (submit && !formElement.reportValidity()) return; $('#autosave-label').textContent = submit ? '제출 중…' : '저장 중…'; $('#form-paper-status').textContent = submit ? 'SUBMITTING' : 'SAVING';
   try { await mutate(submit ? 'submit-form' : 'save-form', { form: documentData }); app.formId = documentData.id; $('#autosave-label').textContent = submit ? '제출 완료' : '자동저장 완료'; $('#form-paper-status').textContent = submit ? 'SUBMITTED' : 'DRAFT'; if (submit) { $('#form-dialog').close(); showToast('서류가 전자서명되어 관제로 제출되었습니다.'); } else if (!quiet) showToast('초안이 저장되었습니다.'); }
   catch (error) { $('#form-error').textContent = error.message; $('#autosave-label').textContent = '저장 실패'; $('#form-paper-status').textContent = 'ERROR'; }
 }
@@ -244,6 +253,7 @@ document.addEventListener('click', (event) => {
 document.addEventListener('change', (event) => { if (event.target.matches('[data-check-id]')) mutate('toggle-checklist', { id: event.target.dataset.checkId, done: event.target.checked }).catch((error) => showToast(error.message)); if (event.target.id === 'form-template') renderFormFields(); });
 document.addEventListener('keydown', (event) => { const row = event.target.closest('.archive-row-link[data-doc]'); if (row && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openDocument(row.dataset.doc); } });
 $('#archive-search').addEventListener('input', renderArchive); $('#evidence-search').addEventListener('input', renderEvidence); $('#evidence-image').addEventListener('load', () => { $('#evidence-loading').hidden = true; }); $('#evidence-image').addEventListener('error', () => { $('#evidence-loading').hidden = false; $('#evidence-loading').textContent = 'IMAGE LOAD FAILED'; }); $('#new-form-button').addEventListener('click', () => openForm()); $('#new-form-button-secondary').addEventListener('click', () => openForm()); $('#save-draft-button').addEventListener('click', () => saveForm(false)); $('#submit-form-button').addEventListener('click', () => saveForm(true)); $('#document-form').addEventListener('input', scheduleAutosave); $('#document-dialog').addEventListener('close', () => { $('#document-frame').src = 'about:blank'; }); $('#evidence-dialog').addEventListener('close', () => { $('#evidence-image').src = ''; });
+$('#form-signature-button').addEventListener('click', toggleFormSignature);
 $('#access-form').addEventListener('submit', async (event) => { event.preventDefault(); $('#access-error').textContent = ''; try { await api('/api/auth', { method: 'POST', body: JSON.stringify({ code: $('#access-code').value, role: 'player' }) }); $('#access-gate').hidden = true; app.mode = 'server'; await Promise.all([loadState(), playLoginSequence('player')]); } catch (error) { $('#access-error').textContent = error.message; } });
 function updateClock() { const now = new Date(); const date = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now); const time = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false }).format(now); $('#system-clock').textContent = `${date} · ${time} KST`; }
 updateClock(); setInterval(updateClock, 30_000); openView(location.hash.slice(1) || 'command'); boot(); setInterval(() => { if (app.mode.startsWith('server') && document.visibilityState === 'visible') loadState().catch(() => {}); }, 15_000);

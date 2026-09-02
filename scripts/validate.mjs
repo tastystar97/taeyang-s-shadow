@@ -14,7 +14,7 @@ for (const id of ["view-command", "view-personnel", "view-city", "view-archive",
 }
 if (html.includes('id="view-branch"') || html.includes('data-view="branch"')) throw new Error("삭제된 브랜치 상태 화면이 남아 있습니다.");
 if (!html.includes("data-close-form")) throw new Error("전자서류 취소 동작이 누락되었습니다.");
-for (const id of ["form-paper-title", "form-paper-status", "form-paper-code"]) {
+for (const id of ["form-paper-title", "form-paper-status", "form-paper-code", "form-signature-button"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`UGN 공문 요소 누락: ${id}`);
 }
 if (!html.includes('class="official-form-paper"')) throw new Error("UGN 공문 양식이 누락되었습니다.");
@@ -33,6 +33,7 @@ for (const id of ["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "h
 }
 
 const app = await readFile("public/app.js", "utf8");
+if (!app.includes("function toggleFormSignature()") || !app.includes("choi-youngho-fitted.png")) throw new Error("공문 이미지 전자서명 기능이 누락되었습니다.");
 if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
 if (!app.includes('class="archive-row-link"') || !app.includes("문서 열기 →")) throw new Error("보관 문서 행 전체 열기 기능이 누락되었습니다.");
 
