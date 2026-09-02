@@ -55,6 +55,8 @@ test("control-only actions require GM role", () => {
   assert.equal(actionRole("set-phase"), "gm");
   assert.equal(actionRole("delete-form-control"), "gm");
   assert.equal(actionRole("delete-notice"), "gm");
+  assert.equal(actionRole("update-evidence"), "gm");
+  assert.equal(actionRole("delete-evidence"), "gm");
   assert.equal(actionRole("delete-form"), "player");
   assert.equal(actionRole("add-evidence"), "gm");
   assert.equal(actionRole("save-form"), "player");
@@ -100,4 +102,17 @@ test("control can register visual evidence metadata", () => {
   applyAction(state, "add-evidence", { evidence: { id: "photo-1", title: "루미나스 병동 4층", category: "현장사진", caseCode: "TCB-2043-017", location: "루미나스 종합병원", contentType: "image/jpeg", fileName: "ward.jpg" } });
   assert.equal(state.evidence.length, 1);
   assert.equal(state.evidence[0].caseCode, "TCB-2043-017");
+});
+
+test("control can update and delete visual evidence metadata", () => {
+  const state = freshState();
+  applyAction(state, "add-evidence", { evidence: { id: "photo-2", title: "수정 전", category: "현장사진", fileName: "before.jpg", contentType: "image/jpeg", createdAt: "2043-01-01T00:00:00.000Z" } });
+  applyAction(state, "update-evidence", { evidence: { id: "photo-2", title: "수정 후", category: "증거물", location: "태양시 구도심", fileName: "after.webp", contentType: "image/webp" } });
+  assert.equal(state.evidence[0].title, "수정 후");
+  assert.equal(state.evidence[0].location, "태양시 구도심");
+  assert.equal(state.evidence[0].createdAt, "2043-01-01T00:00:00.000Z");
+  assert.ok(state.evidence[0].updatedAt);
+  applyAction(state, "delete-evidence", { id: "photo-2" });
+  assert.equal(state.evidence.length, 0);
+  assert.equal(state.activity[0].action, "EVIDENCE_DELETED");
 });

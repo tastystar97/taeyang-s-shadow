@@ -7,7 +7,7 @@ const TEMPLATE_CHECKLIST = {
 
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
 const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "delete-form", "mark-document-read", "save-archive-document"]);
-const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "delete-notice", "add-evidence", "reset-state"]);
+const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "delete-notice", "add-evidence", "update-evidence", "delete-evidence", "reset-state"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -144,6 +144,22 @@ export function applyAction(state, action, payload = {}) {
     state.evidence.unshift(evidence);
     state.evidence = state.evidence.slice(0, 200);
     activity(state, "EVIDENCE_ADDED", evidence.title);
+  }
+  if (action === "update-evidence") {
+    const evidence = sanitizeEvidence(payload.evidence);
+    state.evidence ||= [];
+    const index = state.evidence.findIndex((entry) => entry.id === evidence.id);
+    if (index < 0) throw new Error("수정할 증거 사진을 찾을 수 없습니다.");
+    const existing = state.evidence[index];
+    state.evidence[index] = { ...existing, ...evidence, createdAt: existing.createdAt, updatedAt: new Date().toISOString() };
+    activity(state, "EVIDENCE_UPDATED", evidence.title);
+  }
+  if (action === "delete-evidence") {
+    state.evidence ||= [];
+    const index = state.evidence.findIndex((entry) => entry.id === text(payload.id, 80));
+    if (index < 0) throw new Error("삭제할 증거 사진을 찾을 수 없습니다.");
+    const [evidence] = state.evidence.splice(index, 1);
+    activity(state, "EVIDENCE_DELETED", evidence.title);
   }
   state.revision = Number(state.revision || 0) + 1;
   return state;

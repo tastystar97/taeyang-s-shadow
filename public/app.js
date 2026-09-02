@@ -173,7 +173,7 @@ function renderEvidence() {
   $('#evidence-grid').innerHTML = items.length ? items.map((item) => `<button class="evidence-card" data-evidence-id="${escapeHTML(item.id)}"><span class="evidence-thumb"><img src="${escapeHTML(evidenceSource(item))}" alt="${escapeHTML(item.title)}" loading="lazy"><i>${escapeHTML(item.category)}</i></span><span class="evidence-card-body"><small>${escapeHTML(item.caseCode || 'UNASSIGNED CASE')}</small><b>${escapeHTML(item.title)}</b><em>${escapeHTML(item.location || '촬영지 미기록')} · ${formatEvidenceDate(item.capturedAt)}</em></span></button>`).join('') : (evidence.length ? '<p class="evidence-no-results">검색 조건에 맞는 사진이 없습니다.</p>' : '');
 }
 
-function evidenceSource(item) { return item.src || `/api/evidence?id=${encodeURIComponent(item.id)}`; }
+function evidenceSource(item) { const version = item.updatedAt || item.createdAt || ''; return item.src || `/api/evidence?id=${encodeURIComponent(item.id)}&v=${encodeURIComponent(version)}`; }
 
 function formatEvidenceDate(value) {
   if (!value) return '촬영시각 미기록';
