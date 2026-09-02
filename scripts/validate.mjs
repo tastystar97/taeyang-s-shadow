@@ -30,6 +30,7 @@ for (const id of ["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "h
 
 const app = await readFile("public/app.js", "utf8");
 if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
+if (!app.includes('class="archive-row-link"') || !app.includes("문서 열기 →")) throw new Error("보관 문서 행 전체 열기 기능이 누락되었습니다.");
 
 for (const file of [
   "public/media/evidence/audit-eve.webp", "public/media/evidence/two-beds.webp", "public/media/evidence/luminous-pharma.webp",
