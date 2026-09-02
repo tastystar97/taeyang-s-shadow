@@ -146,7 +146,8 @@ function renderCommand() {
   $('#operation-act').textContent = operation.act; $('#operation-title').textContent = operation.title; $('#phase-label').textContent = PHASE_NAMES[operation.phase];
   $$('#phase-track i').forEach((node, index) => node.classList.toggle('done', index < operation.phase));
   $('#priority-message').textContent = notices.find((notice) => notice.priority)?.body || '현재 긴급 수신 내용이 없습니다.';
-  $('#signal-list').innerHTML = notices.slice(0, 4).map((notice, index) => `<li><time>${escapeHTML(notice.time || '--:--')}</time><span><b>${escapeHTML(notice.title)}</b>${escapeHTML(notice.body)}</span>${index === 0 ? '<em>NEW</em>' : ''}</li>`).join('');
+  const recentSignals = notices.filter((notice) => !notice.priority).slice(0, 4);
+  $('#signal-list').innerHTML = recentSignals.map((notice, index) => `<li><time>${escapeHTML(notice.time || '--:--')}</time><span><b>${escapeHTML(notice.title)}</b>${escapeHTML(notice.body)}</span>${index === 0 ? '<em>NEW</em>' : ''}</li>`).join('');
   const items = app.state.checklist[operation.phase] || []; $('#command-checklist').innerHTML = items.slice(0, 5).map((item) => `<label><input data-check-id="${item.id}" type="checkbox" ${item.done ? 'checked' : ''}><span>${escapeHTML(item.title)}</span></label>`).join('');
   const done = items.filter((item) => item.done).length; const percent = items.length ? Math.round(done / items.length * 100) : 0; $('#command-completion').textContent = `${done} / ${items.length} COMPLETE`; $('#command-progress').style.width = `${percent}%`;
 }

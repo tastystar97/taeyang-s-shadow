@@ -7,7 +7,7 @@ const TEMPLATE_CHECKLIST = {
 
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
 const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "delete-form", "mark-document-read", "save-archive-document"]);
-const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "add-evidence", "reset-state"]);
+const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "delete-notice", "add-evidence", "reset-state"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -129,6 +129,13 @@ export function applyAction(state, action, payload = {}) {
     state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title, body, priority: Boolean(payload.priority) });
     state.notices = state.notices.slice(0, 20);
     activity(state, "NOTICE_SENT", title);
+  }
+  if (action === "delete-notice") {
+    state.notices ||= [];
+    const index = state.notices.findIndex((entry) => entry.id === text(payload.id, 80));
+    if (index < 0) throw new Error("삭제할 알림을 찾을 수 없습니다.");
+    const [notice] = state.notices.splice(index, 1);
+    activity(state, "NOTICE_DELETED", notice.title);
   }
   if (action === "add-evidence") {
     const evidence = sanitizeEvidence(payload.evidence);

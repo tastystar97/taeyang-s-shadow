@@ -54,9 +54,19 @@ test("control can delete a form in any status", () => {
 test("control-only actions require GM role", () => {
   assert.equal(actionRole("set-phase"), "gm");
   assert.equal(actionRole("delete-form-control"), "gm");
+  assert.equal(actionRole("delete-notice"), "gm");
   assert.equal(actionRole("delete-form"), "player");
   assert.equal(actionRole("add-evidence"), "gm");
   assert.equal(actionRole("save-form"), "player");
+});
+
+test("control can delete a broadcast notice", () => {
+  const state = freshState();
+  applyAction(state, "add-notice", { title: "삭제 대상", body: "테스트 알림", priority: true });
+  const noticeId = state.notices[0].id;
+  applyAction(state, "delete-notice", { id: noticeId });
+  assert.equal(state.notices.some((notice) => notice.id === noticeId), false);
+  assert.equal(state.activity[0].action, "NOTICE_DELETED");
 });
 
 test("signed archive documents can be saved as shared player records", () => {
