@@ -4,8 +4,8 @@
 
 - 사이트: `taeyangcitybranchintranet`
 - 운영 주소: <https://taeyangcitybranchintranet.netlify.app>
-- 최종 배포 ID: `6a9c49643fad91ad362e10f5`
-- 최종 배포 로그: <https://app.netlify.com/projects/taeyangcitybranchintranet/deploys/6a9c49643fad91ad362e10f5>
+- 운영 검증 기준 수동 배포 ID: `6a9c49643fad91ad362e10f5`
+- 운영 검증 기준 수동 배포 로그: <https://app.netlify.com/projects/taeyangcitybranchintranet/deploys/6a9c49643fad91ad362e10f5>
 - 운영 반영일: 2026-09-06
 
 ## 전환 전 백업

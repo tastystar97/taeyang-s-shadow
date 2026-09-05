@@ -92,4 +92,4 @@ M5 로컬 검증은 메모리 저장소를 사용했습니다. 배포 전 실제
 
 관제의 증거물 메뉴에서 업로드 기록마다 공개 대상을 지정합니다. 사건철 연결 화면과 같은 단건 공개 창을 사용하며 다른 증거 또는 연결 자료를 함께 공개하지 않습니다. 관제 알림의 사건철 목적지도 지원합니다.
 
-운영 반영 순서와 코드·상태·파일을 함께 되돌리는 절차는 [docs/M6_RELEASE_CHECKLIST.md](docs/M6_RELEASE_CHECKLIST.md)를 따르세요. 2026-09-06 운영 반영 결과, 백업 위치, 최종 배포 ID와 검증 내역은 [docs/M7_PRODUCTION_ROLLOUT.md](docs/M7_PRODUCTION_ROLLOUT.md)에 기록했습니다.
+운영 반영 순서와 코드·상태·파일을 함께 되돌리는 절차는 [docs/M6_RELEASE_CHECKLIST.md](docs/M6_RELEASE_CHECKLIST.md)를 따르세요. 2026-09-06 운영 반영 결과, 백업 위치, 검증 기준 배포 ID와 검증 내역은 [docs/M7_PRODUCTION_ROLLOUT.md](docs/M7_PRODUCTION_ROLLOUT.md)에 기록했습니다.

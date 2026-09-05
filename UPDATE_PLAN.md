@@ -311,7 +311,7 @@ M1~M5도 M0에서 정한 공통 디자인을 사용해. M5는 M1의 권한 필�
 
 ## M7 구현 기록 — 2026-09-06
 
-- **운영 반영 완료.** Git 원격이 일치하는 Netlify 사이트 `taeyangcitybranchintranet`에 연결하고 최종 운영 배포 `6a9c49643fad91ad362e10f5`를 활성화했어. 운영 주소는 `https://taeyangcitybranchintranet.netlify.app`이야.
+- **운영 반영 완료.** Git 원격이 일치하는 Netlify 사이트 `taeyangcitybranchintranet`에 연결하고 운영 검증 기준 수동 배포 `6a9c49643fad91ad362e10f5`를 활성화했고, GitHub `main` 푸시 뒤 연결된 자동 배포로 전환했어. 운영 주소는 `https://taeyangcitybranchintranet.netlify.app`이야.
 - 배포 전 `taeyang-city-branch`의 `shared-state` 원본과 ETag·SHA-256을 `C:\Users\rere3\Downloads\태양의 그림자\taeyang-city-backups\20260906-013604-pre-m7`에 저장했어. `taeyang-city-files`와 `taeyang-city-evidence`는 백업 시점에 객체가 없었어.
 - 기존 `BRANCH_ACCESS_CODE`와 `CONTROL_ACCESS_CODE`는 유지했어. 새 `FIELD_ACCESS_CODE`와 `SESSION_SECRET`은 노출된 초기값을 폐기하고 무작위 값으로 회전한 뒤 `production`·`deploy-preview` 환경에 반영했어. 실제 값은 문서와 로그에 기록하지 않아.
 - 비운영 배포는 Netlify 계정 보호 정책 때문에 일반 HTTP 점검이 차단됐어. 운영 주소에서 미인증 상태·원본 401, 지부장·현장요원·GM 인증과 역할별 상태, 플레이어의 관제 쓰기 403, GM의 지부장·현장요원 미리보기, 미리보기 쓰기 405, 보호 원본·정적 자산 응답을 확인했어.
