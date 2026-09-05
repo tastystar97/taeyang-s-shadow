@@ -1,6 +1,6 @@
 import { requireSession, isSameOriginRequest } from '../lib/auth.mjs';
 import { readState, writeState } from '../lib/store.mjs';
-import { normalizeState, projectState } from '../lib/permissions.mjs';
+import { isPublicCityDocument, normalizeState, projectState } from '../lib/permissions.mjs';
 import { singleAudience } from '../lib/personnel-core.mjs';
 import { ARCHIVE_SCHEMAS } from '../lib/archive-schemas.mjs';
 import { uploadStore, loadStagedFile } from '../lib/uploads.mjs';
@@ -52,7 +52,9 @@ export function createArchiveHandler({read=readState,write=writeState,store=uplo
         }
         if(existing)state.documents[state.documents.indexOf(existing)]=doc;else state.documents.push(doc);
       }else{
-        if(!doc)throw new InputError('문서를 선택하세요.');doc.audience=singleAudience(body);
+        if(!doc)throw new InputError('문서를 선택하세요.');
+        if(isPublicCityDocument(doc.id))throw new InputError('CITY NET 문서는 전체 공개 고정이라 변경할 수 없습니다.',422);
+        doc.audience=singleAudience(body);
       }
       doc.updatedAt=new Date().toISOString();
       state.activity.unshift({id:crypto.randomUUID(),at:doc.updatedAt,action:body.action==='audience'?'ARCHIVE_AUDIENCE_CHANGED':'ARCHIVE_SAVED',detail:doc.title});state.activity=state.activity.slice(0,60);

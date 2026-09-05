@@ -3,6 +3,8 @@ import { PERSONNEL, STATIC_EVIDENCE, CITY_HTML } from './catalog.mjs';
 
 const ROLES = new Set(['director', 'agent', 'gm']);
 const TYPES = new Set(['personnel', 'documents', 'evidence', 'cases', 'forms']);
+export const PUBLIC_CITY_DOCUMENT_IDS = Object.freeze(['city-locations', 'city-history']);
+export const isPublicCityDocument = id => PUBLIC_CITY_DOCUMENT_IDS.includes(id);
 const own = (obj, key) => Object.hasOwn(obj, key);
 const audience = (item, fallback = ['director']) => own(item, 'audience')
   ? (Array.isArray(item.audience) ? [...new Set(item.audience.filter(r => r === 'director' || r === 'agent'))] : [])
@@ -20,6 +22,7 @@ export function normalizeState(input) {
     }
   }
   for (const type of TYPES) for (const item of state[type]) item.audience = audience(item, ['forms', 'cases'].includes(type) ? [] : ['director']);
+  for (const doc of state.documents) if (isPublicCityDocument(doc.id)) doc.audience = ['director', 'agent'];
   for (const form of state.forms) {
     form.kind ||= 'director-form';
     form.authorRole = form.kind === 'field-report' ? 'agent' : 'director';

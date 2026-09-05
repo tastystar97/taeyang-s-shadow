@@ -1,6 +1,6 @@
 import { requireSession,isSameOriginRequest } from '../lib/auth.mjs';
 import {readState,writeState} from '../lib/store.mjs';
-import {normalizeState,projectState} from '../lib/permissions.mjs';
+import {isPublicCityDocument,normalizeState,projectState} from '../lib/permissions.mjs';
 import {InputError} from '../lib/upload-core.mjs';
 import {singleAudience} from '../lib/personnel-core.mjs';
 export function createCasesHandler({read=readState,write=writeState}={}){return async request=>{
@@ -11,7 +11,7 @@ export function createCasesHandler({read=readState,write=writeState}={}){return 
  if(!body||!Object.hasOwn(actions,body.action)||Object.keys(body).some(k=>!actions[body.action].includes(k)))throw new InputError('자료 한 건의 작업만 요청하세요.');
  const original=await read(),state=normalizeState(original);if(body.revision!==state.revision)return json({error:'다른 단말에서 변경되었습니다. 최신 상태를 확인하세요.',state:projectState(state,'gm')},409);
  let record=state.cases.find(c=>c.id===body.id);
- if(body.action==='audience'){if(!['cases','personnel','documents','evidence'].includes(body.type))throw new InputError('해당 자료는 공개 대상을 변경할 수 없습니다.');record=state[body.type].find(r=>r.id===body.id);if(!record)throw new InputError('자료를 찾을 수 없습니다.',404);record.audience=singleAudience(body);}
+ if(body.action==='audience'){if(!['cases','personnel','documents','evidence'].includes(body.type))throw new InputError('해당 자료는 공개 대상을 변경할 수 없습니다.');record=state[body.type].find(r=>r.id===body.id);if(!record)throw new InputError('자료를 찾을 수 없습니다.',404);if(body.type==='documents'&&isPublicCityDocument(record.id))throw new InputError('CITY NET 문서는 전체 공개 고정이라 변경할 수 없습니다.',422);record.audience=singleAudience(body);}
  else if(body.action==='save'){
  if(body.id&&!record)throw new InputError('사건철을 찾을 수 없습니다.',404);const limits={caseCode:100,title:160,summary:4000,status:80,gmNote:8000},fields={};if(!body.data||Object.keys(body.data).some(k=>!Object.hasOwn(limits,k)))throw new InputError('사건 정보를 확인하세요.');for(const [key,max]of Object.entries(limits)){if(typeof body.data[key]!=='string'||body.data[key].length>max)throw new InputError('사건 정보의 길이와 형식을 확인하세요.');fields[key]=body.data[key].trim();}if(!fields.caseCode||!fields.title)throw new InputError('사건번호와 제목을 입력하세요.');if(state.cases.some(c=>c.id!==body.id&&c.caseCode.normalize('NFKC').toUpperCase()===fields.caseCode.normalize('NFKC').toUpperCase()))throw new InputError('이미 사용 중인 사건번호입니다.',422);
  if(!Array.isArray(body.links)||body.links.length>150)throw new InputError('연결 자료를 확인하세요.');const seen=new Set();const links=body.links.map((l,i)=>{if(!l||Object.keys(l).some(k=>!['type','id'].includes(k))||!['personnel','documents','evidence','forms'].includes(l.type)||typeof l.id!=='string')throw new InputError('연결 형식을 확인하세요.');const key=l.type+':'+l.id;if(seen.has(key))throw new InputError('같은 자료를 중복 연결할 수 없습니다.');seen.add(key);if(!state[l.type].some(r=>r.id===l.id)&&!record?.links?.some(old=>old.type===l.type&&old.id===l.id))throw new InputError('연결할 자료를 찾을 수 없습니다.',404);return{type:l.type,id:l.id,order:i};});

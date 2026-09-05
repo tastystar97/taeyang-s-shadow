@@ -48,7 +48,7 @@ test('archive upload registers privately, projects safe metadata and retains all
   assert.equal(h.state.documents.length,12);assert.equal(resolveFile(h.state,'gm',{type:'documents',fileId,id:'pending'}),null);
   const r=await saveDoc(h,{fileId});assert.equal(r.status,200);const {id,state}=await r.json();
   assert.deepEqual(h.state.documents.slice(0,12),before);assert.equal(h.state.documents.length,13);
-  assert.equal(projectState(h.state,'director').documents.length,12);assert.equal(projectState(h.state,'agent').documents.length,0);
+  assert.equal(projectState(h.state,'director').documents.length,12);assert.equal(projectState(h.state,'agent').documents.length,2);
   const doc=state.documents.find(d=>d.id===id);assert.equal(doc.attachment.name,'record.html');assert.equal(doc.managedTemplate,false);assert.equal(doc.editable,false);assert.equal(doc.fileId,undefined);
 });
 test('archive authorization, single-document mutation and duplicate document numbers are enforced',async()=>{
@@ -58,6 +58,7 @@ test('archive authorization, single-document mutation and duplicate document num
   assert.equal((await saveDoc(h,{fileId:await uploadDoc(h),data:docData(' ＨＱ-ＫＲ/ＵＲＧ-２０４３-１７ ')})).status,422);
   assert.equal((await saveDoc(h)).status,422);
   assert.equal((await h.archive(req('gm','/api/archive','POST',{action:'audience',revision:h.state.revision,id:'p07',ids:['handover'],audience:['agent']}))).status,400);
+  assert.equal((await audienceDoc(h,'city-locations',[])).status,422);
   assert.equal(h.writes,0);
 });
 test('archive publication filters notices and case links without publishing adjacent resources',async()=>{
@@ -67,7 +68,7 @@ test('archive publication filters notices and case links without publishing adja
   assert.equal(projectState(state,'agent').cases[0].links.length,0);assert.equal(projectState(state,'agent').notices.length,0);
   state.documents.find(d=>d.id===id).audience=['agent'];assert.deepEqual(projectState(state,'agent').cases[0].links,[{type:'documents',id,order:0}]);assert.equal(projectState(state,'agent').notices.length,1);
   assert.equal((await audienceDoc(h,id,['agent'])).status,200);
-  const projected=projectState(h.state,'agent');assert.equal(projected.documents.length,1);assert.equal(projected.documents[0].fileId,undefined);
+  const projected=projectState(h.state,'agent');assert.equal(projected.documents.length,3);assert.equal(projected.documents[0].fileId,undefined);
   assert.ok(resolveFile(h.state,'agent',{type:'documents',id}));assert.equal(resolveFile(h.state,'director',{type:'documents',id}),null);
   await audienceDoc(h,id,[]);assert.equal(resolveFile(h.state,'agent',{type:'documents',id}),null);
 });

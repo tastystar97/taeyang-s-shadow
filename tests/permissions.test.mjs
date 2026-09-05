@@ -50,10 +50,10 @@ test('agent projection excludes private metadata, archive entries, forms, notice
   const result=projectState(fixture(),'agent');
   const text=JSON.stringify(result);
   for(const secret of ['HIDDEN_TITLE','HIDDEN_ENTRY','PRIVATE_LOG','DIRECTOR_DRAFT','PRIVATE_BODY','SECRET_MEMO','medical-isea']) assert.ok(!text.includes(secret),secret);
-  assert.equal(result.documents.length,1);
+  assert.equal(result.documents.length,3);
   assert.deepEqual(result.cases[0].links,[{type:'documents',id:'hq-urgent',order:0},{type:'forms',id:'field-draft',order:1}]);
   assert.deepEqual(result.personnel,[]); assert.equal(result.forms[0].id,'field-draft');
-  assert.equal(result.cityHtml,'');
+  assert.match(result.cityHtml,/city-locations/); assert.match(result.cityHtml,/city-history/);
 });
 test('GM sees full records; director cannot read agent drafts', () => {
   assert.equal(projectState(fixture(),'gm').activity[0].action,'PRIVATE_LOG');
@@ -74,7 +74,7 @@ test('role action matrix rejects author impersonation and field-report approval 
 test('file aliases enforce audience, reject path traversal and cannot be broadened by viewerRole', async () => {
   const state=fixture();
   for(const file of STATIC_FILES.filter(f=>f.type!=='support')) {
-    if(file.id==='hq-urgent') continue;
+    if(['hq-urgent','city-locations','city-history'].includes(file.id)) continue;
     assert.equal(resolveFile(state,'agent',{path:file.path}),null,file.path);
   }
   assert.ok(resolveFile(state,'agent',{id:'hq-urgent'}));
@@ -161,7 +161,7 @@ test('a shared signed document exposes its signature only through that authorize
   assert.equal(resolveFile(state,'agent',{id:'medical-isea',type:'documents',asset:'signature'}),null);
   assert.equal(resolveFile(state,'agent',{path:'/media/signatures/choi-youngho-fitted.png'}),null);
 });
-test('read status is separated by role and linked city data does not leak a hidden document ID', async () => {
+test('read status is separated by role and CITY NET always exposes both public documents', async () => {
   let state=fixture();
   const handler=createStateHandler({read:async()=>structuredClone(state),write:async next=>{state=next;return next;}});
   await handler(request('agent','/api/state','PATCH',{revision:state.revision,action:'mark-document-read',payload:{id:'hq-urgent'}}));
@@ -169,7 +169,9 @@ test('read status is separated by role and linked city data does not leak a hidd
   assert.equal(projectState(state,'agent').documents[0].status,'RELEASED');
   state.documents[0].audience.push('director');
   assert.equal(projectState(state,'director').documents.find(d=>d.id==='hq-urgent').status,'NEW');
-  state.documents.find(d=>d.id==='city-locations').audience=['agent'];
-  const text=JSON.stringify(projectState(state,'agent'));
-  assert.ok(!text.includes('city-history'));
+  state.documents.find(d=>d.id==='city-locations').audience=[];
+  state.documents.find(d=>d.id==='city-history').audience=[];
+  const view=projectState(state,'agent'),text=JSON.stringify(view);
+  assert.ok(text.includes('city-locations')); assert.ok(text.includes('city-history'));
+  assert.deepEqual(normalizeState(state).documents.filter(d=>d.id.startsWith('city-')).map(d=>d.audience),[['director','agent'],['director','agent']]);
 });

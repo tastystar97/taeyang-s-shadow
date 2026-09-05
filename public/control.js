@@ -17,11 +17,43 @@ const NOTICE_TARGET_LABELS = { command: '지부 공용 단말', workflow: '전�
 async function api(path, options = {}) {
   const response = await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) { if (response.status === 401) clearControl('세션이 만료되었습니다. 다시 접속하세요.'); const error = new Error(data.error || '요청 실패'); error.status = response.status; throw error; }
+  if (!response.ok) { if (response.status === 401) clearControl('세션이 만료되었습니다. 다시 접속하세요.'); const error = new Error(data.error || '요청 실패'); error.status = response.status; error.state = data.state; throw error; }
   return data;
 }
 
 function toast(message) { const node = $('#toast'); node.textContent = message; node.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2400); }
+
+const BULK_LABELS = { cases: '사건철', personnel: '인사기록', documents: '문서', evidence: '증거물' };
+function syncBulkToolbar(toolbar) {
+  const type = toolbar.dataset.bulkToolbar;
+  const items = $$('[data-bulk-item="' + type + '"]:not(:disabled)');
+  const selected = items.filter(item => item.checked);
+  const all = toolbar.querySelector('[data-bulk-select-all]');
+  all.checked = items.length > 0 && selected.length === items.length;
+  all.indeterminate = selected.length > 0 && selected.length < items.length;
+  toolbar.querySelector('[data-bulk-count]').textContent = selected.length + '건 선택';
+  toolbar.querySelectorAll('[data-bulk-apply],[data-bulk-private]').forEach(button => { button.disabled = toolbar.dataset.busy === 'true' || selected.length === 0; });
+}
+function syncAllBulkToolbars() { $$('[data-bulk-toolbar]').forEach(syncBulkToolbar); }
+async function applyBulkPublication(toolbar, privateOnly) {
+  if (toolbar.dataset.busy === 'true') return;
+  const type = toolbar.dataset.bulkToolbar;
+  const ids = $$('[data-bulk-item="' + type + '"]:checked:not(:disabled)').map(item => item.value);
+  if (!ids.length) { toast('변경할 ' + BULK_LABELS[type] + '을 먼저 선택하세요.'); return; }
+  const audience = privateOnly ? [] : ['director', 'agent'].filter(role => toolbar.querySelector('[data-bulk-role="' + role + '"]').checked);
+  if (!privateOnly && !audience.length) { toast('공개할 역할을 하나 이상 선택하세요.'); return; }
+  toolbar.dataset.busy = 'true'; syncBulkToolbar(toolbar);
+  try {
+    const result = await api('/api/publication', { method: 'POST', body: JSON.stringify({ revision: app.state.revision, type, ids, audience }) });
+    app.state = result.state; render();
+    toast(BULK_LABELS[type] + ' ' + result.changed + '건을 ' + (privateOnly ? '비공개했습니다.' : '선택한 역할에 공개했습니다.'));
+  } catch (error) {
+    if (error.state) { app.state = error.state; render(); }
+    toast(error.message);
+  } finally {
+    toolbar.dataset.busy = 'false'; syncBulkToolbar(toolbar);
+  }
+}
 async function load() { const epoch=app.epoch; const result = await api('/api/state'); if(epoch!==app.epoch)return; if (result.state.role !== 'gm') { clearControl('관제 코드로 접속하세요.'); return; } app.state = result.state; $('.control-main').hidden = false; $('#control-gate').hidden = true; render(); }
 
 async function mutate(action, payload = {}) {
@@ -72,12 +104,13 @@ function render() {
   const notices = state.notices || []; $('#notice-count').textContent = `${notices.length} ACTIVE`; $('#control-notice-empty').hidden = notices.length > 0;
   $('#control-notice-list').innerHTML = notices.map((notice) => { const target = notice.formId ? '반려된 전자서류 직접 열기' : (NOTICE_TARGET_LABELS[notice.target] || '지부 공용 단말'); return `<article class="control-notice-card"><time>${escapeHTML(notice.time || '--:--')}</time><div><span>${notice.priority ? 'PRIORITY' : 'SIGNAL'} · → ${escapeHTML(target)}</span><h3>${escapeHTML(notice.title)}</h3><p>${escapeHTML(notice.body)}</p></div><button class="danger-button" type="button" data-delete-notice="${escapeHTML(notice.id)}" aria-label="${escapeHTML(notice.title)} 알림 삭제">삭제</button></article>`; }).join('');
   const evidence = (state.evidence || []).filter(item => item.sourceKind !== 'static'); $('#evidence-register-count').textContent = `${evidence.length} REGISTERED`; $('#control-evidence-empty').hidden = evidence.length > 0;
-  $('#control-evidence-list').innerHTML = evidence.map((item) => { const version = item.updatedAt || item.createdAt || ''; const source = `/api/evidence?id=${encodeURIComponent(item.id)}&v=${encodeURIComponent(version)}`; const audience=(item.audience||[]).map(role=>role==='director'?'지부장':'현장요원').join(' · ')||'관제 전용'; return `<article class="control-evidence-card"><img src="${source}" alt="${escapeHTML(item.title)}" loading="lazy"><div><span>${escapeHTML(item.category || '현장사진')} · ${escapeHTML(item.caseCode || 'NO CASE')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.location || '촬영지 미기록')} · ${escapeHTML(item.fileName || '원본 이미지')}</p><small class="hr-audience">${escapeHTML(audience)}</small></div><div class="approval-actions"><button class="secondary-button" type="button" data-publish-evidence="${escapeHTML(item.id)}">공개 대상</button><button class="secondary-button" type="button" data-edit-evidence="${escapeHTML(item.id)}">수정</button><button class="danger-button" type="button" data-delete-evidence="${escapeHTML(item.id)}">삭제</button></div></article>`; }).join('');
+  $('#control-evidence-list').innerHTML = evidence.map((item) => { const version = item.updatedAt || item.createdAt || ''; const source = `/api/evidence?id=${encodeURIComponent(item.id)}&v=${encodeURIComponent(version)}`; const audience=(item.audience||[]).map(role=>role==='director'?'지부장':'현장요원').join(' · ')||'관제 전용'; return `<article class="control-evidence-card"><label class="bulk-card-check"><input type="checkbox" data-bulk-item="evidence" value="${escapeHTML(item.id)}" aria-label="${escapeHTML(item.title)} 선택"><span class="sr-only">선택</span></label><img src="${source}" alt="${escapeHTML(item.title)}" loading="lazy"><div><span>${escapeHTML(item.category || '현장사진')} · ${escapeHTML(item.caseCode || 'NO CASE')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.location || '촬영지 미기록')} · ${escapeHTML(item.fileName || '원본 이미지')}</p><small class="hr-audience">${escapeHTML(audience)}</small></div><div class="approval-actions"><button class="secondary-button" type="button" data-publish-evidence="${escapeHTML(item.id)}">공개 대상</button><button class="secondary-button" type="button" data-edit-evidence="${escapeHTML(item.id)}">수정</button><button class="danger-button" type="button" data-delete-evidence="${escapeHTML(item.id)}">삭제</button></div></article>`; }).join('');
   const pending = state.forms.filter((form) => form.kind === 'director-form' && form.status === 'SUBMITTED'); $('#pending-count').textContent = `${pending.length} PENDING`; $('#approval-empty').hidden = pending.length > 0;
   $('#approval-list').innerHTML = pending.map((form) => `<article class="approval-card"><span>${escapeHTML((form.template||'보관 서식').toUpperCase())}</span><div><h3>${escapeHTML(form.title)}</h3><small>서명 ${escapeHTML(form.signature)} · ${formatDate(form.updatedAt)}</small></div><div class="approval-actions"><button class="secondary-button" data-open-workflow="${escapeHTML(form.id)}">서류 열기</button></div></article>`).join('');
   const forms = [...state.forms].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); $('#document-count').textContent = `${forms.length} RECORDS`; $('#control-document-empty').hidden = forms.length > 0;
   $('#control-document-list').innerHTML = forms.map((form) => `<article class="approval-card"><span>${escapeHTML(form.status)}</span><div><h3>${escapeHTML(form.title)}</h3><small>${escapeHTML((form.template||'보관 서식').toUpperCase())} · ${formatDate(form.updatedAt)}${form.comment ? ` · 반려: ${escapeHTML(form.comment)}` : ''}</small></div><div class="approval-actions"><button class="secondary-button" data-open-workflow="${escapeHTML(form.id)}">서류 열기</button><button class="danger-button" data-delete-control="${escapeHTML(form.id)}">삭제</button></div></article>`).join('');
   $('#control-log').innerHTML = state.activity.slice(0, 8).map((entry) => `<li><time>${formatDate(entry.at)}</time><b>${escapeHTML(entry.action)}</b><span>${escapeHTML(entry.detail)}</span></li>`).join('') || '<li><span>아직 기록된 관제 활동이 없습니다.</span></li>';
+  syncAllBulkToolbars();
 }
 
 function formatDate(value) { if(!value||Number.isNaN(Date.parse(value)))return '미기록'; return new Intl.DateTimeFormat('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value)); }
@@ -95,6 +128,25 @@ $('#evidence-upload-form').addEventListener('submit', (event) => { event.prevent
 $('#evidence-cancel-button').addEventListener('click', () => resetEvidenceForm());
 $('#control-evidence-list').addEventListener('click', (event) => { const publish = event.target.closest('[data-publish-evidence]'); const edit = event.target.closest('[data-edit-evidence]'); const remove = event.target.closest('[data-delete-evidence]'); if (publish) casesUI.publish('evidence',publish.dataset.publishEvidence); if (edit) editEvidence(edit.dataset.editEvidence); if (remove && confirm('이 증거물을 목록에서 삭제할까?')) deleteEvidence(remove.dataset.deleteEvidence); });
 $('#control-document-list').addEventListener('click', (event) => { const button = event.target.closest('[data-delete-control]'); if (button && confirm('이 전자서류를 영구 삭제할까?')) mutate('delete-form-control', { id: button.dataset.deleteControl }).then((saved) => { if (saved) toast('전자서류를 삭제했습니다.'); }); });
+document.addEventListener('change', event => {
+  const selectAll = event.target.closest('[data-bulk-select-all]');
+  if (selectAll) {
+    const toolbar = selectAll.closest('[data-bulk-toolbar]'), type = toolbar.dataset.bulkToolbar;
+    $$('[data-bulk-item="' + type + '"]:not(:disabled)').forEach(item => { item.checked = selectAll.checked; });
+    syncBulkToolbar(toolbar); return;
+  }
+  const item = event.target.closest('[data-bulk-item]');
+  if (item) { const toolbar = document.querySelector('[data-bulk-toolbar="' + item.dataset.bulkItem + '"]'); if (toolbar) syncBulkToolbar(toolbar); }
+});
+document.addEventListener('click', event => {
+  const action = event.target.closest('[data-bulk-apply],[data-bulk-private]');
+  if (action) applyBulkPublication(action.closest('[data-bulk-toolbar]'), action.hasAttribute('data-bulk-private'));
+});
+const BULK_CONTAINERS = { cases: '#cases-list', personnel: '#personnel-manage-rows', documents: '#archive-manage-rows', evidence: '#control-evidence-list' };
+for (const [type, selector] of Object.entries(BULK_CONTAINERS)) {
+  const toolbar = document.querySelector('[data-bulk-toolbar="' + type + '"]');
+  new MutationObserver(() => syncBulkToolbar(toolbar)).observe($(selector), { childList: true });
+}
 $('#control-logout').addEventListener('click', async () => { clearControl(); try { await api('/api/auth', {method:'DELETE'}); authChannel?.postMessage('changed'); } catch { $('#control-error').textContent = '로그아웃 요청을 완료하지 못했습니다.'; } });
 const casesUI=createCasesUI({getState:()=>app.state,setState:state=>{app.state=state;render();},toast,gm:true,openResource:(type,id)=>{if(type==='personnel')personnelManager.open(id);else if(type==='documents')archiveManager.open(id);else if(type==='forms')workflowViewer.open(id);else if(type==='evidence'){const item=app.state.evidence.find(e=>e.id===id);if(item)window.open(item.src||('/api/evidence?id='+encodeURIComponent(id)),'_blank','noopener');}}});
 const workflowViewer=createWorkflowViewer({getState:()=>app.state,setState:state=>{app.state=state;render();},api,toast});

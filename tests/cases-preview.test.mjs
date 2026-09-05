@@ -64,13 +64,14 @@ test('case validation rejects duplicate IDs, broken links, stale writes and dupl
   assert.equal((await save(h,{data:caseData(' ＣＡＳＥ-Ｍ５-００１ ')})).status,422);
   assert.equal((await save(h,{data:caseData('CASE-BROKEN'),links:[{type:'documents',id:'missing'}]})).status,404);
   assert.equal((await save(h,{data:caseData('CASE-DUP-LINK'),links:[{type:'documents',id:'hq-urgent'},{type:'documents',id:'hq-urgent'}]})).status,400);
+  assert.equal((await audience(h,'documents','city-history',[])).status,422);
   assert.equal((await h.cases(request('gm','/api/cases','POST',{action:'audience',revision:0,type:'cases',id:saved.id,audience:['agent']}))).status,409);assert.equal(h.state.revision,revision);
 });
 
 test('preview endpoint matches role projection, rewrites protected URLs and is GM GET-only',async()=>{
   const h=harness();h.state.documents[0].audience=['agent'];h.state.personnel[0].audience=['agent'];h.state.evidence[0].audience=['agent'];
   assert.equal((await h.preview(request('agent','/api/preview?role=agent'))).status,403);assert.equal((await h.preview(request('gm','/api/preview?role=gm'))).status,400);assert.equal((await h.preview(request('gm','/api/preview?role=agent','POST'))).status,405);
-  const response=await h.preview(request('gm','/api/preview?role=agent'));assert.equal(response.status,200);const {state,preview}=await response.json();assert.equal(preview,true);assert.equal(state.role,'agent');assert.equal(state.documents.length,1);assert.match(state.documents[0].url,/^\/api\/preview-files\?/);assert.match(state.personnel[0].image,/^\/api\/preview-files\?/);assert.match(state.evidence[0].src,/^\/api\/preview-files\?/);assert.equal(state.activity.length,0);
+  const response=await h.preview(request('gm','/api/preview?role=agent'));assert.equal(response.status,200);const {state,preview}=await response.json();assert.equal(preview,true);assert.equal(state.role,'agent');assert.equal(state.documents.length,3);assert.match(state.documents[0].url,/^\/api\/preview-files\?/);assert.match(state.personnel[0].image,/^\/api\/preview-files\?/);assert.match(state.evidence[0].src,/^\/api\/preview-files\?/);assert.equal(state.activity.length,0);
 });
 
 test('preview files enforce the selected role and render managed archive fields without editor scripts',async()=>{
