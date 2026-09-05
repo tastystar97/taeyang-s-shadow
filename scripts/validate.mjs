@@ -27,18 +27,19 @@ for (const file of archive) {
   if (file.endsWith(".html") && !serverState.includes(`/archive/${file}`)) throw new Error(`상태 목록에 없는 문서: ${file}`);
 }
 
-const editor = await readFile("public/archive-editor.js", "utf8");
+const editor = await readFile("netlify/lib/archive-schemas.mjs", "utf8");
 for (const id of ["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]) {
-  if (!editor.includes(`'${id}'`) && !editor.includes(`${id}:`)) throw new Error(`작성 가능한 문서 서식 누락: ${id}`);
+  if (!editor.includes(JSON.stringify(id)) && !editor.includes(`${id}:`)) throw new Error(`작성 가능한 문서 서식 누락: ${id}`);
 }
 
 const app = await readFile("public/app.js", "utf8");
+const catalog = await readFile("netlify/lib/catalog.mjs", "utf8");
 for (const employeeId of ["2043-K-001", "2036-K-032", "2042-K-007", "2033-K-082-C", "2045-K-107"]) {
-  if (!app.includes(employeeId)) throw new Error(`인사기록 사번 누락: ${employeeId}`);
+  if (!catalog.includes(employeeId)) throw new Error(`인사기록 사번 누락: ${employeeId}`);
 }
 if (!app.includes("personnel-record-qualifications") || !app.includes("personnel-record-assessment")) throw new Error("상세 인사기록 렌더링이 누락되었습니다.");
 if (!app.includes("notices.filter((notice) => !notice.priority)")) throw new Error("긴급 알람이 최근 신호에서 제외되지 않았습니다.");
-if (!app.includes("function toggleFormSignature()") || !app.includes("choi-youngho-fitted.png")) throw new Error("공문 이미지 전자서명 기능이 누락되었습니다.");
+if (!app.includes("function toggleFormSignature()") || !catalog.includes("choi-youngho")) throw new Error("공문 이미지 전자서명 기능이 누락되었습니다.");
 if (!app.includes("function evidenceSource(item)") || !app.includes("escapeHTML(evidenceSource(item))")) throw new Error("정적 증거 이미지 경로 처리가 누락되었습니다.");
 if (!app.includes('class="archive-row-link"') || !app.includes("문서 열기 →")) throw new Error("보관 문서 행 전체 열기 기능이 누락되었습니다.");
 if (!app.includes("function openNotice(id)") || !app.includes('data-notice-id=') || !app.includes("반려 서류 열기")) throw new Error("알림별 직관적 이동 기능이 누락되었습니다.");
@@ -49,7 +50,7 @@ if (!control.includes("NOTICE_TARGET_LABELS") || !html.includes('id="priority-op
 if (!control.includes("data-edit-evidence") || !control.includes("data-delete-evidence") || !control.includes("method: 'DELETE'")) throw new Error("관리자 증거물 수정·삭제 기능이 누락되었습니다.");
 
 const evidenceFunction = await readFile("netlify/functions/evidence.mjs", "utf8");
-if (!evidenceFunction.includes('"PATCH"') || !evidenceFunction.includes('"DELETE"') || !evidenceFunction.includes("evidenceStore().delete")) throw new Error("증거 이미지 수정·삭제 API가 누락되었습니다.");
+if (!evidenceFunction.includes("'PATCH'") || !evidenceFunction.includes("'DELETE'") || !evidenceFunction.includes("writeState(state, original)")) throw new Error("증거 이미지 수정·삭제 API가 누락되었습니다.");
 
 for (const file of [
   "public/media/evidence/audit-eve.webp", "public/media/evidence/two-beds.webp", "public/media/evidence/luminous-pharma.webp",

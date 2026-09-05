@@ -1,51 +1,10 @@
+import {createCasesUI} from '/cases-ui.js';
+const PREVIEW_ROLE=new URLSearchParams(location.search).get('preview');
+const IS_PREVIEW=['director','agent'].includes(PREVIEW_ROLE);
+import {FORM_TEMPLATES,formTemplate,renderFormFieldsHTML} from '/form-templates.js';
 import { playLoginSequence } from '/login-sequence.js';
 
-const DEFAULT_STATE = {
-  revision: 1,
-  operation: { act: 'ACT II', title: '배신', phase: 1 },
-  notices: [
-    { id: 'notice-1', time: '21:40', title: '본부 공문 수신', body: '루미나스 병원 확보 인원', priority: true, target: 'archive', targetId: 'hq-urgent' },
-    { id: 'notice-2', time: '20:18', title: '기록 복구 완료', body: '이강준 수첩 · 003 페이지', target: 'archive', targetId: 'kangjun-note' },
-    { id: 'notice-3', time: '18:03', title: '의료기록 갱신', body: '이세아 귀환 후 경과', target: 'archive', targetId: 'medical-isea' }
-  ],
-  checklist: {
-    1: [
-      { id: 'briefing', title: '신규 공문 확인', note: '본부 및 지부 내부 수신함', done: true, source: 'SYSTEM' },
-      { id: 'assignment', title: '대원 배치 확정', note: '내정 및 현장 슬롯 배치', done: false, source: 'COMMAND' },
-      { id: 'operation-order', title: '작전 명령서 제출', note: '전자서명 후 관제 제출', done: false, source: 'E-DOC' },
-      { id: 'protected-review', title: '보호대상 재평가', note: 'P-07 기한 및 본인 의사 확인', done: false, source: 'P-07' }
-    ],
-    2: [
-      { id: 'field-brief', title: '현장 브리핑 완료', note: '목표·철수 조건·연락망 확인', done: false, source: 'COMMAND' },
-      { id: 'resources', title: '지원 리소스 지급', note: '작전실·의무실 보정 확인', done: false, source: 'BRANCH' },
-      { id: 'parallel-front', title: '동시 전선 처리', note: '비투입 대원의 경량 판정', done: false, source: 'FIELD' },
-      { id: 'casualty-log', title: '침식·부상 임시 기록', note: '현장 종료 전 누락 확인', done: false, source: 'MEDICAL' }
-    ],
-    3: [
-      { id: 'result-record', title: '사건 결과 기록', note: '성공도와 미결 사항', done: false, source: 'E-DOC' },
-      { id: 'condition-update', title: '침식·부상 갱신', note: '회복 및 상실 판정 반영', done: false, source: 'MEDICAL' },
-      { id: 'payroll', title: '대원 임금 지급', note: '현재 고정 임금 3 UNIT', done: false, source: 'FINANCE' },
-      { id: 'maintenance', title: '시설 유지비 정산', note: '유료 시설 유지비 확인', done: false, source: 'FINANCE' },
-      { id: 'hq-report', title: '본부 정기 보고서 제출', note: '보고 내용과 누락 항목 최종 확인', done: false, source: 'E-DOC' }
-    ]
-  },
-  documents: [
-    { id: 'hq-urgent', code: 'HQ-KR/URG-2043-17', category: '본부 공문', title: '루미나스 병원 확보 인원', detail: '본부 긴급 공문', security: 'CONFIDENTIAL', status: 'NEW', url: '/archive/hq-urgent.html', editable: true },
-    { id: 'medical-isea', code: 'TCB/MED-002', category: '의료기록', title: '이세아 귀환 후 의료기록', detail: 'POST-OP 기록', security: 'MEDICAL', status: 'NEW', url: '/archive/medical-isea.html', editable: true },
-    { id: 'sera-profile', code: 'TCB/ID-004', category: '신원서류', title: '정세라 임시 신원 및 보호 서류', detail: 'CASE 004 · ADULT', security: 'CONFIDENTIAL', status: 'RELEASED', url: '/archive/sera-profile.html', editable: true },
-    { id: 'suhwan-card', code: 'TCB/ID-003', category: '신원서류', title: '수환 임시 신원 카드', detail: 'CODE-003', security: 'CONFIDENTIAL', status: 'RELEASED', url: '/archive/suhwan-card.html', editable: true },
-    { id: 'kangjun-note', code: 'RECOVERED/NOTE-003', category: '개인 기록', title: '이강준 수첩 · 003 페이지', detail: '복구된 비공식 기록', security: 'RESTRICTED', status: 'NEW', url: '/archive/kangjun-note-003.html' },
-    { id: 'former-chief-note', code: 'TCB/FORMER-01', category: '개인 기록', title: '전임 지부장 개인 수첩', detail: '공식 사건철 미포함', security: 'RESTRICTED', status: 'RELEASED', url: '/archive/former-chief-note.html' },
-    { id: 'handover', code: 'TCB/ADMIN-HO1', category: '지부 행정', title: '지부장 인수인계서', detail: '신임 지부장 부임 기록', security: 'INTERNAL', status: 'RELEASED', url: '/archive/branch-handover.html', editable: true },
-    { id: 'p07', code: 'HQ-PD/P-07', category: '본부 규정', title: '보호대상 안정화 및 인계 규정', detail: 'REVISION 01', security: 'INTERNAL', status: 'RELEASED', url: '/archive/regulation-p07.html' },
-    { id: 'branch-summary', code: 'TCB/OPS-SUM', category: '지부 행정', title: '지부 운영 시스템 서머리', detail: '신임 지부장 업무 참조', security: 'INTERNAL', status: 'RELEASED', url: '/archive/branch-operations.html' },
-    { id: 'facilities', code: 'TCB/FAC-REF', category: '지부 행정', title: '지부 시설 목록 및 효과', detail: 'HOUSING REFERENCE', security: 'INTERNAL', status: 'RELEASED', url: '/archive/facilities.html' },
-    { id: 'city-locations', code: 'CITY/LOC-01', category: '도시 정보', title: '태양시 로케이션', detail: '신도심·구도심·도시 근교·대학가', security: 'INTERNAL', status: 'RELEASED', url: '/archive/city-locations.html' },
-    { id: 'city-history', code: 'CITY/HST-01', category: '도시 정보', title: '태양시 역사와 주요 조직', detail: '1973—2043 CHRONOLOGY', security: 'INTERNAL', status: 'RELEASED', url: '/archive/city-history.html' }
-  ],
-  evidence: [],
-  forms: [], archiveEntries: {}, activity: []
-};
+const DEFAULT_STATE = { revision: 0, role: null, operation: {phase:1,act:'',title:''}, notices:[], checklist:{}, documents:[], personnel:[], evidence:[], forms:[], cases:[], archiveEntries:{}, activity:[] };
 
 const PHASE_NAMES = { 1: 'PHASE 01 · 내정', 2: 'PHASE 02 · 현장', 3: 'PHASE 03 · 정산' };
 const NOTICE_DESTINATIONS = {
@@ -53,106 +12,53 @@ const NOTICE_DESTINATIONS = {
   workflow: { label: '전자서류 · 체크리스트', button: '관련 서류 열기' },
   archive: { label: '문서 보관소', button: '관련 문서 열기' },
   evidence: { label: '증거물 · 현장사진', button: '증거물 보기' },
+  cases: { label: '사건철', button: '사건철 보기' },
   personnel: { label: '인사기록부', button: '인사기록 보기' },
   city: { label: '태양시 정보', button: '도시 정보 보기' }
 };
-const LEGACY_NOTICE_DESTINATIONS = {
-  '본부 공문 수신': { target: 'archive', targetId: 'hq-urgent', button: '공문 열기' },
-  '기록 복구 완료': { target: 'archive', targetId: 'kangjun-note', button: '복구 기록 열기' },
-  '의료기록 갱신': { target: 'archive', targetId: 'medical-isea', button: '의료기록 열기' }
-};
-const DIRECTOR_SIGNATURE = { name: '최영호', image: '/media/signatures/choi-youngho-fitted.png' };
-const EDITABLE_ARCHIVE_DOCUMENTS = new Set(['hq-urgent', 'medical-isea', 'sera-profile', 'suhwan-card', 'handover']);
-const STATIC_EVIDENCE = [
-  { id: 'static-audit-eve', title: '감사 전야', category: '현장사진', caseCode: 'TCB / FIELD RECORD', location: '촬영지 미기록', description: '태양시 지부 현장 기록. 세부 내용은 원본 이미지를 참조하십시오.', fileName: '감사 전야.webp', src: '/media/evidence/audit-eve.webp' },
-  { id: 'static-two-beds', title: '두 개의 침대', category: '현장사진', caseCode: 'EMPTY ROOM', location: '루미나스 관련 현장', description: '현장에서 확보된 시각 기록. 두 개의 침대가 촬영되어 있다.', fileName: '두 개의 침대.webp', src: '/media/evidence/two-beds.webp' },
-  { id: 'static-luminous-pharma', title: '루미나스 제약', category: '증거물', caseCode: 'LUMINOUS', location: '태양시', description: '루미나스 제약 관련 증거 이미지.', fileName: '루미나스 제약.webp', src: '/media/evidence/luminous-pharma.webp' },
-  { id: 'static-white-noise', title: '벽 속의 백색 소음', category: '현장사진', caseCode: 'TCB / FIELD RECORD', location: '촬영지 미기록', description: '벽 내부 이상 현상과 관련된 현장 기록.', fileName: '벽 속의 백색 소음.webp', src: '/media/evidence/white-noise-in-wall.webp' },
-  { id: 'static-incident-record', title: '사고 기록', category: '증거물', caseCode: 'INCIDENT RECORD', location: '기록 출처 미기재', description: '사건 조사 과정에서 확보된 사고 기록 이미지.', fileName: '사고 기록.webp', src: '/media/evidence/incident-record.webp' },
-  { id: 'static-suhwan-collar', title: '수환의 초커', category: '증거물', caseCode: 'CODE-003', location: '루미나스 종합병원', description: '보호대상 수환에게서 분리된 초커 관련 증거 이미지.', fileName: '수환의 초커.webp', src: '/media/evidence/suhwan-collar.webp' },
-  { id: 'static-ghost-waybill', title: '유령 운송장', category: '증거물', caseCode: 'LOGISTICS RECORD', location: '출처 미기재', description: '운송 경로 조사와 관련된 증거 이미지.', fileName: '유령 운송장.webp', src: '/media/evidence/ghost-waybill.webp' },
-  { id: 'static-yunha-report', title: '윤하의 보고서', category: '증거물', caseCode: 'RECOVERED REPORT', location: '기록 출처 미기재', description: '윤하의 보고서 원본 이미지.', fileName: '윤하의 보고서.webp', src: '/media/evidence/yunha-report.webp' },
-  { id: 'static-doctor-disappeared', title: '의사가 사라진 밤', category: '현장사진', caseCode: 'LUMINOUS / NIGHT', location: '촬영지 미기록', description: '의사 실종 사건과 관련된 현장 기록.', fileName: '의사가 사라진 밤.webp', src: '/media/evidence/doctor-disappeared.webp' }
-];
-const PERSONNEL = [
-  { id: 'choi-youngho', name: '최영호', order: '01', employeeId: '2043-K-001', position: '지부장', division: '지부장실 · 통합관제', clearance: 'A-1', status: 'ACTIVE', assignment: '태양시 지부 총괄', appointed: '2043. 04. 01', duties: '태양시 지부 운영과 인사·작전 자원을 총괄하며, 본부 공문 대응·작전 최종 승인·대외 협조 여부를 결정한다.', qualifications: ['지부 작전 최종결재권', 'A급 보안문서 열람', 'P-07 보호조치 승인'], assessment: '상황 판단과 조직 통제가 안정적이다. 직접 현장 개입보다 정보 취합과 자원 조정, 책임 승인 임무를 우선한다.', note: '긴급 상황 발생 시 지부 내 최종 지휘권자. 장기 부재 또는 연락 두절 시 대한민국 지부본부 관제에 즉시 보고한다.', image: '/media/personnel/choi-youngho.webp', fileName: '최영호.webp' },
-  { id: 'ha-eunchae', name: '하은채', order: '02', employeeId: '2036-K-032', position: '선임 행정관', division: '운영지원 · 기록관리', clearance: 'B-1', status: 'ACTIVE', assignment: '지부 행정·문서 관제', appointed: '2036. 09. 18', duties: '인사·예산·보급 기록을 관리하고 문서보관소와 본부 정기보고 자료를 정리한다. 지부 내 행정 일정과 감사 대응을 조율한다.', qualifications: ['보안기록 관리', '물자·예산 정산', '전자문서 감사 대응'], assessment: '기록 정확도와 일정 통제 능력이 우수하다. 규정 이탈과 서류 누락을 빠르게 식별하며 장기 업무의 연속성을 안정적으로 유지한다.', note: '대외 접촉 및 인사 평가 기록은 지부장 결재 후 공개. 원본 문서 수정 이력은 별도 감사 로그에 영구 보존한다.', image: '/media/personnel/ha-eunchae.webp', fileName: '하은채.webp' },
-  { id: 'jin-taeho', name: '진태호', order: '03', employeeId: '2042-K-007', position: '현장 대응 요원', division: '작전팀 · 기동대응', clearance: 'C-3', status: 'ACTIVE', assignment: '초동대응 대기조', appointed: '2042. 07. 11', duties: '이상 사건 초동 대응, 현장 봉쇄, 민간인 대피와 확보 증거물의 안전한 인계를 담당한다. 작전팀의 선행 정찰 임무를 병행한다.', qualifications: ['근접 위협 대응', '현장 응급처치', '봉쇄선·대피로 운용'], assessment: '기동성과 현장 적응력이 우수하고 돌발 상황에 대한 반응이 빠르다. 단독 판단으로 작전 범위를 변경한 경우 사후 보고를 철저히 해야 한다.', note: '고위험 제한구역 투입은 B급 이상 감독자의 승인이 필요하다. 확보 증거물은 현장 종료 즉시 기록관리 담당자에게 인계한다.', image: '/media/personnel/jin-taeho.webp', fileName: '진태호.webp' },
-  { id: 'lee-sea', name: '이세아', order: '04', employeeId: '2033-K-082-C', position: '특수 대응 요원', division: '특수작전 · 보호대상 지원', clearance: 'S-4', status: 'MONITORED', assignment: '복귀 후 제한 배치', appointed: '2033. 12. 02', duties: '고위험 변칙현상 대응, 특수 보호대상 회수와 비정상 환경 정찰을 담당한다. 일반 대응팀이 접근하기 어려운 상황에 우선 배치된다.', qualifications: ['S등급 제한구역 접근', '고위험 대상 회수', '침식 대응 프로토콜'], assessment: '특수 환경 생존성과 임무 지속 능력이 매우 높다. 최근 복귀 이후 의료 경과와 인지 상태를 병행 관찰하며 단계적으로 배치 범위를 확대한다.', note: '의료기록 TCB/MED-002와 연동. 모든 현장 투입 전후에 인지·침식 평가를 실시하고 이상 수치 발생 시 즉시 임무에서 제외한다.', image: '/media/personnel/lee-sea.webp', fileName: '이세아.webp' },
-  { id: 'lee-taeyang', name: '이태양', order: '05', employeeId: '2045-K-107', position: '정보분석 요원', division: '정보분석 · 기술지원', clearance: 'B-1', status: 'ACTIVE', assignment: '정보분석실 상시근무', appointed: '2045. 03. 17', duties: '사건 데이터 상관분석, 통신·감시 기록 복구와 현장정보 시각화를 담당한다. 작전 전 브리핑 자료와 위험요소 예측치를 작성한다.', qualifications: ['디지털 포렌식', '도시 감시망 분석', '보안단말·기록복구 운용'], assessment: '분산된 정보의 연결과 반복 패턴 추적 능력이 우수하다. 분석 결과는 현장팀의 교차 확인을 거쳐 확정 정보로 승격한다.', note: '원본 데이터와 복호화 키의 외부 반출 금지. 분석 산출물은 기본적으로 BRANCH INTERNAL 등급을 적용한다.', image: '/media/personnel/lee-taeyang.webp', fileName: '이태양.webp' }
-];
-const FORM_TEMPLATES = {
-  'operation-order': { code: 'TCB-OPS/01', label: '작전 인원 배치 명령서', checklist: ['assignment', 'operation-order'], fields: [
-    { id: 'caseName', label: '사건명', required: true }, { id: 'priority', label: '작전 우선순위', type: 'select', options: ['인명 구조', '정보 확보', '위협 무력화', '은폐 및 수습'], required: true },
-    { id: 'agents', label: '투입 대원', placeholder: '성명 및 역할', required: true }, { id: 'support', label: '지급 장비 및 지원', placeholder: '시설 보정, 물자, 백업 계획' },
-    { id: 'orders', label: '세부 명령 및 철수 조건', type: 'textarea', full: true, required: true }
-  ] },
-  'hq-report': { code: 'TCB-HQ/02', label: '본부 정기 보고서', checklist: ['hq-report'], fields: [
-    { id: 'subject', label: '보고 제목', required: true }, { id: 'result', label: '사건 결과', type: 'select', options: ['성공', '부분 성공', '실패', '진행 중'], required: true },
-    { id: 'secured', label: '확보 인원 및 물품', placeholder: '해당 없음' }, { id: 'external', label: '외부 세력 접촉', placeholder: 'H.E.L.I.O.S., NOX 등' },
-    { id: 'summary', label: '상세 보고', type: 'textarea', full: true, required: true }, { id: 'omission', label: '비공개·완화 보고 항목', type: 'textarea', full: true, placeholder: '본부 보고에서 제외할 내용이 있다면 기록' }
-  ] },
-  'protection-record': { code: 'TCB-P07/03', label: '보호대상 안정화·인계 기록', checklist: ['protected-review'], fields: [
-    { id: 'subjectName', label: '대상자 / 사건번호', required: true }, { id: 'condition', label: '현재 상태', type: 'select', options: ['안정', '의료 불안정', '인지 평가 중', '보안 위험', '인계 가능'], required: true },
-    { id: 'will', label: '본인 의사', placeholder: '인계 동의·거부·판단 유예', required: true }, { id: 'deferReason', label: '인계 유예 사유', placeholder: '의료 / 인지 / 보안 / 시설' },
-    { id: 'reevaluation', label: '다음 재평가', placeholder: '일시 및 담당자', required: true }, { id: 'plan', label: '보호계획 및 설명 내용', type: 'textarea', full: true, required: true }
-  ] },
-  'settlement-report': { code: 'TCB-FIN/04', label: '사건 종결 및 정산 보고서', checklist: ['result-record', 'condition-update', 'payroll', 'maintenance'], fields: [
-    { id: 'caseName', label: '사건명', required: true }, { id: 'reward', label: '사건 보수', placeholder: '예: +3 UNIT' }, { id: 'payroll', label: '임금 및 유지비', placeholder: '예: -3 UNIT', required: true },
-    { id: 'damage', label: '대원 침식·부상 변화', placeholder: '성명 / 변경값' },
-    { id: 'followup', label: '미결 사항 및 후속 조치', type: 'textarea', full: true }
-  ] }
-};
+const LEGACY_NOTICE_DESTINATIONS = {};
+const DIRECTOR_SIGNATURE = {};
 
-const app = { state: structuredClone(DEFAULT_STATE), mode: 'connecting', archiveFilter: '전체', evidenceFilter: '전체', formId: null, autosaveTimer: null };
+
+const app = { epoch: 0, state: structuredClone(DEFAULT_STATE), mode: 'connecting', archiveFilter: '전체', evidenceFilter: '전체', formId: null, autosaveTimer: null };
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
 
 async function api(path, options = {}) {
-  const response = await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } });
+  if(IS_PREVIEW){if(options.method && options.method!=='GET')throw new Error('미리보기는 읽기 전용입니다.');if(path==='/api/state')path='/api/preview?role='+PREVIEW_ROLE;}
+  const response = await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', ...(IS_PREVIEW ? {'X-TCB-Preview':'1'} : {}), ...(options.headers || {}) } });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) { const error = new Error(data.error || '요청을 처리하지 못했습니다.'); error.status = response.status; error.data = data; throw error; }
+  if (!response.ok) { if (response.status === 401 && path !== '/api/auth') clearSessionView('세션이 만료되었습니다. 다시 접속하세요.'); const error = new Error(data.error || '요청을 처리하지 못했습니다.'); error.status = response.status; error.data = data; throw error; }
   return data;
 }
 
 function showToast(message) { const toast = $('#toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600); }
 
 async function boot() {
+  clearSessionView();
   try {
+    if(IS_PREVIEW){await loadState();return;}
     const session = await api('/api/auth');
-    if (!session.authenticated && session.required) { $('#access-gate').hidden = false; return; }
-    app.mode = session.demo ? 'server-open' : 'server'; await Promise.all([loadState(), playLoginSequence('player')]);
-  } catch {
-    app.mode = 'local'; const saved = localStorage.getItem('tcb-offline-state');
-    if (saved) { try { app.state = JSON.parse(saved); } catch { app.state = structuredClone(DEFAULT_STATE); } }
-    renderAll(); $('#sync-label').textContent = 'LOCAL PREVIEW · DEVICE STORAGE';
-  }
+    if (session.role === 'gm') { location.replace('/control.html'); return; }
+    if (!session.authenticated) { $('#access-error').textContent = session.configured === false ? '서버 인증 설정을 확인해야 합니다.' : ''; return; }
+    await loadState(); await playLoginSequence('player');
+  } catch (error) { clearSessionView(error.message || '서버에 연결하지 못했습니다.'); }
 }
 
-async function loadState() { const result = await api('/api/state'); app.state = result.state; renderAll(); $('#sync-label').textContent = `LAST SYNC · ${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`; }
-
-function applyLocal(action, payload) {
-  const state = app.state;
-  if (action === 'toggle-checklist') { const item = (state.checklist[state.operation.phase] || []).find((entry) => entry.id === payload.id); if (item) item.done = Boolean(payload.done); }
-  if (action === 'save-form' || action === 'submit-form') {
-    const index = state.forms.findIndex((form) => form.id === payload.form.id); const next = { ...payload.form, status: action === 'submit-form' ? 'SUBMITTED' : (payload.form.status === 'RETURNED' ? 'RETURNED' : 'DRAFT'), updatedAt: new Date().toISOString() };
-    if (index >= 0) state.forms[index] = next; else state.forms.unshift({ ...next, createdAt: next.updatedAt }); if (action === 'submit-form') completeTemplateChecklist(next.template);
-  }
-  if (action === 'delete-form') { const index = state.forms.findIndex((form) => form.id === payload.id); if (index >= 0 && ['DRAFT', 'RETURNED'].includes(state.forms[index].status)) state.forms.splice(index, 1); }
-  if (action === 'mark-document-read') { const doc = state.documents.find((entry) => entry.id === payload.id); if (doc?.status === 'NEW') doc.status = 'RELEASED'; }
-  if (action === 'save-archive-document') { state.archiveEntries ||= {}; state.archiveEntries[payload.entry.id] = { ...payload.entry, updatedAt: new Date().toISOString() }; }
-  state.revision += 1; localStorage.setItem('tcb-offline-state', JSON.stringify(state));
-}
+async function loadState() { const epoch = app.epoch; const result = await api('/api/state'); if (epoch !== app.epoch) return; if (!['director','agent'].includes(result.state.role)) { clearSessionView(); location.replace('/control.html'); return; } if (app.state.role && app.state.role !== result.state.role) clearSessionView(); app.state = result.state; app.mode = 'server'; renderAll(); $('.app-shell').hidden = false; $('#access-gate').hidden = true; $('#sync-label').textContent = `LAST SYNC · ${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`; }
 
 async function mutate(action, payload) {
-  if (app.mode === 'local') { applyLocal(action, payload); renderAll(); return; }
-  try { const result = await api('/api/state', { method: 'PATCH', body: JSON.stringify({ action, payload, revision: app.state.revision }) }); app.state = result.state; renderAll(); $('#sync-label').textContent = 'SYNCED · SECURE STORE'; }
-  catch (error) { if (error.status === 409) { await loadState(); showToast('다른 단말의 변경사항을 불러왔습니다. 다시 시도하세요.'); return; } throw error; }
+  const epoch = app.epoch;
+  if (IS_PREVIEW)throw new Error('미리보기는 읽기 전용입니다.');
+  const agentActions = new Set(['save-field-report','submit-field-report','delete-field-report','mark-document-read']);
+  if (app.mode !== 'server' || (app.state.role !== 'director' && !(app.state.role === 'agent' && agentActions.has(action)) && action !== 'mark-document-read')) throw new Error('이 역할에서는 변경할 수 없습니다.');
+  try { const result = await api('/api/state', { method: 'PATCH', body: JSON.stringify({ action, payload, revision: app.state.revision }) }); if (epoch !== app.epoch) throw new Error('접속 상태가 변경되었습니다.'); app.state = result.state; renderAll(); $('#sync-label').textContent = 'SYNCED · SECURE STORE'; }
+  catch (error) { if (error.status === 409) { await loadState(); showToast('다른 단말의 변경사항을 불러왔습니다. 다시 시도하세요.'); throw error; } throw error; }
 }
 
 function completeTemplateChecklist(templateId) { const template = FORM_TEMPLATES[templateId]; const items = app.state.checklist[app.state.operation.phase] || []; template?.checklist.forEach((id) => { const item = items.find((entry) => entry.id === id); if (item) item.done = true; }); }
-function renderAll() { renderCommand(); renderPersonnel(); renderArchive(); renderEvidence(); renderWorkflow(); }
+function renderAll() { if(app.documentId && $('#document-dialog').open){const doc=app.state.documents.find(d=>d.id===app.documentId);if(!doc){$('#document-dialog').close();}else{if($('#document-new-tab').getAttribute('href')!==doc.url)$('#document-frame').src=doc.url;$('#document-new-tab').href=doc.url;$('#document-dialog-title').textContent=doc.title;$('#document-classification').textContent=doc.security;}} renderCommand(); renderPersonnel(); renderArchive(); renderEvidence(); renderWorkflow(); casesUI.render(); renderRole(); }
 
 function noticeDestination(notice) {
   if (notice.formId) return { target: 'workflow', targetId: notice.formId, label: '반려된 전자서류', button: '반려 서류 열기' };
@@ -169,6 +75,7 @@ function openNotice(id) {
   if (destination.target === 'archive' && destination.targetId) openDocument(destination.targetId);
   if (destination.target === 'evidence' && destination.targetId) openEvidence(destination.targetId);
   if (destination.target === 'personnel' && destination.targetId) openPersonnel(destination.targetId);
+  if (destination.target === 'cases' && destination.targetId) casesUI.open(destination.targetId);
 }
 
 function renderCommand() {
@@ -186,16 +93,16 @@ function renderCommand() {
 
 function renderArchive() {
   const categories = ['전체', ...new Set(app.state.documents.map((doc) => doc.category))]; $('#archive-filters').innerHTML = categories.map((category) => `<button class="${app.archiveFilter === category ? 'active' : ''}" data-archive-filter="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join('');
-  const term = $('#archive-search').value.trim().toLowerCase(); const docs = app.state.documents.filter((doc) => (app.archiveFilter === '전체' || doc.category === app.archiveFilter) && `${doc.title} ${doc.category} ${doc.detail}`.toLowerCase().includes(term));
-  $('#archive-count').textContent = `${app.state.documents.length} RECORDS RELEASED`; $('#archive-rows').innerHTML = docs.length ? docs.map((doc) => { const editable = EDITABLE_ARCHIVE_DOCUMENTS.has(doc.id); return `<tr class="archive-row-link" data-doc="${escapeHTML(doc.id)}" tabindex="0" role="link" aria-label="${escapeHTML(doc.title)} 문서 열기"><td class="doc-code">${escapeHTML(doc.code)}</td><td class="doc-name"><b>${escapeHTML(doc.title)}</b><small>${escapeHTML(doc.category)} · ${escapeHTML(doc.detail)}${editable ? ' · 직접 작성 가능' : ''}</small></td><td><span class="security-chip">${escapeHTML(doc.security)}</span></td><td><span class="status-chip ${doc.status.toLowerCase()}">${escapeHTML(doc.status)}</span></td><td><span class="open-doc-button">문서 열기 →</span></td></tr>`; }).join('') : '<tr><td colspan="5">검색 조건에 맞는 문서가 없습니다.</td></tr>';
+  const term = $('#archive-search').value.trim().toLowerCase(); const docs = app.state.documents.filter((doc) => (app.archiveFilter === '전체' || doc.category === app.archiveFilter) && `${doc.title} ${doc.code} ${doc.category} ${doc.detail}`.toLowerCase().includes(term));
+  $('#archive-count').textContent = `${app.state.documents.length} RECORDS RELEASED`; $('#archive-rows').innerHTML = docs.length ? docs.map((doc) => { const editable = app.state.role === 'director' && doc.editable; return `<tr class="archive-row-link" data-doc="${escapeHTML(doc.id)}" tabindex="0" role="link" aria-label="${escapeHTML(doc.title)} 문서 열기"><td class="doc-code">${escapeHTML(doc.code)}</td><td class="doc-name"><b>${escapeHTML(doc.title)}</b><small>${escapeHTML(doc.category)} · ${escapeHTML(doc.detail)}${editable ? ' · 직접 작성 가능' : ''}</small></td><td><span class="security-chip">${escapeHTML(doc.security)}</span></td><td><span class="status-chip ${doc.status.toLowerCase()}">${escapeHTML(doc.status)}</span></td><td><span class="open-doc-button">문서 열기 →</span></td></tr>`; }).join('') : '<tr><td colspan="5">검색 조건에 맞는 문서가 없습니다.</td></tr>';
 }
 
 function renderPersonnel() {
-  $('#personnel-grid').innerHTML = PERSONNEL.map((person) => `<button class="personnel-card" data-personnel-id="${person.id}"><span class="personnel-photo"><img src="${person.image}" alt="${escapeHTML(person.name)} 사원증" loading="lazy"><i>${person.order}</i></span><span><small>UGN HR FILE ${person.order} · ${escapeHTML(person.employeeId)}</small><b>${escapeHTML(person.name)}</b><strong>${escapeHTML(person.position)} · ${escapeHTML(person.clearance)}</strong><em>인사기록 열람 →</em></span></button>`).join('');
+  $('#personnel-grid').innerHTML = (app.state.personnel || []).map((person) => `<button class="personnel-card" data-personnel-id="${person.id}"><span class="personnel-photo">${person.image ? `<img src="${escapeHTML(person.image)}" alt="${escapeHTML(person.name)} 사원증" loading="lazy">` : '<span class="personnel-no-image">UGN · 사진 미등록</span>'}<i>${person.order}</i></span><span><small>UGN HR FILE ${person.order} · ${escapeHTML(person.employeeId)}</small><b>${escapeHTML(person.name)}</b><strong>${escapeHTML(person.position)} · ${escapeHTML(person.clearance)}</strong><em>인사기록 열람 →</em></span></button>`).join('');
 }
 
 function renderEvidence() {
-  const evidence = [...STATIC_EVIDENCE, ...(app.state.evidence || [])];
+  const evidence = (app.state.evidence || []);
   const categories = ['전체', ...new Set(evidence.map((item) => item.category))];
   $('#evidence-filters').innerHTML = categories.map((category) => `<button class="${app.evidenceFilter === category ? 'active' : ''}" data-evidence-filter="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join('');
   const term = $('#evidence-search').value.trim().toLowerCase();
@@ -214,7 +121,7 @@ function formatEvidenceDate(value) {
 }
 
 function openEvidence(id) {
-  const item = [...STATIC_EVIDENCE, ...(app.state.evidence || [])].find((entry) => entry.id === id); if (!item) return;
+  const item = (app.state.evidence || []).find((entry) => entry.id === id); if (!item) return;
   const source = evidenceSource(item);
   $('#evidence-dialog-classification').textContent = item.category || 'VISUAL EVIDENCE'; $('#evidence-dialog-title').textContent = item.title;
   $('#evidence-case').textContent = item.caseCode || 'UNASSIGNED CASE'; $('#evidence-category').textContent = item.category || '미분류'; $('#evidence-captured').textContent = formatEvidenceDate(item.capturedAt); $('#evidence-location').textContent = item.location || '미기록'; $('#evidence-filename').textContent = item.fileName || '원본 파일'; $('#evidence-description').textContent = item.description || '추가 설명 없음';
@@ -222,61 +129,60 @@ function openEvidence(id) {
 }
 
 function openPersonnel(id) {
-  const person = PERSONNEL.find((entry) => entry.id === id); if (!person) return;
-  $('#personnel-dialog-title').textContent = `${person.name} · 인사기록부`; $('#personnel-file-number').textContent = `UGN HR FILE ${person.order} · ${person.employeeId}`; $('#personnel-id-image').alt = `${person.name} 사원증 원본`; $('#personnel-id-image').src = person.image; $('#personnel-original').href = person.image;
+  const person = (app.state.personnel || []).find((entry) => entry.id === id); if (!person) return;
+  $('#personnel-dialog-title').textContent = `${person.name} · 인사기록부`; $('#personnel-file-number').textContent = `UGN HR FILE ${person.order} · ${person.employeeId}`; $('#personnel-id-image').alt = `${person.name} 사원증 원본`; $('#personnel-id-image').src = person.image; $('#personnel-original').href = person.image || ''; $('#personnel-original').hidden = !person.image; $('#personnel-id-image').hidden = !person.image;
+  $('#personnel-attachment').hidden = !person.attachment; $('#personnel-attachment').href=person.attachment?.url || ''; $('#personnel-attachment').textContent=person.attachment ? '인사 원문 · '+person.attachment.name : '';
   $('#personnel-record-name').textContent = person.name; $('#personnel-record-position').textContent = `${person.position} / ${person.division}`; $('#personnel-record-status').textContent = person.status; $('#personnel-record-id').textContent = person.employeeId; $('#personnel-record-clearance').textContent = person.clearance; $('#personnel-record-division').textContent = person.division; $('#personnel-record-assignment').textContent = person.assignment; $('#personnel-record-appointed').textContent = person.appointed; $('#personnel-record-duties').textContent = person.duties; $('#personnel-record-qualifications').innerHTML = person.qualifications.map((item) => `<li>${escapeHTML(item)}</li>`).join(''); $('#personnel-record-assessment').textContent = person.assessment; $('#personnel-record-note').textContent = person.note; $('#personnel-dialog').showModal();
 }
 
+function formIsEditable(form) { return !IS_PREVIEW && ['DRAFT','RETURNED'].includes(form.status) && ((form.kind === 'field-report' && app.state.role === 'agent') || (form.kind !== 'field-report' && app.state.role === 'director')); }
+function selectWorkflowTab(name) { document.querySelectorAll('#view-workflow [data-workflow-tab]').forEach(button => { const active=button.dataset.workflowTab===name; button.classList.toggle('active',active); button.setAttribute('aria-selected',String(active)); }); document.querySelectorAll('#view-workflow .workflow-pane').forEach(pane=>pane.classList.toggle('active',pane.id==='workflow-'+name)); }
 function renderWorkflow() {
   const items = app.state.checklist[app.state.operation.phase] || []; const done = items.filter((item) => item.done).length; const percent = items.length ? Math.round(done / items.length * 100) : 0;
   $('#workflow-phase').textContent = PHASE_NAMES[app.state.operation.phase]; $('#workflow-progress-label').textContent = `${done} / ${items.length}`; $('#workflow-progress-bar').style.width = `${percent}%`;
   $('#workflow-checklist-items').innerHTML = items.map((item) => `<label class="work-item ${item.done ? 'done' : ''}"><input data-check-id="${item.id}" type="checkbox" ${item.done ? 'checked' : ''}><span><b>${escapeHTML(item.title)}</b><small>${escapeHTML(item.note)}</small></span><em>${escapeHTML(item.source)}</em></label>`).join('');
   const forms = [...app.state.forms].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); $('#form-badge').textContent = forms.length; $('#forms-empty').hidden = forms.length > 0;
-  $('#document-list').innerHTML = forms.map((form) => { const template = FORM_TEMPLATES[form.template] || { code: 'TCB/DOC', label: form.title }; const editable = ['DRAFT', 'RETURNED'].includes(form.status); return `<article class="document-item"><span class="doc-type">${template.code}</span><div><h3>${escapeHTML(form.title || template.label)}</h3><small>${escapeHTML(template.label)} · ${formatDate(form.updatedAt)}${form.comment ? ` · 반려 사유: ${escapeHTML(form.comment)}` : ''}</small></div><span class="status-chip ${form.status.toLowerCase()}">${escapeHTML(form.status)}</span><div class="document-actions"><button class="secondary-button" data-edit-form="${form.id}">${editable ? '계속 작성' : '내용 확인'}</button>${editable ? `<button class="danger-button" data-delete-form="${form.id}">삭제</button>` : ''}</div></article>`; }).join('');
+  $('#document-list').innerHTML = forms.map((form) => { const template = formTemplate(form.template); const editable=formIsEditable(form); const reviewable=!IS_PREVIEW&&app.state.role==='director'&&form.kind==='field-report'&&form.status==='SUBMITTED'; const detail=form.kind==='field-report'?`보고자 ${escapeHTML(form.reporter||form.content?.reporter||'미기록')} · v${form.version||0}`:escapeHTML(template.label); return `<article class="document-item"><span class="doc-type">${escapeHTML(template.code)}</span><div><h3>${escapeHTML(form.title || template.label)}</h3><small>${detail} · ${formatDate(form.updatedAt)}${form.comment ? ` · 반려 사유: ${escapeHTML(form.comment)}` : ''}</small></div><span class="status-chip ${form.status.toLowerCase()}">${escapeHTML(form.status)}</span><div class="document-actions"><button class="secondary-button" data-edit-form="${escapeHTML(form.id)}">${reviewable ? '결재하기' : editable ? '계속 작성' : '내용 확인'}</button>${editable ? `<button class="danger-button" data-delete-form="${escapeHTML(form.id)}">삭제</button>` : ''}</div></article>`; }).join('');
 }
 
 function formatDate(value) { if (!value) return '저장 전'; return new Intl.DateTimeFormat('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value)); }
-function openView(name) { const targetName = $(`#view-${name}`) ? name : 'command'; $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.view === targetName)); $$('.view').forEach((view) => view.classList.toggle('active', view.id === `view-${targetName}`)); $('#main').focus({ preventScroll: true }); history.replaceState(null, '', `#${targetName}`); }
+function openView(name) { const targetName = $(`#view-${name}`) ? name : 'command'; if(targetName==='workflow'&&app.state.role==='agent')selectWorkflowTab('forms'); $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.view === targetName)); $$('.view').forEach((view) => view.classList.toggle('active', view.id === `view-${targetName}`)); $('#main').focus({ preventScroll: true }); history.replaceState(null, '', `#${targetName}`); }
 
-function openDocument(id) { const doc = app.state.documents.find((entry) => entry.id === id); if (!doc) return; $('#document-dialog-title').textContent = doc.title; $('#document-classification').textContent = doc.security; $('#document-frame').src = doc.url; $('#document-new-tab').href = doc.url; $('#document-dialog').showModal(); if (doc.status === 'NEW') mutate('mark-document-read', { id }).catch((error) => showToast(error.message)); }
+function openDocument(id) { const doc = app.state.documents.find((entry) => entry.id === id); if (!doc) return; app.documentId=id; $('#document-dialog-title').textContent = doc.title; $('#document-classification').textContent = doc.security; $('#document-frame').src = doc.url; $('#document-new-tab').href = doc.url; $('#document-dialog').showModal(); if (!IS_PREVIEW && doc.status === 'NEW') mutate('mark-document-read', { id }).catch((error) => showToast(error.message)); }
 
-function openForm(templateId = 'operation-order', formId = null) {
-  app.formId = formId; const existing = formId ? app.state.forms.find((form) => form.id === formId) : null; const templateSelect = $('#form-template'); templateSelect.innerHTML = Object.entries(FORM_TEMPLATES).map(([id, template]) => `<option value="${id}">${template.label}</option>`).join('');
-  templateSelect.value = existing?.template || templateId; templateSelect.disabled = Boolean(existing); $('#form-signature').value = existing?.signature || ''; renderFormSignature(Boolean(existing?.signature)); $('#form-dialog-title').textContent = existing ? (existing.title || FORM_TEMPLATES[existing.template].label) : '신규 전자서류 작성'; renderFormFields(existing?.content || {});
-  const editable = !existing || ['DRAFT', 'RETURNED'].includes(existing.status); $('#form-paper-status').textContent = existing?.status || 'DRAFT'; $$('#document-form input, #document-form textarea, #document-form select').forEach((field) => { if (field.id !== 'form-template') field.disabled = !editable; }); $('#form-signature-button').disabled = !editable; $('#save-draft-button').hidden = !editable; $('#submit-form-button').hidden = !editable; $('#autosave-label').textContent = editable ? '변경사항 없음' : `${existing.status} · 읽기 전용`; $('#form-dialog').showModal();
+function openForm(templateId, formId = null) {
+  if (!['director','agent'].includes(app.state.role)) return;
+  app.formId = formId; const existing = formId ? app.state.forms.find((form) => form.id === formId) : null; if(formId&&!existing)return;
+  const defaultTemplate=app.state.role==='agent'?'field-report':'operation-order'; const selectedId=existing?.template||templateId||defaultTemplate; const allowed=Object.entries(FORM_TEMPLATES).filter(([,template])=>(template.authorRole||'director')===app.state.role); if(existing&&!allowed.some(([id])=>id===existing.template))allowed.push([existing.template,formTemplate(existing.template)]);
+  const templateSelect=$('#form-template'); templateSelect.innerHTML=allowed.map(([id,template])=>`<option value="${escapeHTML(id)}">${escapeHTML(template.label)}</option>`).join(''); templateSelect.value=selectedId; templateSelect.disabled=Boolean(existing)||app.state.role==='agent';
+  const template=formTemplate(selectedId),fieldReport=(existing?.kind==='field-report'||selectedId==='field-report'),editable=!existing?!IS_PREVIEW:formIsEditable(existing),reviewable=!IS_PREVIEW&&app.state.role==='director'&&existing?.kind==='field-report'&&existing.status==='SUBMITTED';
+  $('#form-signature').value=existing?.signature||''; $('#form-dialog-title').textContent=existing?(existing.title||template.label):(fieldReport?'신규 현장 보고서':'신규 전자서류 작성'); $('#form-paper-status').textContent=existing?.status||'DRAFT'; $('#form-signature-label').textContent=fieldReport?'보고자 확인':'지부장 전자서명'; $('#form-reviewer-label').textContent=fieldReport?'지부장 확인':'관제 확인'; $('#form-reviewer-state').textContent=existing?.status==='APPROVED'?'승인 완료':existing?.status==='RETURNED'?'반려됨':'제출 후 결재';
+  renderFormFields(existing?.content||{},!editable); renderFormSignature(Boolean(existing?.signature)); document.querySelectorAll('#document-form input, #document-form textarea, #document-form select').forEach(field=>{if(field.id!=='form-template')field.disabled=!editable;}); $('#form-signature-button').disabled=!editable; $('#save-draft-button').hidden=!editable; $('#submit-form-button').hidden=!editable; $('#submit-form-button').textContent=fieldReport?'보고 확인 후 제출':'서명 후 제출'; $('#autosave-label').textContent=editable?'변경사항 없음':`${existing?.status||'READ ONLY'} · 읽기 전용`;
+  $('#player-review-actions').hidden=!reviewable; $('#player-review-comment').disabled=!reviewable; $('#player-review-comment').value=''; $('#player-review-message').textContent=reviewable?`제출본 v${existing.version||0}를 확인하고 결재하세요.`:''; $('#form-dialog').showModal();
 }
 
 function renderFormSignature(signed) {
-  const button = $('#form-signature-button'); button.classList.toggle('signed', signed); button.setAttribute('aria-pressed', String(signed)); button.setAttribute('aria-label', signed ? `${DIRECTOR_SIGNATURE.name} 전자서명 입력됨. 다시 누르면 삭제` : '서명란 클릭'); $('img', button).hidden = !signed; $('.signature-placeholder', button).hidden = signed;
+  const button=$('#form-signature-button'),fieldReport=$('#form-template').value==='field-report',value=$('#form-signature').value; button.classList.toggle('signed',signed); button.classList.toggle('field-report',fieldReport); button.setAttribute('aria-pressed',String(signed)); button.setAttribute('aria-label',signed?`${value} 확인 입력됨. 다시 누르면 삭제`:(fieldReport?'보고자 확인':'전자서명 입력')); const image=$('img',button),placeholder=$('.signature-placeholder',button); image.hidden=fieldReport||!signed; placeholder.hidden=signed&&!fieldReport; placeholder.textContent=fieldReport?(signed?`보고자 확인 · ${value}`:'보고자 이름을 입력한 뒤 확인'): '서명란 클릭\n전자서명 입력';
 }
 
 function toggleFormSignature() {
-  if ($('#form-signature-button').disabled) return; const signed = Boolean($('#form-signature').value); $('#form-signature').value = signed ? '' : DIRECTOR_SIGNATURE.name; renderFormSignature(!signed); $('#form-error').textContent = ''; scheduleAutosave();
+  if ($('#form-signature-button').disabled) return; const fieldReport=$('#form-template').value==='field-report'; const signed=Boolean($('#form-signature').value); let name=DIRECTOR_SIGNATURE.name; if(fieldReport){name=$('[data-field="reporter"]')?.value.trim();if(!signed&&!name){$('#form-error').textContent='보고자 이름을 먼저 입력해줘.';$('[data-field="reporter"]')?.focus();return;}} $('#form-signature').value=signed?'':name;renderFormSignature(!signed);$('#form-error').textContent='';scheduleAutosave();
 }
 
-function renderFormFields(values = {}) {
-  const template = FORM_TEMPLATES[$('#form-template').value]; $('#form-classification').textContent = `${template.code} · BRANCH INTERNAL`;
-  $('#form-paper-code').textContent = template.code; $('#form-paper-title').textContent = template.label;
-  $('#dynamic-fields').innerHTML = template.fields.map((field) => { const attrs = `name="${field.id}" data-field="${field.id}" ${field.required ? 'required' : ''}`; let control; if (field.type === 'textarea') control = `<textarea ${attrs} placeholder="${escapeHTML(field.placeholder || '')}">${escapeHTML(values[field.id] || '')}</textarea>`; else if (field.type === 'select') control = `<select ${attrs}>${field.options.map((option) => `<option ${values[field.id] === option ? 'selected' : ''}>${escapeHTML(option)}</option>`).join('')}</select>`; else control = `<input ${attrs} value="${escapeHTML(values[field.id] || '')}" placeholder="${escapeHTML(field.placeholder || '')}">`; return `<div class="field-group ${field.full ? 'full' : ''}"><label><span>${escapeHTML(field.label)}</span>${control}</label></div>`; }).join('');
-}
+function renderFormFields(values = {}, readonly = false) { const template=formTemplate($('#form-template').value); $('#form-classification').textContent=`${template.code} · BRANCH INTERNAL`; $('#form-paper-code').textContent=template.code; $('#form-paper-title').textContent=template.label; $('#dynamic-fields').innerHTML=renderFormFieldsHTML(template,values,readonly); }
+function collectForm(){const templateId=$('#form-template').value,template=formTemplate(templateId),existing=app.state.forms.find(f=>f.id===app.formId),content={...(existing?.content||{})};document.querySelectorAll('#document-form [data-field]').forEach(field=>content[field.dataset.field]=field.value.trim());const firstField=template.fields[0]?.id;return{id:app.formId||crypto.randomUUID(),kind:templateId==='field-report'?'field-report':'director-form',template:templateId,title:content[firstField]||template.label,content,signature:$('#form-signature').value.trim(),status:existing?.status||'DRAFT'};}
+async function saveForm(submit=false,quiet=false){const fieldReport=$('#form-template').value==='field-report',author=(fieldReport&&app.state.role==='agent')||(!fieldReport&&app.state.role==='director');if(!author||app.mode!=='server')return;clearTimeout(app.autosaveTimer);const formElement=$('#document-form'),documentData=collectForm();$('#form-error').textContent='';if(submit&&!documentData.signature){$('#form-error').textContent=fieldReport?'보고자 확인란을 눌러 제출을 확인해줘.':'지부장 전자서명란을 눌러 서명한 뒤 제출해줘.';$('#form-signature-button').focus();return;}if(submit&&!formElement.reportValidity())return;$('#autosave-label').textContent=submit?'제출 중…':'저장 중…';$('#form-paper-status').textContent=submit?'SUBMITTING':'SAVING';const action=fieldReport?(submit?'submit-field-report':'save-field-report'):(submit?'submit-form':'save-form');try{await mutate(action,{form:documentData});app.formId=documentData.id;$('#autosave-label').textContent=submit?'제출 완료':'자동저장 완료';$('#form-paper-status').textContent=submit?'SUBMITTED':'DRAFT';if(submit){$('#form-dialog').close();showToast(fieldReport?'현장 보고서가 지부장 수신함에 제출되었습니다.':'서류가 전자서명되어 관제로 제출되었습니다.');}else if(!quiet)showToast(fieldReport?'현장 보고서 초안을 저장했습니다.':'초안이 저장되었습니다.');}catch(error){$('#form-error').textContent=error.message;$('#autosave-label').textContent='저장 실패';$('#form-paper-status').textContent='ERROR';}}
+async function reviewFieldReport(action){const form=app.state.forms.find(entry=>entry.id===app.formId);if(!form||form.kind!=='field-report'||form.status!=='SUBMITTED')return;const comment=$('#player-review-comment').value.trim();if(action==='return-field-report'&&!comment){$('#player-review-message').textContent='반려 사유를 입력해줘.';$('#player-review-comment').focus();return;}for(const id of ['player-review-return','player-review-approve'])$('#'+id).disabled=true;try{await mutate(action,{id:form.id,version:form.version,comment});$('#form-dialog').close();showToast(action==='approve-field-report'?'현장 보고서를 승인했습니다.':'현장 보고서를 반려했습니다.');}catch(error){$('#player-review-message').textContent=error.status===409?'다른 단말에서 보고서가 변경됐어. 최신 내용을 다시 열어줘.':error.message;}finally{for(const id of ['player-review-return','player-review-approve'])$('#'+id).disabled=false;}}
 
-function collectForm() { const templateId = $('#form-template').value; const template = FORM_TEMPLATES[templateId]; const content = {}; $$('[data-field]', $('#document-form')).forEach((field) => { content[field.dataset.field] = field.value.trim(); }); const firstField = template.fields[0]?.id; return { id: app.formId || crypto.randomUUID(), template: templateId, title: content[firstField] || template.label, content, signature: $('#form-signature').value.trim(), status: app.state.forms.find((form) => form.id === app.formId)?.status || 'DRAFT' }; }
-
-async function saveForm(submit = false, quiet = false) {
-  clearTimeout(app.autosaveTimer); const formElement = $('#document-form'); const documentData = collectForm(); $('#form-error').textContent = ''; if (submit && !documentData.signature) { $('#form-error').textContent = '지부장 전자서명란을 눌러 서명한 뒤 제출해줘.'; $('#form-signature-button').focus(); return; } if (submit && !formElement.reportValidity()) return; $('#autosave-label').textContent = submit ? '제출 중…' : '저장 중…'; $('#form-paper-status').textContent = submit ? 'SUBMITTING' : 'SAVING';
-  try { await mutate(submit ? 'submit-form' : 'save-form', { form: documentData }); app.formId = documentData.id; $('#autosave-label').textContent = submit ? '제출 완료' : '자동저장 완료'; $('#form-paper-status').textContent = submit ? 'SUBMITTED' : 'DRAFT'; if (submit) { $('#form-dialog').close(); showToast('서류가 전자서명되어 관제로 제출되었습니다.'); } else if (!quiet) showToast('초안이 저장되었습니다.'); }
-  catch (error) { $('#form-error').textContent = error.message; $('#autosave-label').textContent = '저장 실패'; $('#form-paper-status').textContent = 'ERROR'; }
-}
-
-function scheduleAutosave() { if (!$('#form-dialog').open || $('#save-draft-button').hidden) return; $('#autosave-label').textContent = '저장 대기 중…'; clearTimeout(app.autosaveTimer); app.autosaveTimer = setTimeout(() => saveForm(false, true), 900); }
+function scheduleAutosave() { if (!$('#form-dialog').open || $('#save-draft-button').hidden) return; if($('#form-template').value==='field-report'&&$('#form-signature').value&&$('#form-signature').value!==($('[data-field="reporter"]')?.value.trim()||'')){ $('#form-signature').value=''; renderFormSignature(false); } $('#autosave-label').textContent = '저장 대기 중…'; clearTimeout(app.autosaveTimer); app.autosaveTimer = setTimeout(() => saveForm(false, true), 900); }
 
 document.addEventListener('click', (event) => {
   const notice = event.target.closest('[data-notice-id]'); if (notice) openNotice(notice.dataset.noticeId); const nav = event.target.closest('[data-view]'); if (nav) openView(nav.dataset.view); const go = event.target.closest('[data-go]'); if (go) openView(go.dataset.go); const doc = event.target.closest('[data-doc]'); if (doc) openDocument(doc.dataset.doc);
   const filter = event.target.closest('[data-archive-filter]'); if (filter) { app.archiveFilter = filter.dataset.archiveFilter; renderArchive(); } const template = event.target.closest('[data-template]'); if (template) openForm(template.dataset.template); const edit = event.target.closest('[data-edit-form]'); if (edit) openForm(undefined, edit.dataset.editForm);
-  const deleteForm = event.target.closest('[data-delete-form]'); if (deleteForm && confirm('이 전자서류를 삭제할까? 삭제한 기록은 복구할 수 없어.')) mutate('delete-form', { id: deleteForm.dataset.deleteForm }).then(() => showToast('전자서류를 삭제했습니다.')).catch((error) => showToast(error.message));
+  const deleteForm = event.target.closest('[data-delete-form]'); if (deleteForm && confirm('이 전자서류를 삭제할까? 삭제한 기록은 복구할 수 없어.')) { const form=app.state.forms.find(entry=>entry.id===deleteForm.dataset.deleteForm); mutate(form?.kind==='field-report'?'delete-field-report':'delete-form', { id: deleteForm.dataset.deleteForm }).then(() => showToast('전자서류를 삭제했습니다.')).catch((error) => showToast(error.message)); }
   const evidenceFilter = event.target.closest('[data-evidence-filter]'); if (evidenceFilter) { app.evidenceFilter = evidenceFilter.dataset.evidenceFilter; renderEvidence(); } const evidence = event.target.closest('[data-evidence-id]'); if (evidence) openEvidence(evidence.dataset.evidenceId);
   const personnel = event.target.closest('[data-personnel-id]'); if (personnel) openPersonnel(personnel.dataset.personnelId);
-  const tab = event.target.closest('[data-workflow-tab]'); if (tab) { $$('[data-workflow-tab]').forEach((button) => button.classList.toggle('active', button === tab)); $$('.workflow-pane').forEach((pane) => pane.classList.toggle('active', pane.id === `workflow-${tab.dataset.workflowTab}`)); }
+  const tab = event.target.closest('[data-workflow-tab]'); if (tab) selectWorkflowTab(tab.dataset.workflowTab);
   if (event.target.closest('[data-close-document]')) { $('#document-dialog').close(); $('#document-frame').src = 'about:blank'; }
   if (event.target.closest('[data-close-personnel]')) { $('#personnel-dialog').close(); $('#personnel-id-image').src = ''; }
   if (event.target.closest('[data-close-form]')) { clearTimeout(app.autosaveTimer); $('#form-error').textContent = ''; $('#form-dialog').close(); }
@@ -285,8 +191,43 @@ document.addEventListener('click', (event) => {
 
 document.addEventListener('change', (event) => { if (event.target.matches('[data-check-id]')) mutate('toggle-checklist', { id: event.target.dataset.checkId, done: event.target.checked }).catch((error) => showToast(error.message)); if (event.target.id === 'form-template') renderFormFields(); });
 document.addEventListener('keydown', (event) => { const row = event.target.closest('.archive-row-link[data-doc]'); if (row && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openDocument(row.dataset.doc); } });
-$('#archive-search').addEventListener('input', renderArchive); $('#evidence-search').addEventListener('input', renderEvidence); $('#evidence-image').addEventListener('load', () => { $('#evidence-loading').hidden = true; }); $('#evidence-image').addEventListener('error', () => { $('#evidence-loading').hidden = false; $('#evidence-loading').textContent = 'IMAGE LOAD FAILED'; }); $('#new-form-button').addEventListener('click', () => openForm()); $('#new-form-button-secondary').addEventListener('click', () => openForm()); $('#save-draft-button').addEventListener('click', () => saveForm(false)); $('#submit-form-button').addEventListener('click', () => saveForm(true)); $('#document-form').addEventListener('input', scheduleAutosave); $('#document-dialog').addEventListener('close', () => { $('#document-frame').src = 'about:blank'; }); $('#evidence-dialog').addEventListener('close', () => { $('#evidence-image').src = ''; });
-$('#form-signature-button').addEventListener('click', toggleFormSignature);
-$('#access-form').addEventListener('submit', async (event) => { event.preventDefault(); $('#access-error').textContent = ''; try { await api('/api/auth', { method: 'POST', body: JSON.stringify({ code: $('#access-code').value, role: 'player' }) }); $('#access-gate').hidden = true; app.mode = 'server'; await Promise.all([loadState(), playLoginSequence('player')]); } catch (error) { $('#access-error').textContent = error.message; } });
+$('#archive-search').addEventListener('input', renderArchive); $('#evidence-search').addEventListener('input', renderEvidence); $('#evidence-image').addEventListener('load', () => { $('#evidence-loading').hidden = true; }); $('#evidence-image').addEventListener('error', () => { $('#evidence-loading').hidden = false; $('#evidence-loading').textContent = 'IMAGE LOAD FAILED'; }); $('#new-form-button').addEventListener('click', () => openForm()); $('#new-form-button-secondary').addEventListener('click', () => openForm()); $('#save-draft-button').addEventListener('click', () => saveForm(false)); $('#submit-form-button').addEventListener('click', () => saveForm(true)); $('#document-form').addEventListener('input', scheduleAutosave); $('#document-dialog').addEventListener('close', () => { app.documentId=null; $('#document-frame').src = 'about:blank'; $('#document-new-tab').removeAttribute('href'); if (app.mode === 'server') loadState().catch(error => showToast(error.message)); }); $('#evidence-dialog').addEventListener('close', () => { $('#evidence-image').src = ''; });
+$('#form-signature-button').addEventListener('click', toggleFormSignature); $('#player-review-approve').addEventListener('click',()=>reviewFieldReport('approve-field-report')); $('#player-review-return').addEventListener('click',()=>reviewFieldReport('return-field-report'));
+$('#access-form').addEventListener('submit', async (event) => { event.preventDefault(); $('#access-error').textContent = ''; try { await api('/api/auth', { method: 'POST', body: JSON.stringify({ code: $('#access-code').value, role: 'player' }) }); $('#access-code').value = ''; authChannel?.postMessage('changed'); await loadState(); await playLoginSequence('player'); } catch (error) { $('#access-error').textContent = error.message; } });
+
+function clearSessionView(message = '') {
+  app.epoch += 1;
+  clearTimeout(app.autosaveTimer);
+  app.mode = 'connecting'; app.state = structuredClone(DEFAULT_STATE); app.formId = null;
+  app.archiveFilter = app.evidenceFilter = '전체'; casesUI.clear();
+  try { localStorage.removeItem('tcb-offline-state'); for (const key of Object.keys(localStorage)) if (key.startsWith('tcb-archive-entry-')) localStorage.removeItem(key); } catch {}
+  $$('dialog').forEach(dialog => { if (dialog.open) dialog.close(); });
+  $$('iframe').forEach(frame => { frame.src = 'about:blank'; });
+  $$('img').forEach(img => { if (img.hasAttribute('src')) img.removeAttribute('src'); });
+  $$('dialog a[href]').forEach(link => link.removeAttribute('href'));
+  $$('form').forEach(form => form.reset());
+  ['#personnel-grid','#archive-rows','#evidence-grid','#document-list','#dynamic-fields','#city-content'].forEach(id => { $(id).replaceChildren(); });
+  ['#personnel-dialog-title','#personnel-file-number','#personnel-record-name','#personnel-record-position','#personnel-record-status','#personnel-record-id','#personnel-record-clearance','#personnel-record-division','#personnel-record-assignment','#personnel-record-appointed','#personnel-record-duties','#personnel-record-qualifications','#personnel-record-assessment','#personnel-record-note','#evidence-dialog-title','#evidence-case','#evidence-category','#evidence-captured','#evidence-location','#evidence-filename','#evidence-description'].forEach(id => $(id).textContent = '');
+  renderAll();
+  $('.app-shell').hidden = true; $('#access-gate').hidden = false; $('#access-error').textContent = message;
+}
+function renderRole() {
+  const director=app.state.role==='director',agent=app.state.role==='agent',player=director||agent; Object.assign(DIRECTOR_SIGNATURE,{name:'',image:''},app.state.directorSignature||{}); $('#session-role').textContent=director?'지부장':agent?'현장요원':'접속 대기'; $('#workflow-title').textContent=agent?'현장 보고':'서류 및 체크리스트';
+  document.querySelectorAll('[data-view="workflow"], [data-go="workflow"], #new-form-button, #new-form-button-secondary').forEach(el=>{el.hidden=!player||IS_PREVIEW;}); document.querySelectorAll('[data-template]').forEach(el=>{el.hidden=!director||IS_PREVIEW;}); document.querySelectorAll('[data-check-id]').forEach(el=>{el.disabled=!director||IS_PREVIEW;}); $('#view-workflow').hidden=!player; $('#workflow-checklist-tab').hidden=!director; $('#new-form-button').textContent=agent?'+ 새 현장 보고서':'+ 새 서류 작성'; $('#new-form-button-secondary').textContent=agent?'새 현장 보고서':'새 서류'; $('#form-toolbar-copy').textContent=agent?'공용 보고서함입니다. 초안은 함께 보이며 제출 후 지부장이 검토합니다.':'지부장 서류와 제출된 현장 보고서를 한곳에서 확인합니다.';
+  if(agent&&$('#view-workflow').classList.contains('active'))selectWorkflowTab('forms'); $('#personnel-count').textContent=app.state.personnel.length+' RECORDS';
+  if(IS_PREVIEW){$('#logout-button').hidden=true;$('#preview-banner').hidden=false;$('#preview-role-label').textContent=(PREVIEW_ROLE==='director'?'지부장':'현장요원')+' 미리보기 · 읽기 전용';document.querySelectorAll('[data-check-id],[data-delete-form],#player-review-approve,#player-review-return').forEach(el=>{el.disabled=true;});document.querySelectorAll('#new-form-button,#new-form-button-secondary,[data-template],#player-review-actions').forEach(el=>{el.hidden=true;el.disabled=true;});}
+  $('#city-content').innerHTML=app.state.cityHtml||'<p class="empty-state">공개된 도시 자료가 없습니다.</p>'; document.querySelectorAll('[data-doc]').forEach(el=>{el.hidden=!app.state.documents.some(doc=>doc.id===el.dataset.doc);}); if(app.mode==='server'){ $('.operation-visual').src=IS_PREVIEW?'/api/preview-files?role='+PREVIEW_ROLE+'&type=support&id=operation-image':'/media/evidence/taeyang-shadow-main.webp'; if(director)$('#form-signature-button img').src=DIRECTOR_SIGNATURE.image; }
+}
+const casesUI=createCasesUI({getState:()=>app.state,setState:state=>{app.state=state;renderAll();},toast:showToast,gm:false,openResource:(type,id)=>{if(type==='personnel')openPersonnel(id);else if(type==='documents')openDocument(id);else if(type==='evidence')openEvidence(id);else if(type==='forms')openForm(undefined,id);}});
+$('#preview-exit').addEventListener('click',()=>{if(window.parent!==window)window.parent.postMessage({type:'tcb-close-preview'},location.origin);});
+$('#logout-button').addEventListener('click', async () => {
+  clearSessionView();
+  try { await api('/api/auth', {method:'DELETE'}); authChannel?.postMessage('changed'); }
+  catch { $('#access-error').textContent = '로그아웃 요청을 완료하지 못했습니다. 다시 시도하세요.'; }
+});
+const authChannel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tcb-auth') : null;
+if (authChannel) authChannel.onmessage = () => boot();
+window.addEventListener('pageshow', event => { if (event.persisted) boot(); });
+
 function updateClock() { const now = new Date(); const date = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now); const time = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false }).format(now); $('#system-clock').textContent = `${date} · ${time} KST`; }
 updateClock(); setInterval(updateClock, 30_000); openView(location.hash.slice(1) || 'command'); boot(); setInterval(() => { if (app.mode.startsWith('server') && document.visibilityState === 'visible') loadState().catch(() => {}); }, 15_000);

@@ -1,65 +1,14 @@
 const SIGNATURE = { name: '최영호', image: '/media/signatures/choi-youngho-fitted.png' };
 
-const SCHEMAS = {
-  'hq-urgent': {
-    code: 'HQ RESPONSE / DIRECTOR', title: '지부장 회신 기록', mode: 'hq',
-    fields: [
-      { id: 'decision', label: '회신 결정', type: 'select', options: ['본부 인계 협의', '지부 보호 지속', 'P-07 인계 유예'] },
-      { id: 'responseAt', label: '회신 일시', type: 'datetime-local' },
-      { id: 'opinion', label: '지부장 의견', type: 'textarea', full: true },
-      { id: 'nextAction', label: '후속 조치 및 재검 일정', type: 'textarea', full: true }
-    ], signatures: [{ id: 'branchDirector', label: '지부장 서명', target: '.reason', asset: true }]
-  },
-  'medical-isea': {
-    code: 'MEDICAL FOLLOW-UP', title: '추가 의료 경과 기록', mount: '.sign',
-    fields: [
-      { id: 'observedAt', label: '관찰 일시', type: 'datetime-local' },
-      { id: 'condition', label: '현재 판정', type: 'select', options: ['의무 관찰', '안정', '현장 투입 보류', '추가 검사 필요', '격리 관찰'] },
-      { id: 'vitals', label: '활력·침식 수치', placeholder: '활력, 침식률, 특이 변화' },
-      { id: 'observations', label: '추가 관찰 소견', type: 'textarea', full: true },
-      { id: 'treatment', label: '처치 및 투입 제한', type: 'textarea', full: true }
-    ], signatures: [
-      { id: 'medicalOfficer', label: '의무 담당자 서명', target: '.sign .sig:nth-child(1)' },
-      { id: 'branchDirector', label: '지부장 확인', target: '.sign .sig:nth-child(2)', asset: true }
-    ]
-  },
-  'sera-profile': {
-    code: 'PROTECTION DECISION', title: '임시 보호 결정 기록', mount: '.signatures',
-    fields: [
-      { id: 'placement', label: '처우 선택', type: 'select', options: ['지부 숙소 보호', 'UGN 본부 인계', '외부 협력처 보호', '임시 은폐'] },
-      { id: 'resources', label: '시설·자원 배정', type: 'textarea', full: true },
-      { id: 'reason', label: '결정 사유', type: 'textarea', full: true }
-    ], signatures: [
-      { id: 'protectionOfficer', label: '보호 담당자 서명', target: '.signatures .sig:nth-child(1)' },
-      { id: 'medicalOfficer', label: '의무 담당자 서명', target: '.signatures .sig:nth-child(2)' },
-      { id: 'branchDirector', label: '지부장 결정·서명', target: '.signatures .sig:nth-child(3)', asset: true }
-    ]
-  },
-  'suhwan-card': {
-    code: 'TEMPORARY ID ISSUE', title: '임시 신원 카드 발급 기록', mount: '.signatures',
-    fields: [
-      { id: 'issuedAt', label: '발급 일자', type: 'date' }, { id: 'housing', label: '현재 보호처' },
-      { id: 'medicalNote', label: '의료 확인 내용', type: 'textarea', full: true },
-      { id: 'issueNote', label: '발급 및 보호 메모', type: 'textarea', full: true }
-    ], signatures: [
-      { id: 'protectionOfficer', label: '보호 담당자 서명', target: '.signatures .sig:nth-child(1)' },
-      { id: 'medicalOfficer', label: '의료 확인 서명', target: '.signatures .sig:nth-child(2)' },
-      { id: 'branchDirector', label: '지부장 승인 서명', target: '.signatures .sig:nth-child(3)', asset: true }
-    ]
-  },
-  handover: {
-    code: 'HANDOVER ACCEPTANCE', title: '인수 확인 기록', mount: '.sign',
-    fields: [
-      { id: 'acceptedAt', label: '인수 일시', type: 'datetime-local' },
-      { id: 'exceptions', label: '인수 제외·유보 사항', type: 'textarea', full: true },
-      { id: 'notes', label: '추가 인수 메모', type: 'textarea', full: true }
-    ], signatures: [{ id: 'incomingDirector', label: '인수자 서명', target: '.sign .box:nth-child(1)', asset: true }]
-  }
-};
+
 
 const script = document.querySelector('script[data-archive-id]');
 const documentId = script?.dataset.archiveId;
-const schema = SCHEMAS[documentId];
+SIGNATURE.image = '/api/files?type=documents&id=' + encodeURIComponent(documentId) + '&asset=signature';
+let initialState;
+try { const response = await fetch('/api/state', {cache:'no-store'}); if (response.ok) initialState = (await response.json()).state; } catch {}
+const schema = initialState?.documents.find(doc => doc.id === documentId)?.editorSchema;
+if (!schema) document.body.replaceChildren(Object.assign(document.createElement('p'), {textContent:'문서 접근 권한을 확인할 수 없습니다.'}));
 
 if (schema) {
   const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
@@ -79,7 +28,8 @@ if (schema) {
   `;
   document.head.append(style);
 
-  let mode = 'server';
+  let canEdit = false;
+  let loadedRevision = null;
   let currentEntry = { id: documentId, content: {}, signatures: {} };
   let saveTimer = 0;
   let saving = false;
@@ -95,12 +45,13 @@ if (schema) {
   }
 
   async function saveShared(entry) {
-    let state = await getSharedState();
+    if (!canEdit) throw new Error('읽기 전용 문서입니다.');
+    let state = {revision: loadedRevision};
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const response = await fetch('/api/state', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save-archive-document', payload: { entry }, revision: state.revision }) });
       const data = await response.json().catch(() => ({}));
-      if (response.ok) return data.state.archiveEntries?.[documentId];
-      if (response.status === 409 && data.state) { state = data.state; continue; }
+      if (response.ok) { loadedRevision = data.state.revision; return data.state.archiveEntries?.[documentId]; }
+      if (response.status === 409) { canEdit = false; clearTimeout(saveTimer); throw new Error('다른 단말에서 기록이 변경되었습니다. 새로 열어 내용을 확인하세요.'); }
       throw new Error(data.error || '공유 기록을 저장하지 못했습니다.');
     }
     throw new Error('다른 단말의 변경과 충돌했습니다. 다시 눌러 줘.');
@@ -110,21 +61,20 @@ if (schema) {
   const savedStatus = (entry) => entry?.updatedAt ? `저장됨 · ${new Date(entry.updatedAt).toLocaleString('ko-KR')}` : '새 기록 · 선택 대기';
 
   async function persist(quiet = false) {
+    if (!canEdit) return;
     if (saving) { saveQueued = true; return; }
     clearTimeout(saveTimer); saving = true;
     if (saveButton) saveButton.disabled = true;
     setStatus('공유 기록 저장 중…');
     const entry = collectEntry();
     try {
-      let saved;
-      if (mode === 'server') saved = await saveShared(entry);
-      else { saved = { ...entry, updatedAt: new Date().toISOString() }; localStorage.setItem(`tcb-archive-entry-${documentId}`, JSON.stringify(saved)); }
+      const saved = await saveShared(entry);
       currentEntry = saved;
-      setStatus(mode === 'server' ? savedStatus(saved) : '이 기기에 저장됨 · 서버 연결 없음');
+      setStatus(savedStatus(saved));
     } catch (error) { setStatus(error.message); if (!quiet) console.error(error); }
     finally {
       saving = false;
-      if (saveButton) saveButton.disabled = false;
+      if (saveButton) saveButton.disabled = !canEdit;
       if (saveQueued) {
         saveQueued = false;
         window.setTimeout(() => persist(true), 50);
@@ -133,6 +83,7 @@ if (schema) {
   }
 
   function scheduleSave() {
+    if (!canEdit) return;
     setStatus('변경됨 · 자동 저장 대기');
     if (saving) saveQueued = true;
     clearTimeout(saveTimer);
@@ -141,8 +92,8 @@ if (schema) {
 
   function activate(element, handler) {
     element.tabIndex = 0;
-    element.addEventListener('click', handler);
-    element.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handler(); } });
+    element.addEventListener('click', event => { if (canEdit) handler(event); });
+    element.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (canEdit) handler(); } });
   }
 
   const signatureHTML = (signed) => signed ? `<img src="${SIGNATURE.image}" alt="${SIGNATURE.name} 전자서명">` : '<span>서명란 클릭<br>전자서명 입력</span>';
@@ -238,14 +189,24 @@ if (schema) {
       document.querySelectorAll('[data-entry-attachment]').forEach((item) => { const selected = attachments.has(item.dataset.entryAttachment); item.classList.toggle('selected', selected); item.setAttribute('aria-checked', String(selected)); });
       document.querySelectorAll('[data-entry-decision]').forEach((item) => { const selected = item.dataset.entryDecision === currentEntry.content.decision; item.classList.toggle('selected', selected); item.setAttribute('aria-checked', String(selected)); });
     }
-    setStatus(mode === 'server' ? savedStatus(entry) : '로컬 미리보기 · 이 기기에만 저장');
+    setStatus(savedStatus(entry));
   }
 
   async function loadEntry() {
-    try { const state = await getSharedState(); applyEntry(state.archiveEntries?.[documentId]); }
-    catch { mode = 'local'; const saved = localStorage.getItem(`tcb-archive-entry-${documentId}`); applyEntry(saved ? JSON.parse(saved) : {}); }
+    try {
+      const state = await getSharedState();
+      if (!state.documents.some(doc => doc.id === documentId)) throw new Error('문서 접근 권한이 없습니다.');
+      canEdit = state.role === 'director'; loadedRevision = state.revision;
+      applyEntry(state.archiveEntries?.[documentId] || {});
+      document.querySelectorAll('input,textarea,select,button').forEach(el => { el.disabled = !canEdit; });
+      if (!canEdit) setStatus('읽기 전용 · 작성은 지부장 권한이 필요합니다.');
+    } catch {
+      canEdit = false; clearTimeout(saveTimer);
+      document.body.replaceChildren(Object.assign(document.createElement('p'), {textContent:'인증 상태 또는 문서 접근 권한을 확인할 수 없습니다. 창을 닫고 다시 접속하세요.'}));
+    }
   }
 
   if (schema.mode === 'hq') setupHq(); else setupInlineDocument();
+  document.querySelectorAll('input,textarea,select,button').forEach(el => { el.disabled = true; });
   loadEntry();
 }

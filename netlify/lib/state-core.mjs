@@ -2,13 +2,16 @@ const TEMPLATE_CHECKLIST = {
   "operation-order": ["assignment", "operation-order"],
   "hq-report": ["hq-report"],
   "protection-record": ["protected-review"],
-  "settlement-report": ["result-record", "condition-update", "payroll", "maintenance"]
+  "settlement-report": ["result-record", "condition-update", "payroll", "maintenance"],
+  "field-report": []
 };
 
 const EDITABLE_ARCHIVE_DOCUMENTS = new Set(["hq-urgent", "medical-isea", "sera-profile", "suhwan-card", "handover"]);
 const PLAYER_ACTIONS = new Set(["toggle-checklist", "save-form", "submit-form", "delete-form", "mark-document-read", "save-archive-document"]);
+const FIELD_REPORT_ACTIONS = new Set(["save-field-report", "submit-field-report", "delete-field-report"]);
+const DIRECTOR_REVIEW_ACTIONS = new Set(["approve-field-report", "return-field-report"]);
 const GM_ACTIONS = new Set(["approve-form", "return-form", "delete-form-control", "set-phase", "add-notice", "delete-notice", "add-evidence", "update-evidence", "delete-evidence", "reset-state"]);
-const NOTICE_TARGETS = new Set(["command", "workflow", "archive", "evidence", "personnel", "city"]);
+const NOTICE_TARGETS = new Set(["command", "workflow", "archive", "evidence", "personnel", "city", "cases"]);
 
 function text(value, max = 8000) {
   return String(value ?? "").trim().slice(0, max);
@@ -56,40 +59,60 @@ function completeChecklist(state, template) {
 }
 
 export function actionRole(action) {
-  if (PLAYER_ACTIONS.has(action)) return "player";
+  if (PLAYER_ACTIONS.has(action)) return "director";
+  if (FIELD_REPORT_ACTIONS.has(action)) return "agent";
+  if (DIRECTOR_REVIEW_ACTIONS.has(action)) return "director";
   if (GM_ACTIONS.has(action)) return "gm";
   return null;
 }
 
-export function applyAction(state, action, payload = {}) {
+export function applyAction(state, action, payload = {}, actorRole = "director") {
   if (!actionRole(action)) throw new Error("허용되지 않은 작업입니다.");
   if (action === "toggle-checklist") {
     const item = (state.checklist[state.operation.phase] || []).find((entry) => entry.id === text(payload.id, 80));
     if (!item) throw new Error("체크 항목을 찾을 수 없습니다.");
     item.done = Boolean(payload.done);
   }
-  if (action === "save-form" || action === "submit-form") {
+  if (["save-form", "submit-form", "save-field-report", "submit-field-report"].includes(action)) {
+    const fieldReport = action.endsWith("field-report");
+    if ((fieldReport && actorRole !== "agent") || (!fieldReport && actorRole !== "director")) throw new Error("이 역할은 해당 서류를 작성할 수 없습니다.");
     const form = sanitizeForm(payload.form);
     if (!form.id) throw new Error("서류 식별자가 없습니다.");
-    if (action === "submit-form" && !form.signature) throw new Error("전자서명이 필요합니다.");
+    if (fieldReport !== (form.template === "field-report")) throw new Error("역할에 맞지 않는 서식입니다.");
+    if (!fieldReport && action === "submit-form" && !form.signature) throw new Error("전자서명이 필요합니다.");
+    if (fieldReport && action === "submit-field-report") {
+      for (const id of ["reportTitle", "reporter", "location", "observedAt", "details"]) if (!form.content[id]) throw new Error("현장 보고 필수 항목을 모두 입력하세요.");
+      form.signature = form.content.reporter;
+    }
     const existing = state.forms.find((entry) => entry.id === form.id);
+    const expectedKind = fieldReport ? "field-report" : "director-form";
+    if (existing && existing.kind !== expectedKind) throw new Error("다른 종류의 서류는 덮어쓸 수 없습니다.");
     if (existing && !["DRAFT", "RETURNED"].includes(existing.status)) throw new Error("제출된 서류는 수정할 수 없습니다.");
     const now = new Date().toISOString();
-    const next = { ...form, status: action === "submit-form" ? "SUBMITTED" : (existing?.status === "RETURNED" ? "RETURNED" : "DRAFT"), createdAt: existing?.createdAt || now, updatedAt: now, comment: existing?.comment || "" };
+    const submitted = action === "submit-form" || action === "submit-field-report";
+    const version = fieldReport ? Number(existing?.version || 0) + (submitted ? 1 : 0) : undefined;
+    const next = { ...form, audience: existing?.audience || [], kind: expectedKind, authorRole: fieldReport ? "agent" : "director", reviewerRole: fieldReport ? "director" : "gm", status: submitted ? "SUBMITTED" : (existing?.status === "RETURNED" ? "RETURNED" : "DRAFT"), createdAt: existing?.createdAt || now, updatedAt: now, comment: submitted ? "" : (existing?.comment || ""), ...(fieldReport ? { reporter: form.content.reporter || "", version } : {}) };
+    if (fieldReport && submitted) { next.submittedAt = now; next.lastSubmitted = { title: form.title, content: structuredClone(form.content), signature: form.signature, submittedAt: now, version }; }
     if (existing) Object.assign(existing, next); else state.forms.unshift(next);
-    if (action === "submit-form") { completeChecklist(state, form.template); activity(state, "FORM_SUBMITTED", form.title); }
+    if (submitted) {
+      if (!fieldReport) completeChecklist(state, form.template);
+      activity(state, fieldReport ? "FIELD_REPORT_SUBMITTED" : "FORM_SUBMITTED", form.title);
+      if (fieldReport) { state.notices ||= []; state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title: "현장 보고서 도착", body: `${form.title} · ${form.content.reporter}`.slice(0, 240), priority: true, target: "workflow", formId: form.id, audience: ["director"] }); state.notices = state.notices.slice(0, 20); }
+    }
   }
-  if (action === "delete-form" || action === "delete-form-control") {
+  if (action === "delete-form" || action === "delete-field-report" || action === "delete-form-control") {
     const index = state.forms.findIndex((entry) => entry.id === text(payload.id, 80));
     if (index < 0) throw new Error("삭제할 서류를 찾을 수 없습니다.");
     const form = state.forms[index];
-    if (action === "delete-form" && !["DRAFT", "RETURNED"].includes(form.status)) throw new Error("제출 또는 승인된 서류는 관제실에서만 삭제할 수 있습니다.");
+    if (action === "delete-form" && (actorRole !== "director" || form.kind !== "director-form")) throw new Error("이 서류를 삭제할 수 없습니다.");
+    if (action === "delete-field-report" && (actorRole !== "agent" || form.kind !== "field-report")) throw new Error("이 보고서를 삭제할 수 없습니다.");
+    if (action !== "delete-form-control" && !["DRAFT", "RETURNED"].includes(form.status)) throw new Error("제출 또는 승인된 서류는 관제실에서만 삭제할 수 있습니다.");
     state.forms.splice(index, 1);
     activity(state, action === "delete-form-control" ? "FORM_DELETED_CONTROL" : "FORM_DELETED", form.title);
   }
   if (action === "mark-document-read") {
     const document = state.documents.find((entry) => entry.id === text(payload.id, 80));
-    if (document?.status === "NEW") document.status = "RELEASED";
+    if (document) { state.readReceipts ||= {}; state.readReceipts[actorRole] ||= {}; state.readReceipts[actorRole][document.id] = new Date().toISOString(); }
   }
   if (action === "save-archive-document") {
     const entry = sanitizeArchiveEntry(payload.entry);
@@ -97,24 +120,30 @@ export function applyAction(state, action, payload = {}) {
     state.archiveEntries[entry.id] = { ...entry, updatedAt: new Date().toISOString() };
     activity(state, "ARCHIVE_UPDATED", entry.id);
   }
-  if (action === "approve-form" || action === "return-form") {
+  if (["approve-form", "return-form", "approve-field-report", "return-field-report"].includes(action)) {
+    const fieldReport = action.endsWith("field-report");
+    if ((fieldReport && actorRole !== "director") || (!fieldReport && actorRole !== "gm")) throw new Error("이 서류의 결재자가 아닙니다.");
     const form = state.forms.find((entry) => entry.id === text(payload.id, 80));
-    if (!form || form.status !== "SUBMITTED") throw new Error("승인 대기 중인 서류가 아닙니다.");
-    form.status = action === "approve-form" ? "APPROVED" : "RETURNED";
+    if (!form || form.status !== "SUBMITTED" || (fieldReport ? form.kind !== "field-report" : form.kind !== "director-form")) throw new Error("승인 대기 중인 서류가 아닙니다.");
+    if (fieldReport && Number(payload.version) !== Number(form.version)) throw new Error("제출 버전이 변경되었습니다. 최신 보고서를 다시 확인하세요.");
+    const approved = action === "approve-form" || action === "approve-field-report";
+    form.status = approved ? "APPROVED" : "RETURNED";
     form.comment = text(payload.comment, 600);
     form.updatedAt = new Date().toISOString();
-    activity(state, action === "approve-form" ? "FORM_APPROVED" : "FORM_RETURNED", form.title);
-    if (action === "return-form") {
+    form.reviewedAt = form.updatedAt;
+    activity(state, fieldReport ? (approved ? "FIELD_REPORT_APPROVED" : "FIELD_REPORT_RETURNED") : (approved ? "FORM_APPROVED" : "FORM_RETURNED"), form.title);
+    if (!approved) {
       const reason = form.comment || "반려 사유가 입력되지 않았습니다.";
       state.notices ||= [];
       state.notices.unshift({
         id: crypto.randomUUID(),
         time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }),
-        title: "전자서류 반려",
+        title: fieldReport ? "현장 보고서 반려" : "전자서류 반려",
         body: `${form.title} · ${reason}`.slice(0, 240),
         priority: true,
         target: "workflow",
-        formId: form.id
+        formId: form.id,
+        audience: [fieldReport ? "agent" : "director"]
       });
       state.notices = state.notices.slice(0, 20);
     }
@@ -128,7 +157,7 @@ export function applyAction(state, action, payload = {}) {
   if (action === "add-notice") {
     const title = text(payload.title, 100); const body = text(payload.body, 240); const requestedTarget = text(payload.target, 40); const target = NOTICE_TARGETS.has(requestedTarget) ? requestedTarget : "command"; const targetId = text(payload.targetId, 100);
     if (!title || !body) throw new Error("알림 제목과 내용이 필요합니다.");
-    state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title, body, priority: Boolean(payload.priority), target, ...(targetId ? { targetId } : {}) });
+    state.notices.unshift({ id: crypto.randomUUID(), time: new Date().toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false }), title, body, priority: Boolean(payload.priority), target, audience: ['director','agent'], ...(targetId ? { targetId } : {}) });
     state.notices = state.notices.slice(0, 20);
     activity(state, "NOTICE_SENT", title);
   }
@@ -143,7 +172,7 @@ export function applyAction(state, action, payload = {}) {
     const evidence = sanitizeEvidence(payload.evidence);
     state.evidence ||= [];
     if (state.evidence.some((entry) => entry.id === evidence.id)) throw new Error("이미 등록된 증거 사진입니다.");
-    state.evidence.unshift(evidence);
+    state.evidence.unshift({ ...evidence, audience: [] });
     state.evidence = state.evidence.slice(0, 200);
     activity(state, "EVIDENCE_ADDED", evidence.title);
   }

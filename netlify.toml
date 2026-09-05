@@ -1,10 +1,23 @@
 [build]
-  publish = "public"
+  publish = "dist-netlify"
   functions = "netlify/functions"
   command = "npm run build"
 
 [functions]
   node_bundler = "esbuild"
+  included_files = ["public/archive/**", "public/media/**"]
+
+[[redirects]]
+  from = "/archive/*"
+  to = "/.netlify/functions/files?path=/archive/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/media/*"
+  to = "/.netlify/functions/files?path=/media/:splat"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/api/*"

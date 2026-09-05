@@ -1,0 +1,23 @@
+import { requireSession,isSameOriginRequest } from '../lib/auth.mjs';
+import {readState,writeState} from '../lib/store.mjs';
+import {normalizeState,projectState} from '../lib/permissions.mjs';
+import {InputError} from '../lib/upload-core.mjs';
+import {singleAudience} from '../lib/personnel-core.mjs';
+export function createCasesHandler({read=readState,write=writeState}={}){return async request=>{
+ const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'private, no-store',Vary:'Cookie'}});const session=requireSession(request);
+ if(!session)return json({error:'인증이 필요합니다.'},401);if(session.role!=='gm')return json({error:'관제 권한이 필요합니다.'},403);if(request.method!=='POST')return json({error:'허용되지 않은 요청입니다.'},405);if(!isSameOriginRequest(request)||request.headers.has('x-tcb-preview'))return json({error:'읽기 전용이거나 허용되지 않은 출처입니다.'},403);
+ try{const raw=await request.text();if(Buffer.byteLength(raw)>50000)throw new InputError('요청이 너무 큽니다.',413);let body;try{body=JSON.parse(raw)}catch{throw new InputError('요청을 확인하세요.')}
+ const actions={save:['action','revision','id','data','links'],audience:['action','revision','id','type','audience'],delete:['action','revision','id'],move:['action','revision','id','direction']};
+ if(!body||!Object.hasOwn(actions,body.action)||Object.keys(body).some(k=>!actions[body.action].includes(k)))throw new InputError('자료 한 건의 작업만 요청하세요.');
+ const original=await read(),state=normalizeState(original);if(body.revision!==state.revision)return json({error:'다른 단말에서 변경되었습니다. 최신 상태를 확인하세요.',state:projectState(state,'gm')},409);
+ let record=state.cases.find(c=>c.id===body.id);
+ if(body.action==='audience'){if(!['cases','personnel','documents','evidence'].includes(body.type))throw new InputError('해당 자료는 공개 대상을 변경할 수 없습니다.');record=state[body.type].find(r=>r.id===body.id);if(!record)throw new InputError('자료를 찾을 수 없습니다.',404);record.audience=singleAudience(body);}
+ else if(body.action==='save'){
+ if(body.id&&!record)throw new InputError('사건철을 찾을 수 없습니다.',404);const limits={caseCode:100,title:160,summary:4000,status:80,gmNote:8000},fields={};if(!body.data||Object.keys(body.data).some(k=>!Object.hasOwn(limits,k)))throw new InputError('사건 정보를 확인하세요.');for(const [key,max]of Object.entries(limits)){if(typeof body.data[key]!=='string'||body.data[key].length>max)throw new InputError('사건 정보의 길이와 형식을 확인하세요.');fields[key]=body.data[key].trim();}if(!fields.caseCode||!fields.title)throw new InputError('사건번호와 제목을 입력하세요.');if(state.cases.some(c=>c.id!==body.id&&c.caseCode.normalize('NFKC').toUpperCase()===fields.caseCode.normalize('NFKC').toUpperCase()))throw new InputError('이미 사용 중인 사건번호입니다.',422);
+ if(!Array.isArray(body.links)||body.links.length>150)throw new InputError('연결 자료를 확인하세요.');const seen=new Set();const links=body.links.map((l,i)=>{if(!l||Object.keys(l).some(k=>!['type','id'].includes(k))||!['personnel','documents','evidence','forms'].includes(l.type)||typeof l.id!=='string')throw new InputError('연결 형식을 확인하세요.');const key=l.type+':'+l.id;if(seen.has(key))throw new InputError('같은 자료를 중복 연결할 수 없습니다.');seen.add(key);if(!state[l.type].some(r=>r.id===l.id)&&!record?.links?.some(old=>old.type===l.type&&old.id===l.id))throw new InputError('연결할 자료를 찾을 수 없습니다.',404);return{type:l.type,id:l.id,order:i};});
+ if(!record){record={id:crypto.randomUUID(),audience:[],order:state.cases.length,createdAt:new Date().toISOString()};state.cases.push(record);}Object.assign(record,fields,{links});
+ }else{if(!record)throw new InputError('사건철을 찾을 수 없습니다.',404);if(body.action==='delete')state.cases=state.cases.filter(c=>c.id!==record.id);else{if(!['up','down'].includes(body.direction))throw new InputError('순서 방향을 확인하세요.');const i=state.cases.indexOf(record),to=i+(body.direction==='up'?-1:1);if(to<0||to>=state.cases.length)throw new InputError('더 이동할 수 없습니다.');[state.cases[i],state.cases[to]]=[state.cases[to],state.cases[i]];state.cases.forEach((c,i)=>c.order=i);}}
+ record.updatedAt=new Date().toISOString();state.activity.unshift({id:crypto.randomUUID(),at:record.updatedAt,action:'CASE_'+body.action.toUpperCase(),detail:record.title||record.name});state.activity=state.activity.slice(0,60);state.revision++;
+ if(await write(state,original)===false)return json({error:'다른 단말에서 변경되었습니다. 최신 상태를 확인하세요.',state:projectState(await read(),'gm')},409);return json({id:record.id,state:projectState(state,'gm')});
+ }catch(e){return json({error:e instanceof InputError?e.message:'사건철을 저장하지 못했습니다.'},e instanceof InputError?e.status:503);}
+};}export default createCasesHandler();

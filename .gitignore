@@ -1,4 +1,9 @@
 node_modules/
 .netlify/
 .env
+.env.*
+!.env.example
+backups/
 *.zip
+
+dist-netlify/

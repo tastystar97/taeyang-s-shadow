@@ -295,13 +295,13 @@
       <div class="phase">
         <div class="num">PHASE 01</div>
         <h3>내정</h3>
-        <p>가챠로 대원을 뽑고, 내정·현장 슬롯에 배치. 이번 사이클의 판을 깝니다.</p>
+        <p>PC·NPC 대원 명부를 정리하고 내정·현장 슬롯에 배치. 이번 사이클의 판을 깝니다.</p>
       </div>
       <div class="arrow">→</div>
       <div class="phase">
         <div class="num">PHASE 02</div>
         <h3>현장</h3>
-        <p>메인은 더블크로스 세션(현장요원 PC), 동시 전선은 경량 판정으로. 침식·부상이 여기서 오릅니다.</p>
+        <p>플레이어 출동은 실제 인플레이로, 동시 전선은 경량 판정으로 해결. GM 확정 사건은 주사위 없이 재량 처리합니다.</p>
       </div>
       <div class="arrow">→</div>
       <div class="phase">
@@ -337,7 +337,7 @@
       </div>
       <div class="card stat fund">
         <div class="name gold">자금</div><div class="rng">누적 풀 · 상한 없음</div>
-        <p>임금·가챠·시설로 나가고, 사건·조달로 들어온다. 0이면 파산.</p>
+        <p>NPC 임금·영입·시설로 나가고, 사건·조달로 들어온다. PC 임금은 0. 자금 0이면 파산.</p>
       </div>
     </div>
   </div>
@@ -349,7 +349,7 @@
     <div class="sec-head">
       <span class="eyebrow">03 · Two Paths to Loss</span>
       <h2>대원을 잃는 두 갈래</h2>
-      <p>현장에 나간 대원에게만 붙는 개인 게이지. <strong>더 강해지려다 잃거나(침식), 버티려다 잃거나(부상).</strong> 둘 다 영구적이며 가챠로만 보충됩니다.</p>
+      <p>현장에 나간 대원에게만 붙는 개인 게이지. <strong>더 강해지려다 잃거나(침식), 버티려다 잃거나(부상).</strong> 둘 다 영구적이며 새 대원 영입으로만 빈자리를 보충합니다.</p>
     </div>
     <div class="gauges">
       <div class="gauge erode">
@@ -443,23 +443,23 @@
       <div class="fac">
         <div class="ico">🏥</div><h3>의무실</h3>
         <div class="role">회복 · 침식 케어</div>
-        <p>부상 회복, 침식 리셋 강화. Lv3은 로스트 판정 <b>재굴림 1회</b> — 한 번은 구할 기회. 세션 PC에게 침식 경감 리소스로도 작용.</p>
+        <p>치료 배치 대원에게 레벨만큼 회복 풀을 제공. 의료 태그 직원을 배치하면 회복 풀 +1.</p>
         <span class="free">Lv1 무료</span>
       </div>
       <div class="fac">
         <div class="ico">🎯</div><h3>훈련장</h3>
         <div class="role">태그 · 승급</div>
-        <p>대원 카드를 영구히 바꾸는 곳. 2사이클 훈련 → 태그 +1(교관 지도 시 1사이클), Lv3은 <b>B→A→S 승급</b> 과정 개방.</p>
+        <p>Lv1부터 <b>B→A→S 승급</b> 과정 개방. 훈련권을 소비하고 1사이클 뒤 완료. 슬롯은 레벨별 1/2/3.</p>
       </div>
       <div class="fac">
         <div class="ico">📡</div><h3>작전실</h3>
         <div class="role">정보 우위</div>
-        <p>매 사이클 정보력 자동 회복, '정보 수집' 판정 상시 보정, Lv3은 진입 전 단서 무료 공개.</p>
+        <p>사이클 시작 시 정보력 +1/+2/+3 자동 회복. 레벨별 회복 한도는 3/5/7.</p>
       </div>
       <div class="fac">
         <div class="ico">🏠</div><h3>숙소</h3>
         <div class="role">보호 수용력</div>
-        <p>동시에 지킬 수 있는 오버드 수(Lv1:2 / Lv2:4 / Lv3:7·NEST). 수용마다 사기↑. Lv2+는 구한 오버드를 <b>대원으로 육성</b>.</p>
+        <p>동시에 지킬 수 있는 오버드 수(Lv1:2 / Lv2:4 / Lv3:7·NEST). 유효 사기는 수용 인원과 숙소 레벨 중 낮은 값만큼 상승.</p>
       </div>
       <div class="fac">
         <div class="ico">🍜</div><h3>휴게실</h3>
@@ -482,11 +482,11 @@
     <div class="money-grid">
       <div class="block">
         <h3>나가는 돈 — 임금</h3>
-        <p style="color:var(--text-2);font-size:.9rem;margin-bottom:14px">매 사이클 고정 지출. 등급별 차등.</p>
+        <p style="color:var(--text-2);font-size:.9rem;margin-bottom:14px">활동 중인 NPC 대원만 지급. 지부장·현장요원 PC는 등급과 관계없이 임금 0.</p>
         <div class="wage"><span class="g">B급</span><span class="v">1 / 사이클</span></div>
         <div class="wage"><span class="g">A급</span><span class="v">2 / 사이클</span></div>
         <div class="wage"><span class="g">S급</span><span class="v">3 / 사이클</span></div>
-        <small>"S급 하나로 갈까, B급 셋으로 물량 갈까." 무작정 뽑으면 급여로 파산. 체불 시 사기 −1, 2연속이면 이탈.</small>
+        <small>"S급 하나로 갈까, B급 셋으로 물량 갈까." NPC를 무작정 영입하면 급여로 파산. 체불 시 사기 −1, 2연속이면 이탈.</small>
       </div>
       <div class="block">
         <h3>들어오는 돈 — 본부 지원금</h3>
@@ -532,7 +532,7 @@
           <div class="l"><span class="nm">진태호</span> | <span class="gr">B급</span> · 임금 1 | 키마이라 | <span class="tg">전투</span> | <span class="oo">현장 요원</span></div>
         </div>
       </div>
-      <p style="margin-top:18px;color:var(--text-2);font-size:.9rem">매 사이클 임금 <b class="gold">3</b> 고정. 자금 6에서 임금 떼면 3 — 가챠 한 번(자금 3) 돌리면 잔고가 바닥난다. 첫 턴부터 '무엇을 포기할지'를 묻는 값입니다.</p>
+      <p style="margin-top:18px;color:var(--text-2);font-size:.9rem">예시 NPC 명부의 매 사이클 임금은 <b class="gold">3</b>. 지부장과 현장요원 PC는 명부에 있어도 임금이 0이라 이 합계에 포함되지 않습니다.</p>
     </div>
   </div>
 </section>

@@ -1,0 +1,295 @@
+{
+  "version": 1,
+  "observedAt": "2026-09-05T13:27:33.908Z",
+  "scope": "로컬 기본 자료만 확인. 운영 저장 데이터와 업로드 파일은 별도 대조 필요.",
+  "counts": {
+    "personnel": 5,
+    "archive": 12,
+    "evidence": 9,
+    "support": 3
+  },
+  "records": [
+    {
+      "type": "personnel",
+      "id": "choi-youngho",
+      "title": "최영호",
+      "sourcePath": "public/media/personnel/choi-youngho.webp",
+      "bytes": 160840,
+      "sha256": "5f96f80301ac58a9862df0efc1e6e70c9bcf95a6d9037ce678f2c86ee35bf67a",
+      "employeeId": "2043-K-001",
+      "order": "01"
+    },
+    {
+      "type": "personnel",
+      "id": "ha-eunchae",
+      "title": "하은채",
+      "sourcePath": "public/media/personnel/ha-eunchae.webp",
+      "bytes": 187204,
+      "sha256": "b74c8373145f32d98eda34fdd12e86ca5a05c26275c86404ae96eeb8d31c7359",
+      "employeeId": "2036-K-032",
+      "order": "02"
+    },
+    {
+      "type": "personnel",
+      "id": "jin-taeho",
+      "title": "진태호",
+      "sourcePath": "public/media/personnel/jin-taeho.webp",
+      "bytes": 188120,
+      "sha256": "de40cb9075456eef3e790aca1b3145beb51c5fd19c6151f221acc62fe66c59bc",
+      "employeeId": "2042-K-007",
+      "order": "03"
+    },
+    {
+      "type": "personnel",
+      "id": "lee-sea",
+      "title": "이세아",
+      "sourcePath": "public/media/personnel/lee-sea.webp",
+      "bytes": 179886,
+      "sha256": "7650f444e0f5b0218caff2fb96709e977e41e5936f5d9874ce2285c4a3162f8c",
+      "employeeId": "2033-K-082-C",
+      "order": "04"
+    },
+    {
+      "type": "personnel",
+      "id": "lee-taeyang",
+      "title": "이태양",
+      "sourcePath": "public/media/personnel/lee-taeyang.webp",
+      "bytes": 201276,
+      "sha256": "5570701c054284a1775daf2e273d560b49e9a39841c5bed18c780b1f8d21bdea",
+      "employeeId": "2045-K-107",
+      "order": "05"
+    },
+    {
+      "type": "archive",
+      "id": "hq-urgent",
+      "title": "루미나스 병원 확보 인원",
+      "sourcePath": "public/archive/hq-urgent.html",
+      "bytes": 16271,
+      "sha256": "97059bf17ae652a3a00c644075b7b79227d0c2ab595270e5643cf1ef8fb9bdc5",
+      "code": "HQ-KR/URG-2043-17",
+      "editable": true
+    },
+    {
+      "type": "archive",
+      "id": "medical-isea",
+      "title": "이세아 귀환 후 의료기록",
+      "sourcePath": "public/archive/medical-isea.html",
+      "bytes": 19546,
+      "sha256": "f82c978fc97735bbbf076f486a85ce41179517b5a4279551028cf3ab69d4f171",
+      "code": "TCB/MED-002",
+      "editable": true
+    },
+    {
+      "type": "archive",
+      "id": "sera-profile",
+      "title": "정세라 임시 신원 및 보호 서류",
+      "sourcePath": "public/archive/sera-profile.html",
+      "bytes": 21400,
+      "sha256": "a45bf1e6ac968fee24ea360102bf81dbe47dc2bb6f8439da2291515ee7ed9656",
+      "code": "TCB/ID-004",
+      "editable": true
+    },
+    {
+      "type": "archive",
+      "id": "suhwan-card",
+      "title": "수환 임시 신원 카드",
+      "sourcePath": "public/archive/suhwan-card.html",
+      "bytes": 11359,
+      "sha256": "5e2834ea33916c7c6ca5f387c9cead7e7d30d51c6897e5e80ff104aa72d52a45",
+      "code": "TCB/ID-003",
+      "editable": true
+    },
+    {
+      "type": "archive",
+      "id": "kangjun-note",
+      "title": "이강준 수첩 · 003 페이지",
+      "sourcePath": "public/archive/kangjun-note-003.html",
+      "bytes": 10599,
+      "sha256": "6a1c7eea0f0b391d5de162eb1ca0846fda1c455f3dae0c0ddd660e7e514fff51",
+      "code": "RECOVERED/NOTE-003",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "former-chief-note",
+      "title": "전임 지부장 개인 수첩",
+      "sourcePath": "public/archive/former-chief-note.html",
+      "bytes": 10079,
+      "sha256": "558f67a84680cd027964c703d6c96e9a24ae112c1ab71078b1354b705cbe9383",
+      "code": "TCB/FORMER-01",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "handover",
+      "title": "지부장 인수인계서",
+      "sourcePath": "public/archive/branch-handover.html",
+      "bytes": 14074,
+      "sha256": "04dff2ad7ab6d0e1e44ace1127cd36c6c0a450a42634e231523befea5b9a4983",
+      "code": "TCB/ADMIN-HO1",
+      "editable": true
+    },
+    {
+      "type": "archive",
+      "id": "p07",
+      "title": "보호대상 안정화 및 인계 규정",
+      "sourcePath": "public/archive/regulation-p07.html",
+      "bytes": 20180,
+      "sha256": "1301468cde6b0c4e6c17a54b3b78df2ca10dcaaee033d7ae5bb56208bcedcd07",
+      "code": "HQ-PD/P-07",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "branch-summary",
+      "title": "지부 운영 시스템 서머리",
+      "sourcePath": "public/archive/branch-operations.html",
+      "bytes": 28573,
+      "sha256": "4c5872c529cef60edd39e5500399095c99d623c49e9e51f999517c023473e88a",
+      "code": "TCB/OPS-SUM",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "facilities",
+      "title": "지부 시설 목록 및 효과",
+      "sourcePath": "public/archive/facilities.html",
+      "bytes": 13851,
+      "sha256": "54ea3acdcadfc82b966b341a7ae91728234ff0cc0e46a4417f87fd1b7b87c3f0",
+      "code": "TCB/FAC-REF",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "city-locations",
+      "title": "태양시 로케이션",
+      "sourcePath": "public/archive/city-locations.html",
+      "bytes": 17570,
+      "sha256": "78b4c2d97028cc117cc4ca9f023fc1c63e8ac5af0bd815963e3baf3f403bc380",
+      "code": "CITY/LOC-01",
+      "editable": false
+    },
+    {
+      "type": "archive",
+      "id": "city-history",
+      "title": "태양시 역사와 주요 조직",
+      "sourcePath": "public/archive/city-history.html",
+      "bytes": 41820,
+      "sha256": "f6378eee1e4cb43b73dfd8559301e57f0a0d353e19d618ccd9bbda4f1e1954eb",
+      "code": "CITY/HST-01",
+      "editable": false
+    },
+    {
+      "type": "evidence",
+      "id": "static-audit-eve",
+      "title": "감사 전야",
+      "sourcePath": "public/media/evidence/audit-eve.webp",
+      "bytes": 541386,
+      "sha256": "baab2f047ac288e5abf2483b0b3f7b07872b6332f67659e4ad59ad7c0deb628c",
+      "caseCode": "TCB / FIELD RECORD"
+    },
+    {
+      "type": "evidence",
+      "id": "static-two-beds",
+      "title": "두 개의 침대",
+      "sourcePath": "public/media/evidence/two-beds.webp",
+      "bytes": 496888,
+      "sha256": "296704d7ec95fb3fdcefa1ccabd3888b1e6636b80262ca5cb80a433ef8d8b1ba",
+      "caseCode": "EMPTY ROOM"
+    },
+    {
+      "type": "evidence",
+      "id": "static-luminous-pharma",
+      "title": "루미나스 제약",
+      "sourcePath": "public/media/evidence/luminous-pharma.webp",
+      "bytes": 247660,
+      "sha256": "93e524193f11b0165fabe5b8fde453de81a684ee9ab2528c0ae9c08b6dc35067",
+      "caseCode": "LUMINOUS"
+    },
+    {
+      "type": "evidence",
+      "id": "static-white-noise",
+      "title": "벽 속의 백색 소음",
+      "sourcePath": "public/media/evidence/white-noise-in-wall.webp",
+      "bytes": 501552,
+      "sha256": "c70b96161dda95547a23702bec66918b0762d151c86a57d5cf578b2260e0af5f",
+      "caseCode": "TCB / FIELD RECORD"
+    },
+    {
+      "type": "evidence",
+      "id": "static-incident-record",
+      "title": "사고 기록",
+      "sourcePath": "public/media/evidence/incident-record.webp",
+      "bytes": 614364,
+      "sha256": "08d34a8fbd5e78c32b2b6173637a3d300b3752a1ce324e5298c98d2b697b9520",
+      "caseCode": "INCIDENT RECORD"
+    },
+    {
+      "type": "evidence",
+      "id": "static-suhwan-collar",
+      "title": "수환의 초커",
+      "sourcePath": "public/media/evidence/suhwan-collar.webp",
+      "bytes": 394206,
+      "sha256": "fb24ab0578dca63ee26bf51bfa3034f06f5cebf3c5f7c20c5ec4690d3c0d4ee1",
+      "caseCode": "CODE-003"
+    },
+    {
+      "type": "evidence",
+      "id": "static-ghost-waybill",
+      "title": "유령 운송장",
+      "sourcePath": "public/media/evidence/ghost-waybill.webp",
+      "bytes": 604556,
+      "sha256": "e3bf1937e3fdffe732c4df8b71d908c8daf3d121e80f974a7401f90880d1a5ed",
+      "caseCode": "LOGISTICS RECORD"
+    },
+    {
+      "type": "evidence",
+      "id": "static-yunha-report",
+      "title": "윤하의 보고서",
+      "sourcePath": "public/media/evidence/yunha-report.webp",
+      "bytes": 653794,
+      "sha256": "34eedc20b1e4b262a3bd0ec757ab2bf61ea828d9271af8db4f15c211b6d7ce40",
+      "caseCode": "RECOVERED REPORT"
+    },
+    {
+      "type": "evidence",
+      "id": "static-doctor-disappeared",
+      "title": "의사가 사라진 밤",
+      "sourcePath": "public/media/evidence/doctor-disappeared.webp",
+      "bytes": 579940,
+      "sha256": "ab81fad18a909b6818c5087fc6471e9b5705aeb8642b1a42bca07bad3c641b82",
+      "caseCode": "LUMINOUS / NIGHT"
+    },
+    {
+      "type": "support",
+      "id": "director-signature",
+      "title": "director-signature",
+      "sourcePath": "public/media/signatures/choi-youngho-fitted.png",
+      "bytes": 12795,
+      "sha256": "d5f1ada2eef215c6e44de6c1932988e77ba8f6a6eb2b885b2a472554bbeb8529"
+    },
+    {
+      "type": "support",
+      "id": "command-image",
+      "title": "command-image",
+      "sourcePath": "public/media/evidence/taeyang-shadow-main.webp",
+      "bytes": 158786,
+      "sha256": "469f627da193eb28598d7634fd2b80847f1bfad4af2d001af3dfb867e2197d8c"
+    },
+    {
+      "type": "support",
+      "id": "city-image",
+      "title": "city-image",
+      "sourcePath": "public/media/evidence/taeyang-city-view.webp",
+      "bytes": 117856,
+      "sha256": "128f4741516a2939dfd645c97531108a325d3416eb8e785948d1e33c5a52cbb6"
+    }
+  ],
+  "existingTemplates": [
+    "operation-order",
+    "hq-report",
+    "protection-record",
+    "settlement-report"
+  ],
+  "newTemplate": "field-report"
+}
