@@ -11,16 +11,16 @@ const NOTICE_DESTINATIONS = {
   command: { label: '지부 공용 단말', button: '공용 단말 보기' },
   workflow: { label: '전자서류 · 체크리스트', button: '관련 서류 열기' },
   archive: { label: '문서 보관소', button: '관련 문서 열기' },
-  evidence: { label: '증거물 · 현장사진', button: '증거물 보기' },
+  evidence: { label: '증거품 · 현장사진', button: '증거품 보기' },
   cases: { label: '사건철', button: '사건철 보기' },
   personnel: { label: '인사기록부', button: '인사기록 보기' },
   city: { label: '태양시 정보', button: '도시 정보 보기' }
 };
 const LEGACY_NOTICE_DESTINATIONS = {};
 const DIRECTOR_SIGNATURE = {};
+const ARCHIVE_CATEGORIES = ['본부 공문','의료기록','인물 관련','개인 기록','지부 행정','본부 규정','도시 정보','사건 자료','증거품','기타 문서'];
 
-
-const app = { epoch: 0, state: structuredClone(DEFAULT_STATE), mode: 'connecting', archiveFilter: '전체', evidenceFilter: '전체', formId: null, autosaveTimer: null };
+const app = { epoch: 0, state: structuredClone(DEFAULT_STATE), mode: 'connecting', archiveTab: 'documents', archiveFilter: '전체', evidenceFilter: '전체', formId: null, autosaveTimer: null };
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
@@ -91,10 +91,17 @@ function renderCommand() {
   const done = items.filter((item) => item.done).length; const percent = items.length ? Math.round(done / items.length * 100) : 0; $('#command-completion').textContent = `${done} / ${items.length} COMPLETE`; $('#command-progress').style.width = `${percent}%`;
 }
 
+function updateArchiveTotal() { $('#archive-total-count').textContent = `${app.state.documents.length + app.state.evidence.length} RECORDS RELEASED`; }
+function selectArchiveTab(name) {
+  app.archiveTab = name === 'evidence' ? 'evidence' : 'documents';
+  document.querySelectorAll('[data-archive-tab]').forEach(button => { const active=button.dataset.archiveTab===app.archiveTab; button.classList.toggle('active',active); button.setAttribute('aria-selected',String(active)); });
+  $('#archive-documents-pane').hidden=app.archiveTab!=='documents'; $('#archive-evidence-pane').hidden=app.archiveTab!=='evidence';
+}
 function renderArchive() {
-  const categories = ['전체', ...new Set(app.state.documents.map((doc) => doc.category))]; $('#archive-filters').innerHTML = categories.map((category) => `<button class="${app.archiveFilter === category ? 'active' : ''}" data-archive-filter="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join('');
+  const categories = ['전체', ...new Set([...ARCHIVE_CATEGORIES, ...app.state.documents.map((doc) => doc.category)])]; $('#archive-filters').innerHTML = categories.map((category) => `<button class="${app.archiveFilter === category ? 'active' : ''}" data-archive-filter="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join('');
   const term = $('#archive-search').value.trim().toLowerCase(); const docs = app.state.documents.filter((doc) => (app.archiveFilter === '전체' || doc.category === app.archiveFilter) && `${doc.title} ${doc.code} ${doc.category} ${doc.detail}`.toLowerCase().includes(term));
-  $('#archive-count').textContent = `${app.state.documents.length} RECORDS RELEASED`; $('#archive-rows').innerHTML = docs.length ? docs.map((doc) => { const editable = app.state.role === 'director' && doc.editable; return `<tr class="archive-row-link" data-doc="${escapeHTML(doc.id)}" tabindex="0" role="link" aria-label="${escapeHTML(doc.title)} 문서 열기"><td class="doc-code">${escapeHTML(doc.code)}</td><td class="doc-name"><b>${escapeHTML(doc.title)}</b><small>${escapeHTML(doc.category)} · ${escapeHTML(doc.detail)}${editable ? ' · 직접 작성 가능' : ''}</small></td><td><span class="security-chip">${escapeHTML(doc.security)}</span></td><td><span class="status-chip ${doc.status.toLowerCase()}">${escapeHTML(doc.status)}</span></td><td><span class="open-doc-button">문서 열기 →</span></td></tr>`; }).join('') : '<tr><td colspan="5">검색 조건에 맞는 문서가 없습니다.</td></tr>';
+  $('#archive-count').textContent = app.state.documents.length; updateArchiveTotal(); $('#archive-rows').innerHTML = docs.length ? docs.map((doc) => { const editable = app.state.role === 'director' && doc.editable; return `<tr class="archive-row-link" data-doc="${escapeHTML(doc.id)}" tabindex="0" role="link" aria-label="${escapeHTML(doc.title)} 문서 열기"><td class="doc-code">${escapeHTML(doc.code)}</td><td class="doc-name"><b>${escapeHTML(doc.title)}</b><small>${escapeHTML(doc.category)} · ${escapeHTML(doc.detail)}${editable ? ' · 직접 작성 가능' : ''}</small></td><td><span class="security-chip">${escapeHTML(doc.security)}</span></td><td><span class="status-chip ${doc.status.toLowerCase()}">${escapeHTML(doc.status)}</span></td><td><span class="open-doc-button">문서 열기 →</span></td></tr>`; }).join('') : '<tr><td colspan="5">검색 조건에 맞는 문서가 없습니다.</td></tr>';
+  selectArchiveTab(app.archiveTab);
 }
 
 function renderPersonnel() {
@@ -107,7 +114,7 @@ function renderEvidence() {
   $('#evidence-filters').innerHTML = categories.map((category) => `<button class="${app.evidenceFilter === category ? 'active' : ''}" data-evidence-filter="${escapeHTML(category)}">${escapeHTML(category)}</button>`).join('');
   const term = $('#evidence-search').value.trim().toLowerCase();
   const items = evidence.filter((item) => (app.evidenceFilter === '전체' || item.category === app.evidenceFilter) && `${item.title} ${item.caseCode} ${item.location} ${item.description}`.toLowerCase().includes(term));
-  $('#evidence-count').textContent = `${evidence.length} FILES RELEASED`;
+  $('#evidence-count').textContent = evidence.length; updateArchiveTotal();
   $('#evidence-empty').hidden = evidence.length > 0;
   $('#evidence-grid').innerHTML = items.length ? items.map((item) => `<button class="evidence-card" data-evidence-id="${escapeHTML(item.id)}"><span class="evidence-thumb"><img src="${escapeHTML(evidenceSource(item))}" alt="${escapeHTML(item.title)}" loading="lazy"><i>${escapeHTML(item.category)}</i></span><span class="evidence-card-body"><small>${escapeHTML(item.caseCode || 'UNASSIGNED CASE')}</small><b>${escapeHTML(item.title)}</b><em>${escapeHTML(item.location || '촬영지 미기록')} · ${formatEvidenceDate(item.capturedAt)}</em></span></button>`).join('') : (evidence.length ? '<p class="evidence-no-results">검색 조건에 맞는 사진이 없습니다.</p>' : '');
 }
@@ -146,7 +153,7 @@ function renderWorkflow() {
 }
 
 function formatDate(value) { if (!value) return '저장 전'; return new Intl.DateTimeFormat('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value)); }
-function openView(name) { const targetName = $(`#view-${name}`) ? name : 'command'; if(targetName==='workflow'&&app.state.role==='agent')selectWorkflowTab('forms'); $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.view === targetName)); $$('.view').forEach((view) => view.classList.toggle('active', view.id === `view-${targetName}`)); $('#main').focus({ preventScroll: true }); history.replaceState(null, '', `#${targetName}`); }
+function openView(name) { const archiveTab=name==='evidence'?'evidence':'documents'; const targetName=name==='evidence'?'archive':($(`#view-${name}`)?name:'command'); if(targetName==='archive')selectArchiveTab(archiveTab); if(targetName==='workflow'&&app.state.role==='agent')selectWorkflowTab('forms'); $$('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.view === targetName)); $$('.view').forEach((view) => view.classList.toggle('active', view.id === `view-${targetName}`)); $('#main').focus({ preventScroll: true }); history.replaceState(null, '', `#${name==='evidence'?'evidence':targetName}`); }
 
 function openDocument(id) { const doc = app.state.documents.find((entry) => entry.id === id); if (!doc) return; app.documentId=id; $('#document-dialog-title').textContent = doc.title; $('#document-classification').textContent = doc.security; $('#document-frame').src = doc.url; $('#document-new-tab').href = doc.url; $('#document-dialog').showModal(); if (!IS_PREVIEW && doc.status === 'NEW') mutate('mark-document-read', { id }).catch((error) => showToast(error.message)); }
 
@@ -182,6 +189,7 @@ document.addEventListener('click', (event) => {
   const deleteForm = event.target.closest('[data-delete-form]'); if (deleteForm && confirm('이 전자서류를 삭제할까? 삭제한 기록은 복구할 수 없어.')) { const form=app.state.forms.find(entry=>entry.id===deleteForm.dataset.deleteForm); mutate(form?.kind==='field-report'?'delete-field-report':'delete-form', { id: deleteForm.dataset.deleteForm }).then(() => showToast('전자서류를 삭제했습니다.')).catch((error) => showToast(error.message)); }
   const evidenceFilter = event.target.closest('[data-evidence-filter]'); if (evidenceFilter) { app.evidenceFilter = evidenceFilter.dataset.evidenceFilter; renderEvidence(); } const evidence = event.target.closest('[data-evidence-id]'); if (evidence) openEvidence(evidence.dataset.evidenceId);
   const personnel = event.target.closest('[data-personnel-id]'); if (personnel) openPersonnel(personnel.dataset.personnelId);
+  const archiveTab = event.target.closest('[data-archive-tab]'); if (archiveTab) { selectArchiveTab(archiveTab.dataset.archiveTab); history.replaceState(null,'','#'+(app.archiveTab==='evidence'?'evidence':'archive')); }
   const tab = event.target.closest('[data-workflow-tab]'); if (tab) selectWorkflowTab(tab.dataset.workflowTab);
   if (event.target.closest('[data-close-document]')) { $('#document-dialog').close(); $('#document-frame').src = 'about:blank'; }
   if (event.target.closest('[data-close-personnel]')) { $('#personnel-dialog').close(); $('#personnel-id-image').src = ''; }
@@ -199,7 +207,7 @@ function clearSessionView(message = '') {
   app.epoch += 1;
   clearTimeout(app.autosaveTimer);
   app.mode = 'connecting'; app.state = structuredClone(DEFAULT_STATE); app.formId = null;
-  app.archiveFilter = app.evidenceFilter = '전체'; casesUI.clear();
+  app.archiveTab = 'documents'; app.archiveFilter = app.evidenceFilter = '전체'; casesUI.clear();
   try { localStorage.removeItem('tcb-offline-state'); for (const key of Object.keys(localStorage)) if (key.startsWith('tcb-archive-entry-')) localStorage.removeItem(key); } catch {}
   $$('dialog').forEach(dialog => { if (dialog.open) dialog.close(); });
   $$('iframe').forEach(frame => { frame.src = 'about:blank'; });

@@ -46,10 +46,10 @@ async function audienceDoc(h,id,audience){return h.archive(req('gm','/api/archiv
 test('archive upload registers privately, projects safe metadata and retains all twelve originals',async()=>{
   const h=harness(),before=structuredClone(h.state.documents);const fileId=await uploadDoc(h);
   assert.equal(h.state.documents.length,12);assert.equal(resolveFile(h.state,'gm',{type:'documents',fileId,id:'pending'}),null);
-  const r=await saveDoc(h,{fileId});assert.equal(r.status,200);const {id,state}=await r.json();
+  const r=await saveDoc(h,{fileId,data:{...docData(),category:'신원서류'}});assert.equal(r.status,200);const {id,state}=await r.json();
   assert.deepEqual(h.state.documents.slice(0,12),before);assert.equal(h.state.documents.length,13);
   assert.equal(projectState(h.state,'director').documents.length,12);assert.equal(projectState(h.state,'agent').documents.length,2);
-  const doc=state.documents.find(d=>d.id===id);assert.equal(doc.attachment.name,'record.html');assert.equal(doc.managedTemplate,false);assert.equal(doc.editable,false);assert.equal(doc.fileId,undefined);
+  const doc=state.documents.find(d=>d.id===id);assert.equal(doc.category,'인물 관련');assert.equal(h.state.documents.find(d=>d.id===id).category,'인물 관련');assert.equal(doc.attachment.name,'record.html');assert.equal(doc.managedTemplate,false);assert.equal(doc.editable,false);assert.equal(doc.fileId,undefined);
 });
 test('archive authorization, single-document mutation and duplicate document numbers are enforced',async()=>{
   const h=harness();for(const role of ['agent','director',null])assert.equal((await h.archive(req(role,'/api/archive','POST',{}))).status,role?403:401);

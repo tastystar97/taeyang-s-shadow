@@ -9,10 +9,12 @@ const required = [
 for (const file of required) await access(file);
 
 const html = await readFile("public/index.html", "utf8");
-for (const id of ["view-command", "view-personnel", "view-city", "view-archive", "view-evidence", "view-workflow", "document-dialog", "personnel-dialog", "evidence-dialog", "form-dialog"]) {
+for (const id of ["view-command", "view-personnel", "view-city", "view-archive", "archive-documents-pane", "archive-evidence-pane", "view-workflow", "document-dialog", "personnel-dialog", "evidence-dialog", "form-dialog"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`필수 화면 누락: ${id}`);
 }
 if (html.includes('id="view-branch"') || html.includes('data-view="branch"')) throw new Error("삭제된 브랜치 상태 화면이 남아 있습니다.");
+if (html.includes('id="view-evidence"') || html.includes('data-view="evidence"')) throw new Error("통합된 증거 화면이 별도 메뉴로 남아 있습니다.");
+if (!html.includes('data-archive-tab="documents"') || !html.includes('data-archive-tab="evidence"')) throw new Error("문서·증거 아카이브 탭이 누락되었습니다.");
 if (!html.includes("data-close-form")) throw new Error("전자서류 취소 동작이 누락되었습니다.");
 for (const id of ["form-paper-title", "form-paper-status", "form-paper-code", "form-signature-button"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`UGN 공문 요소 누락: ${id}`);

@@ -1,6 +1,7 @@
 export function createArchiveManager({getState,setState,onUnauthorized,toast}){
   const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const audience=a=>a?.length?a.map(r=>r==='director'?'지부장':'현장요원').join(' · '):'관제 전용';
+  const categories=['본부 공문','의료기록','인물 관련','개인 기록','지부 행정','본부 규정','도시 정보','사건 자료','증거품','기타 문서'];
   const dialog=$('#archive-editor'),form=$('#archive-edit-form'),frame=$('#archive-upload-preview'),link=$('#archive-preview-link');
   let id=null,revision=0,pending=null,dirty=false,busy=false,uploading=false,epoch=0,publishId=null;
   const current=()=>getState()?.documents.find(d=>d.id===id);
@@ -17,7 +18,7 @@ export function createArchiveManager({getState,setState,onUnauthorized,toast}){
     attachment();preview(doc?.url);buttons();if(!dialog.open)dialog.showModal();form.elements.title.focus();
   }
   function close(force=false){if(busy)return;if(!force&&dirty&&!confirm('저장하지 않은 변경사항을 버릴까?'))return;retire(pending);pending=null;dirty=false;epoch++;dialog.close();preview(null);}
-  function render(){const state=getState();if(!state)return;const select=$('#archive-category-filter'),value=select.value;select.innerHTML='<option value="">모든 분류</option>'+[...new Set(state.documents.map(d=>d.category))].map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');select.value=[...select.options].some(o=>o.value===value)?value:'';
+  function render(){const state=getState();if(!state)return;const select=$('#archive-category-filter'),value=select.value;select.innerHTML='<option value="">모든 분류</option>'+[...new Set([...categories,...state.documents.map(d=>d.category)])].map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');select.value=[...select.options].some(o=>o.value===value)?value:'';
     const term=$('#archive-manage-search').value.trim().toLowerCase(),filter=$('#archive-manage-audience').value;
     const docs=state.documents.filter(d=>(!select.value||d.category===select.value)&&(!term||[d.title,d.code,d.category,d.detail].join(' ').toLowerCase().includes(term))&&(filter==='all'||(filter==='private'?!d.audience.length:d.audience.includes(filter))));
     $('#archive-managed-count').textContent=state.documents.length+'건';$('#archive-manage-rows').innerHTML=docs.map(d=>{const fixed=['city-locations','city-history'].includes(d.id);return '<tr><td class="bulk-cell"><input type="checkbox" data-bulk-item="documents" value="'+esc(d.id)+'" aria-label="'+esc(d.title)+' 선택" '+(fixed?'disabled title="CITY NET 전체 공개 고정"':'')+'></td><td class="doc-code">'+esc(d.code)+'</td><td><b>'+esc(d.title)+'</b><small class="hr-cell-note">'+esc(d.category)+' · '+(d.managedTemplate?'앱 관리 서식':d.attachment?'업로드 문서':'기본 문서')+'</small><small class="hr-cell-note">'+esc(d.detail)+'</small></td><td>'+esc(d.security)+'</td><td><span class="hr-audience '+(d.audience.length?'is-public':'')+'">'+audience(d.audience)+'</span></td><td><div class="hr-row-actions"><button class="secondary-button" data-archive-edit="'+esc(d.id)+'">열람·수정</button>'+(fixed?'<span class="fixed-publication">CITY NET 전체 공개</span>':'<button class="secondary-button" data-archive-audience="'+esc(d.id)+'">공개 대상</button>')+'</div></td></tr>';}).join('')||'<tr><td colspan="6" class="hr-no-records">조건에 맞는 문서가 없습니다.</td></tr>';

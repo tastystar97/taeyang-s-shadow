@@ -1,4 +1,5 @@
 import { ARCHIVE_SCHEMAS } from './archive-schemas.mjs';
+import { normalizeArchiveCategory, normalizeEvidenceCategory } from './archive-categories.mjs';
 import { PERSONNEL, STATIC_EVIDENCE, CITY_HTML } from './catalog.mjs';
 
 const ROLES = new Set(['director', 'agent', 'gm']);
@@ -22,7 +23,11 @@ export function normalizeState(input) {
     }
   }
   for (const type of TYPES) for (const item of state[type]) item.audience = audience(item, ['forms', 'cases'].includes(type) ? [] : ['director']);
-  for (const doc of state.documents) if (isPublicCityDocument(doc.id)) doc.audience = ['director', 'agent'];
+  for (const doc of state.documents) {
+    doc.category = normalizeArchiveCategory(doc.category);
+    if (isPublicCityDocument(doc.id)) doc.audience = ['director', 'agent'];
+  }
+  for (const item of state.evidence) item.category = normalizeEvidenceCategory(item.category);
   for (const form of state.forms) {
     form.kind ||= 'director-form';
     form.authorRole = form.kind === 'field-report' ? 'agent' : 'director';

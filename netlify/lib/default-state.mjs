@@ -30,8 +30,8 @@ export const defaultState = {
   documents: [
     { id: "hq-urgent", code: "HQ-KR/URG-2043-17", category: "본부 공문", title: "루미나스 병원 확보 인원", detail: "본부 긴급 공문", security: "CONFIDENTIAL", status: "NEW", url: "/archive/hq-urgent.html", editable: true },
     { id: "medical-isea", code: "TCB/MED-002", category: "의료기록", title: "이세아 귀환 후 의료기록", detail: "POST-OP 기록", security: "MEDICAL", status: "NEW", url: "/archive/medical-isea.html", editable: true },
-    { id: "sera-profile", code: "TCB/ID-004", category: "신원서류", title: "정세라 임시 신원 및 보호 서류", detail: "CASE 004 · ADULT", security: "CONFIDENTIAL", status: "RELEASED", url: "/archive/sera-profile.html", editable: true },
-    { id: "suhwan-card", code: "TCB/ID-003", category: "신원서류", title: "수환 임시 신원 카드", detail: "CODE-003", security: "CONFIDENTIAL", status: "RELEASED", url: "/archive/suhwan-card.html", editable: true },
+    { id: "sera-profile", code: "TCB/ID-004", category: "인물 관련", title: "정세라 임시 신원 및 보호 서류", detail: "CASE 004 · ADULT", security: "CONFIDENTIAL", status: "RELEASED", url: "/archive/sera-profile.html", editable: true },
+    { id: "suhwan-card", code: "TCB/ID-003", category: "인물 관련", title: "수환 임시 신원 카드", detail: "CODE-003", security: "CONFIDENTIAL", status: "RELEASED", url: "/archive/suhwan-card.html", editable: true },
     { id: "kangjun-note", code: "RECOVERED/NOTE-003", category: "개인 기록", title: "이강준 수첩 · 003 페이지", detail: "복구된 비공식 기록", security: "RESTRICTED", status: "NEW", url: "/archive/kangjun-note-003.html" },
     { id: "former-chief-note", code: "TCB/FORMER-01", category: "개인 기록", title: "전임 지부장 개인 수첩", detail: "공식 사건철 미포함", security: "RESTRICTED", status: "RELEASED", url: "/archive/former-chief-note.html" },
     { id: "handover", code: "TCB/ADMIN-HO1", category: "지부 행정", title: "지부장 인수인계서", detail: "신임 지부장 부임 기록", security: "INTERNAL", status: "RELEASED", url: "/archive/branch-handover.html", editable: true },

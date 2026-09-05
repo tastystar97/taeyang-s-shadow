@@ -109,10 +109,26 @@ test('control UI exposes four selected-publication toolbars and locks CITY NET r
 });
 
 
-test('player and read-only preview keep 06 WORKFLOW between EVIDENCE and CASE FILES', async () => {
+test('player and read-only preview expose one archive and continuous 01-06 navigation', async () => {
   const { readFile } = await import('node:fs/promises');
-  const [html, app] = await Promise.all([readFile('public/index.html', 'utf8'), readFile('public/app.js', 'utf8')]);
-  assert.match(html, /<span>05<\/span>EVIDENCE<\/button>\s*<button[^>]+data-view="workflow"><span>06<\/span>WORKFLOW<\/button>\s*<button[^>]+data-view="cases"><span>07<\/span>CASE FILES/);
+  const [html, app, control] = await Promise.all([readFile('public/index.html', 'utf8'), readFile('public/app.js', 'utf8'), readFile('public/control.html', 'utf8')]);
+  assert.match(html, /data-view="archive"><span>04<\/span>ARCHIVE<\/button>\s*<button[^>]+data-view="workflow"><span>05<\/span>WORKFLOW<\/button>\s*<button[^>]+data-view="cases"><span>06<\/span>CASE FILES/);
+  assert.doesNotMatch(html, /data-view="evidence"|id="view-evidence"/);
+  assert.match(html, /data-archive-tab="documents"/); assert.match(html, /data-archive-tab="evidence"/);
+  assert.match(control, /data-control-archive-tab="documents"/); assert.match(control, /data-control-archive-tab="evidence"/);
+  assert.doesNotMatch(control, /data-control-view="evidence"/);
   assert.match(app, /\[data-view="workflow"\], \[data-go="workflow"\][^\n]+hidden=!player;/);
   assert.match(app, /#new-form-button, #new-form-button-secondary[^\n]+hidden=!player\|\|IS_PREVIEW;/);
+});
+
+test('legacy archive and evidence categories normalize into the combined taxonomy', () => {
+  const original = freshState();
+  original.documents[0].category = '신원서류';
+  original.evidence = [{ id: 'legacy-evidence', title: '구형 기록', category: '증거물', audience: ['director'] }];
+  const state = normalizeState(original);
+  assert.equal(state.documents[0].category, '인물 관련');
+  assert.equal(state.evidence.find(item => item.id === 'legacy-evidence').category, '증거품');
+  assert.equal(original.documents[0].category, '신원서류');
+  assert.equal(original.evidence[0].category, '증거물');
+  assert.deepEqual(normalizeState(state), state);
 });

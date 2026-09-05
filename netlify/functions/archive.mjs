@@ -3,6 +3,7 @@ import { readState, writeState } from '../lib/store.mjs';
 import { isPublicCityDocument, normalizeState, projectState } from '../lib/permissions.mjs';
 import { singleAudience } from '../lib/personnel-core.mjs';
 import { ARCHIVE_SCHEMAS } from '../lib/archive-schemas.mjs';
+import { normalizeArchiveCategory } from '../lib/archive-categories.mjs';
 import { uploadStore, loadStagedFile } from '../lib/uploads.mjs';
 import { InputError } from '../lib/upload-core.mjs';
 const limits={title:160,code:100,category:80,detail:2000,security:40};
@@ -13,6 +14,7 @@ function metadata(data,state,id){
     if(typeof data[key]!=='string'||data[key].trim().length>max)throw new InputError('문서 정보의 형식과 길이를 확인하세요.');
     result[key]=data[key].trim();
   }
+  result.category=normalizeArchiveCategory(result.category);
   if(!result.title||!result.code||!result.category)throw new InputError('문서명, 문서번호, 분류를 입력하세요.',422);
   const key=s=>s.normalize('NFKC').trim().toUpperCase();
   if(state.documents.some(d=>d.id!==id&&key(d.code)===key(result.code)))throw new InputError('이미 사용 중인 문서번호입니다.',422);

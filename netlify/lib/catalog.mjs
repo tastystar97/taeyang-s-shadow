@@ -135,7 +135,7 @@ export const STATIC_EVIDENCE = [
   {
     "id": "static-luminous-pharma",
     "title": "루미나스 제약",
-    "category": "증거물",
+    "category": "증거품",
     "caseCode": "LUMINOUS",
     "location": "태양시",
     "description": "루미나스 제약 관련 증거 이미지.",
@@ -155,7 +155,7 @@ export const STATIC_EVIDENCE = [
   {
     "id": "static-incident-record",
     "title": "사고 기록",
-    "category": "증거물",
+    "category": "증거품",
     "caseCode": "INCIDENT RECORD",
     "location": "기록 출처 미기재",
     "description": "사건 조사 과정에서 확보된 사고 기록 이미지.",
@@ -165,7 +165,7 @@ export const STATIC_EVIDENCE = [
   {
     "id": "static-suhwan-collar",
     "title": "수환의 초커",
-    "category": "증거물",
+    "category": "증거품",
     "caseCode": "CODE-003",
     "location": "루미나스 종합병원",
     "description": "보호대상 수환에게서 분리된 초커 관련 증거 이미지.",
@@ -175,7 +175,7 @@ export const STATIC_EVIDENCE = [
   {
     "id": "static-ghost-waybill",
     "title": "유령 운송장",
-    "category": "증거물",
+    "category": "증거품",
     "caseCode": "LOGISTICS RECORD",
     "location": "출처 미기재",
     "description": "운송 경로 조사와 관련된 증거 이미지.",
@@ -185,7 +185,7 @@ export const STATIC_EVIDENCE = [
   {
     "id": "static-yunha-report",
     "title": "윤하의 보고서",
-    "category": "증거물",
+    "category": "증거품",
     "caseCode": "RECOVERED REPORT",
     "location": "기록 출처 미기재",
     "description": "윤하의 보고서 원본 이미지.",

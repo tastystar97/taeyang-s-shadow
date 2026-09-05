@@ -120,6 +120,7 @@ test("control can update and delete visual evidence metadata", () => {
   applyAction(state, "update-evidence", { evidence: { id: "photo-2", title: "수정 후", category: "증거물", location: "태양시 구도심", fileName: "after.webp", contentType: "image/webp" } });
   assert.equal(state.evidence[0].title, "수정 후");
   assert.equal(state.evidence[0].location, "태양시 구도심");
+  assert.equal(state.evidence[0].category, "증거품");
   assert.equal(state.evidence[0].createdAt, "2043-01-01T00:00:00.000Z");
   assert.ok(state.evidence[0].updatedAt);
   applyAction(state, "delete-evidence", { id: "photo-2" });

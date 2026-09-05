@@ -27,9 +27,8 @@
         <button class="nav-item" data-view="personnel"><span>02</span>PERSONNEL</button>
         <button class="nav-item" data-view="city"><span>03</span>CITY NET</button>
         <button class="nav-item" data-view="archive"><span>04</span>ARCHIVE</button>
-        <button class="nav-item" data-view="evidence"><span>05</span>EVIDENCE</button>
-        <button class="nav-item" data-view="workflow"><span>06</span>WORKFLOW</button>
-        <button class="nav-item" data-view="cases"><span>07</span>CASE FILES</button>
+        <button class="nav-item" data-view="workflow"><span>05</span>WORKFLOW</button>
+        <button class="nav-item" data-view="cases"><span>06</span>CASE FILES</button>
       </nav>
       <div class="clearance">
         <span>TERMINAL</span><b>TCB-COMMON-01</b>
@@ -81,16 +80,18 @@
       </section>
 
       <section class="view" id="view-archive" aria-labelledby="archive-title">
-        <div class="view-head"><div><span class="eyebrow">RECORD ARCHIVE</span><h1 id="archive-title">문서보관소</h1></div><span class="view-code" id="archive-count">0 RECORDS RELEASED</span></div>
-        <div class="archive-tools"><label><span class="sr-only">문서 검색</span><input id="archive-search" type="search" placeholder="문서명, 분류, 키워드 검색"></label><div id="archive-filters" class="filter-row"></div></div>
-        <div class="archive-table-wrap"><table class="archive-table"><thead><tr><th>분류</th><th>문서명</th><th>보안등급</th><th>상태</th><th></th></tr></thead><tbody id="archive-rows"></tbody></table></div>
-      </section>
-
-      <section class="view" id="view-evidence" aria-labelledby="evidence-title">
-        <div class="view-head"><div><span class="eyebrow">VISUAL EVIDENCE ARCHIVE</span><h1 id="evidence-title">증거물·현장사진</h1></div><span class="view-code" id="evidence-count">0 FILES RELEASED</span></div>
-        <div class="evidence-tools"><label><span class="sr-only">사진 검색</span><input id="evidence-search" type="search" placeholder="제목, 사건번호, 촬영지 검색"></label><div id="evidence-filters" class="filter-row"></div></div>
-        <div class="evidence-grid" id="evidence-grid"></div>
-        <div class="empty-state evidence-empty" id="evidence-empty"><span>NO VISUAL RECORDS</span><h3>등록된 증거 사진이 없습니다.</h3><p>관제실에서 현장사진이나 증거물을 등록하면 이곳에 표시됩니다.</p></div>
+        <div class="view-head"><div><span class="eyebrow">INTEGRATED RECORD ARCHIVE</span><h1 id="archive-title">문서·증거 아카이브</h1></div><span class="view-code" id="archive-total-count">0 RECORDS RELEASED</span></div>
+        <div class="workflow-tabs archive-tabs" role="tablist" aria-label="아카이브 자료 종류"><button class="active" type="button" role="tab" aria-controls="archive-documents-pane" aria-selected="true" data-archive-tab="documents">DOCUMENTS <span id="archive-count">0</span></button><button type="button" role="tab" aria-controls="archive-evidence-pane" aria-selected="false" data-archive-tab="evidence">EVIDENCE <span id="evidence-count">0</span></button></div>
+        <div class="archive-pane" id="archive-documents-pane">
+          <div class="archive-tools"><label><span class="sr-only">문서 검색</span><input id="archive-search" type="search" placeholder="문서명, 분류, 키워드 검색"></label><div id="archive-filters" class="filter-row"></div></div>
+          <div class="archive-table-wrap"><table class="archive-table"><thead><tr><th>분류</th><th>문서명</th><th>보안등급</th><th>상태</th><th></th></tr></thead><tbody id="archive-rows"></tbody></table></div>
+        </div>
+        <div class="archive-pane" id="archive-evidence-pane" hidden>
+          <div class="archive-pane-head"><div><span class="eyebrow">VISUAL EVIDENCE</span><h2>증거품·현장사진</h2></div><p>공개된 현장 기록과 확보 증거품을 같은 아카이브에서 열람합니다.</p></div>
+          <div class="evidence-tools"><label><span class="sr-only">사진 검색</span><input id="evidence-search" type="search" placeholder="제목, 사건번호, 촬영지 검색"></label><div id="evidence-filters" class="filter-row"></div></div>
+          <div class="evidence-grid" id="evidence-grid"></div>
+          <div class="empty-state evidence-empty" id="evidence-empty"><span>NO VISUAL RECORDS</span><h3>등록된 증거품이나 현장사진이 없습니다.</h3><p>관제 아카이브에서 자료를 등록하면 이곳에 표시됩니다.</p></div>
+        </div>
       </section>
 
       <section class="view" id="view-workflow" aria-labelledby="workflow-title">

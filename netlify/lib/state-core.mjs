@@ -1,3 +1,4 @@
+import { normalizeEvidenceCategory } from './archive-categories.mjs';
 const TEMPLATE_CHECKLIST = {
   "operation-order": ["assignment", "operation-order"],
   "hq-report": ["hq-report"],
@@ -39,7 +40,7 @@ function sanitizeEvidence(input) {
   const title = text(input?.title, 120);
   if (!id || !title) throw new Error("증거 사진의 식별자와 제목이 필요합니다.");
   return {
-    id, title, category: text(input.category, 40) || "현장사진", caseCode: text(input.caseCode, 80),
+    id, title, category: normalizeEvidenceCategory(text(input.category, 40)) || "현장사진", caseCode: text(input.caseCode, 80),
     location: text(input.location, 160), capturedAt: text(input.capturedAt, 40), description: text(input.description, 1200),
     fileName: text(input.fileName, 180), contentType: text(input.contentType, 80), createdAt: text(input.createdAt, 40) || new Date().toISOString()
   };
