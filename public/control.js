@@ -32,7 +32,9 @@ function syncBulkToolbar(toolbar) {
   all.checked = items.length > 0 && selected.length === items.length;
   all.indeterminate = selected.length > 0 && selected.length < items.length;
   toolbar.querySelector('[data-bulk-count]').textContent = selected.length + '건 선택';
-  toolbar.querySelectorAll('[data-bulk-apply],[data-bulk-private]').forEach(button => { button.disabled = toolbar.dataset.busy === 'true' || selected.length === 0; });
+  toolbar.querySelectorAll('[data-bulk-apply],[data-bulk-private],[data-bulk-delete-documents]').forEach(button => { button.disabled = toolbar.dataset.busy === 'true' || selected.length === 0; });
+  const deleteButton=toolbar.querySelector('[data-bulk-delete-documents]');
+  if(deleteButton){const protectedSelected=selected.some(item=>{const doc=app.state?.documents.find(entry=>entry.id===item.value);return !doc||doc.sourceKind!=='upload'||!doc.createdAt;});deleteButton.disabled=deleteButton.disabled||protectedSelected;deleteButton.title=protectedSelected?'관제에서 직접 등록한 업로드 문서만 삭제할 수 있습니다.':'';}
 }
 function syncAllBulkToolbars() { $$('[data-bulk-toolbar]').forEach(syncBulkToolbar); }
 async function applyBulkPublication(toolbar, privateOnly) {
@@ -53,6 +55,18 @@ async function applyBulkPublication(toolbar, privateOnly) {
   } finally {
     toolbar.dataset.busy = 'false'; syncBulkToolbar(toolbar);
   }
+}
+async function deleteBulkDocuments(toolbar) {
+  if(toolbar.dataset.busy==='true')return;
+  const ids=$$('[data-bulk-item="documents"]:checked:not(:disabled)').map(item=>item.value);
+  if(!ids.length){toast('삭제할 문서를 먼저 선택하세요.');return;}
+  const docs=ids.map(id=>app.state.documents.find(doc=>doc.id===id));
+  if(docs.some(doc=>!doc||doc.sourceKind!=='upload'||!doc.createdAt)){toast('관제에서 직접 등록한 업로드 문서만 삭제할 수 있습니다.');return;}
+  if(!confirm('선택한 문서 '+ids.length+'건을 삭제할까? 사건철 연결과 관련 알림도 함께 제거됩니다.'))return;
+  toolbar.dataset.busy='true';syncBulkToolbar(toolbar);
+  try{const result=await api('/api/archive',{method:'DELETE',body:JSON.stringify({action:'delete',revision:app.state.revision,ids})});app.state=result.state;render();toast('문서 '+result.deleted+'건을 삭제했습니다.');}
+  catch(error){if(error.state){app.state=error.state;render();}toast(error.message);}
+  finally{toolbar.dataset.busy='false';syncBulkToolbar(toolbar);}
 }
 async function load() { const epoch=app.epoch; const result = await api('/api/state'); if(epoch!==app.epoch)return; if (result.state.role !== 'gm') { clearControl('관제 코드로 접속하세요.'); return; } app.state = result.state; $('.control-main').hidden = false; $('#control-gate').hidden = true; render(); }
 
@@ -139,6 +153,8 @@ document.addEventListener('change', event => {
   if (item) { const toolbar = document.querySelector('[data-bulk-toolbar="' + item.dataset.bulkItem + '"]'); if (toolbar) syncBulkToolbar(toolbar); }
 });
 document.addEventListener('click', event => {
+  const deleteDocuments=event.target.closest('[data-bulk-delete-documents]');
+  if(deleteDocuments){deleteBulkDocuments(deleteDocuments.closest('[data-bulk-toolbar]'));return;}
   const action = event.target.closest('[data-bulk-apply],[data-bulk-private]');
   if (action) applyBulkPublication(action.closest('[data-bulk-toolbar]'), action.hasAttribute('data-bulk-private'));
 });

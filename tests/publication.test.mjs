@@ -117,6 +117,7 @@ test('player and read-only preview expose one archive and continuous 01-06 navig
   assert.match(html, /data-archive-tab="documents"/); assert.match(html, /data-archive-tab="evidence"/);
   assert.match(control, /data-control-archive-tab="documents"/); assert.match(control, /data-control-archive-tab="evidence"/);
   assert.doesNotMatch(control, /data-control-view="evidence"/);
+  assert.match(control, /data-bulk-delete-documents/); assert.match(control, /id="archive-delete"/);
   assert.match(app, /\[data-view="workflow"\], \[data-go="workflow"\][^\n]+hidden=!player;/);
   assert.match(app, /#new-form-button, #new-form-button-secondary[^\n]+hidden=!player\|\|IS_PREVIEW;/);
 });

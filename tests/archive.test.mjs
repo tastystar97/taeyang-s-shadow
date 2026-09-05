@@ -61,6 +61,39 @@ test('archive authorization, single-document mutation and duplicate document num
   assert.equal((await audienceDoc(h,'city-locations',[])).status,422);
   assert.equal(h.writes,0);
 });
+test('registered archive documents support atomic single and bulk deletion with reference cleanup',async()=>{
+  const h=harness();
+  assert.equal((await h.archive(req('director','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids:['x']}))).status,403);
+  assert.equal((await h.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids:['x']},{origin:'https://evil.test'}))).status,403);
+  const fileA=await uploadDoc(h),savedA=await(await saveDoc(h,{fileId:fileA,data:docData('DEL-A')})).json();
+  const fileB=await uploadDoc(h),savedB=await(await saveDoc(h,{fileId:fileB,data:docData('DEL-B')})).json();
+  h.state.cases=[{id:'case-delete',caseCode:'DEL',title:'삭제 정리',audience:[],links:[{type:'documents',id:savedA.id},{type:'documents',id:savedB.id},{type:'documents',id:'hq-urgent'}]}];
+  h.state.notices.push({id:'delete-notice',target:'archive',targetId:savedA.id,title:'삭제 대상',audience:['director']});
+  h.state.archiveEntries[savedA.id]={content:{memo:'삭제'},signatures:{}};
+  const response=await h.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids:[savedA.id,savedB.id]}));
+  assert.equal(response.status,200);const result=await response.json();assert.equal(result.deleted,2);
+  assert.ok(!h.state.documents.some(doc=>doc.id===savedA.id||doc.id===savedB.id));
+  assert.deepEqual(h.state.cases[0].links,[{type:'documents',id:'hq-urgent'}]);
+  assert.ok(!h.state.notices.some(notice=>notice.id==='delete-notice'));assert.equal(h.state.archiveEntries[savedA.id],undefined);
+  for(const fileId of [fileA,fileB]){assert.equal(h.state.files[fileId],undefined);assert.equal(h.values.has('body/'+fileId),true);assert.equal(resolveFile(h.state,'gm',{type:'documents',id:savedA.id,fileId}),null);}
+  assert.equal(h.state.activity[0].action,'ARCHIVE_DELETED');
+
+  const protectedHarness=harness(),fileId=await uploadDoc(protectedHarness),saved=await(await saveDoc(protectedHarness,{fileId,data:docData('DEL-C')})).json(),before=structuredClone(protectedHarness.state);
+  assert.equal((await protectedHarness.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:protectedHarness.state.revision,ids:[saved.id,'city-history']}))).status,422);
+  assert.deepEqual(protectedHarness.state,before);assert.ok(protectedHarness.values.has('body/'+fileId));
+  assert.equal((await protectedHarness.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:protectedHarness.state.revision,ids:['hq-urgent']}))).status,422);
+  assert.equal((await protectedHarness.archive(req('gm','/api/archive','POST',{action:'delete',revision:protectedHarness.state.revision,ids:[saved.id]}))).status,405);
+  assert.equal((await protectedHarness.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:-1,ids:[saved.id]}))).status,409);
+});
+test('archive deletion rejects invalid selections and preserves files on CAS failure',async()=>{
+ const h=harness(),fileId=await uploadDoc(h),saved=await(await saveDoc(h,{fileId})).json(),before=structuredClone(h.state);
+ for(const ids of [[],[saved.id,saved.id],[saved.id,'missing'],Array.from({length:151},(_,i)=>'id-'+i)]){
+  const r=await h.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids}));assert.ok(r.status>=400);assert.deepEqual(h.state,before);
+ }
+ assert.equal((await h.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids:[saved.id]},{'X-TCB-Preview':'1'}))).status,403);
+ h.reject();assert.equal((await h.archive(req('gm','/api/archive','DELETE',{action:'delete',revision:h.state.revision,ids:[saved.id]}))).status,409);
+ assert.deepEqual(h.state,before);assert.ok(h.values.has('body/'+fileId));
+});
 test('archive publication filters notices and case links without publishing adjacent resources',async()=>{
   const h=harness();const saved=await(await saveDoc(h,{fileId:await uploadDoc(h)})).json();const id=saved.id;
   // Local fixture through a validated state writer is not needed: projections accept snapshots.

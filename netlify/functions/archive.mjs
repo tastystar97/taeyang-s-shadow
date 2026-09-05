@@ -26,17 +26,37 @@ export function createArchiveHandler({read=readState,write=writeState,store=uplo
     const session=requireSession(request);
     if(!session)return json({error:'접근 인증이 필요합니다.'},401);
     if(session.role!=='gm')return json({error:'관제 권한이 필요합니다.'},403);
-    if(request.method!=='POST')return json({error:'허용되지 않은 요청입니다.'},405);
+    if(!['POST','DELETE'].includes(request.method))return json({error:'허용되지 않은 요청입니다.'},405);
     if(!isSameOriginRequest(request))return json({error:'허용되지 않은 요청 출처입니다.'},403);
     try{
       if(Number(request.headers.get('content-length'))>20000)throw new InputError('문서 정보가 너무 큽니다.',413);
       const raw=await request.text();if(Buffer.byteLength(raw)>20000)throw new InputError('문서 정보가 너무 큽니다.',413);
       let body;try{body=JSON.parse(raw)}catch{throw new InputError('저장 요청을 읽을 수 없습니다.')}
-      const actions={save:['action','revision','id','data','fileId'],audience:['action','revision','id','audience']};
-      if(!body||Array.isArray(body)||!Object.hasOwn(actions,body.action)||Object.keys(body).some(k=>!actions[body.action].includes(k)))throw new InputError('문서 한 건의 작업만 요청하세요.');
-      if(body.id!=null&&(typeof body.id!=='string'||!body.id||body.id.length>80))throw new InputError('문서 식별자를 확인하세요.');
+      const actions={save:['action','revision','id','data','fileId'],audience:['action','revision','id','audience'],delete:['action','revision','ids']};
+      if(!body||Array.isArray(body)||!Object.hasOwn(actions,body.action)||Object.keys(body).some(k=>!actions[body.action].includes(k)))throw new InputError('문서 작업 요청을 확인하세요.');
+      if((body.action==='delete')!==(request.method==='DELETE'))throw new InputError('문서 작업 방식을 확인하세요.',405);
+      if(body.action==='delete'){
+        if(!Array.isArray(body.ids)||body.ids.length<1||body.ids.length>150||body.ids.some(id=>typeof id!=='string'||!id||id.length>80)||new Set(body.ids).size!==body.ids.length)throw new InputError('삭제할 문서를 1건 이상 선택하세요.',422);
+      }else if(body.id!=null&&(typeof body.id!=='string'||!body.id||body.id.length>80))throw new InputError('문서 식별자를 확인하세요.');
       const original=await read();const state=normalizeState(original);
       if(!Number.isInteger(body.revision)||body.revision!==state.revision)return json({error:'다른 단말에서 기록이 변경되었습니다. 최신 기록을 확인하세요.',state:projectState(state,'gm')},409);
+      if(body.action==='delete'){
+        const selected=body.ids.map(id=>state.documents.find(doc=>doc.id===id));
+        if(selected.some(doc=>!doc))throw new InputError('삭제할 문서 중 찾을 수 없는 기록이 있습니다.',404);
+        if(selected.some(doc=>isPublicCityDocument(doc.id)))throw new InputError('CITY NET 문서는 삭제할 수 없습니다.',422);
+        if(selected.some(doc=>doc.sourceKind!=='upload'||!doc.createdAt))throw new InputError('관제에서 직접 등록한 업로드 문서만 삭제할 수 있습니다.',422);
+        const ids=new Set(body.ids),fileIds=selected.map(doc=>doc.fileId).filter(Boolean),at=new Date().toISOString();
+        state.documents=state.documents.filter(doc=>!ids.has(doc.id));
+        for(const id of body.ids){delete state.archiveEntries[id];for(const receipts of Object.values(state.readReceipts||{}))delete receipts[id];}
+        for(const fileId of fileIds)delete state.files[fileId];
+        for(const item of state.cases)item.links=(item.links||[]).filter(link=>link.type!=='documents'||!ids.has(link.id));
+        state.notices=(state.notices||[]).filter(notice=>notice.target!=='archive'||!ids.has(notice.targetId));
+        state.activity.unshift({id:crypto.randomUUID(),at,action:'ARCHIVE_DELETED',detail:selected.map(doc=>doc.title).join(' · ').slice(0,240)});state.activity=state.activity.slice(0,60);
+        state.revision++;
+        if(await write(state,original)===false)return json({error:'다른 단말에서 기록이 변경되었습니다. 최신 기록을 확인하세요.',state:projectState(await read(),'gm')},409);
+        // Unreferenced blobs expire through upload cleanup, avoiding races with in-flight attachment saves.
+        return json({deleted:selected.length,state:projectState(state,'gm')});
+      }
       const existing=state.documents.find(d=>d.id===body.id);
       if(body.id&&!existing)throw new InputError('문서를 찾을 수 없습니다.',404);
       let doc=existing;
@@ -63,7 +83,7 @@ export function createArchiveHandler({read=readState,write=writeState,store=uplo
       state.revision++;
       if(await write(state,original)===false)return json({error:'다른 단말에서 기록이 변경되었습니다. 최신 기록을 확인하세요.',state:projectState(await read(),'gm')},409);
       return json({id:doc.id,state:projectState(state,'gm')});
-    }catch(error){return json({error:error instanceof InputError?error.message:'문서를 저장하지 못했습니다. 작성 내용을 유지한 채 다시 시도하세요.'},error instanceof InputError?error.status:503);}
+    }catch(error){if(!(error instanceof InputError))console.error('Archive operation failed',error);return json({error:error instanceof InputError?error.message:'문서 작업을 완료하지 못했습니다. 작성 내용을 유지한 채 다시 시도하세요.'},error instanceof InputError?error.status:503);}
   };
 }
 export default createArchiveHandler();
