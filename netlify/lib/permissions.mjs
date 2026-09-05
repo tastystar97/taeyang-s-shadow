@@ -67,6 +67,7 @@ const FIELDS = {
 export function projectState(input, role) {
   if (!ROLES.has(role)) throw new Error('유효한 역할이 필요합니다.');
   const state = normalizeState(input);
+  state.documents.sort((a,b)=>(Date.parse(b.createdAt)||0)-(Date.parse(a.createdAt)||0));
   if (role === 'gm') return { ...state, personnel: state.personnel.map(p => personnelView(p,state)), role, cityHtml: CITY_HTML, documents: state.documents.map(doc => ({...documentView(doc,state), editorSchema: ARCHIVE_SCHEMAS[doc.id], editable: false})) };
   const result = {
     revision: state.revision, schemaVersion: state.schemaVersion, role,

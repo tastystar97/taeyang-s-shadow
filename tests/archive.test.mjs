@@ -154,3 +154,13 @@ test('archive PDF and raster attachments use the same protected current-file rou
 test('archive attachment staging is bound to its selected document',async()=>{
   const h=harness();const fileId=await uploadDoc(h,'p07');const before=structuredClone(h.state);assert.equal((await saveDoc(h,{id:'branch-summary',data:docData(),fileId})).status,400);assert.deepEqual(h.state,before);
 });
+
+test('archive lists show latest registrations first for GM and player roles without changing source order',()=>{
+ const state=normalizeState(freshState());
+ const make=(id,createdAt,extra={})=>({id,title:id,code:id,category:'개인 기록',status:'NEW',createdAt,audience:['director','agent'],...extra});
+ state.documents.push(make('older','2026-09-01T00:00:00Z',{updatedAt:'2026-09-10T00:00:00Z'}),make('newest','2026-09-05T00:00:00Z'),make('hidden','2026-09-06T00:00:00Z',{audience:[]}));
+ const order=state.documents.map(d=>d.id);
+ for(const role of ['director','agent'])assert.deepEqual(projectState(state,role).documents.slice(0,2).map(d=>d.id),['newest','older']);
+ assert.deepEqual(projectState(state,'gm').documents.slice(0,3).map(d=>d.id),['hidden','newest','older']);
+ assert.deepEqual(state.documents.map(d=>d.id),order);
+});
