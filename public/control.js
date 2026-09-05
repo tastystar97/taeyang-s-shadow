@@ -1,3 +1,4 @@
+import {setupNumberTemplates} from '/number-templates.js';
 import {createCasesUI} from '/cases-ui.js';
 import {createWorkflowViewer} from '/workflow-control.js';
 import {createArchiveManager} from './archive-control.js';
@@ -5,6 +6,7 @@ import { createPersonnelManager } from '/personnel-control.js';
 import { playLoginSequence } from '/login-sequence.js';
 
 const app = { state: null, epoch: 0 };
+setupNumberTemplates(()=>app.state,toast);
 const authChannel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tcb-auth') : null;
 function clearControl(message = '') { app.epoch += 1; app.state = null; personnelManager.clear(); archiveManager.clear(); workflowViewer.clear(); casesUI.clear(); closePlayerPreview(); $('.control-main').hidden = true; $('#control-gate').hidden = false; $('#control-error').textContent = message; $$('form').forEach(f => f.reset()); ['#control-notice-list','#control-evidence-list','#approval-list','#control-document-list','#control-log'].forEach(id => $(id).replaceChildren()); }
 if (authChannel) authChannel.onmessage = () => { clearControl(); boot(); };
